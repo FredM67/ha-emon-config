@@ -1,0 +1,30 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "emonTx Configuration",
+        "description": "Configure the emonTx serial bridge integration. Select the ESPHome device that is connected to your emonTx.",
+        "data": {
+          "esphome_device": "ESPHome Device Name"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to the ESPHome device",
+      "unknown": "Unexpected error"
+    },
+    "abort": {
+      "already_configured": "emonTx Configuration is already set up"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "emonTx Configuration Options",
+        "data": {
+          "esphome_device": "ESPHome Device Name"
+        }
+      }
+    }
+  }
+}
