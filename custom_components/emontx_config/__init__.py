@@ -94,14 +94,14 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def _async_register_panel(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Register the frontend panel."""
+    from homeassistant.components.http import StaticPathConfig
+
     # Get the path to the frontend files
     frontend_path = os.path.join(os.path.dirname(__file__), "frontend")
 
     # Register static path for frontend files
-    hass.http.register_static_path(
-        "/emontx_config_static",
-        frontend_path,
-        cache_headers=False,
+    await hass.http.async_register_static_paths(
+        [StaticPathConfig("/emontx_config_static", frontend_path, cache_headers=False)]
     )
 
     # Register the panel
