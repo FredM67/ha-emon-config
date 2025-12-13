@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>emonTx Configuration</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 24px;
+        }
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+        }
+        .status-bar {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .status-item {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ccc;
+        }
+        .status-dot.connected {
+            background: #4CAF50;
+        }
+        .status-dot.disconnected {
+            background: #f44336;
+        }
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .card-header {
+            background: #f8f8f8;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            font-weight: 600;
+        }
+        .card-body {
+            padding: 20px;
+        }
+        .terminal {
+            background: #1e1e1e;
+            color: #00ff00;
+            font-family: 'Consolas', 'Monaco', monospace;
+            padding: 15px;
+            border-radius: 4px;
+            height: 300px;
+            overflow-y: auto;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .terminal .error {
+            color: #ff6b6b;
+        }
+        .terminal .info {
+            color: #4ecdc4;
+        }
+        .terminal .sent {
+            color: #ffd93d;
+        }
+        .command-input {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .command-input input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: monospace;
+        }
+        .command-input input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #45a049;
+        }
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+        .quick-commands {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        .quick-cmd {
+            padding: 8px 16px;
+            background: #e8f5e9;
+            border: 1px solid #4CAF50;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        .quick-cmd:hover {
+            background: #4CAF50;
+            color: white;
+        }
+        .config-section {
+            margin-bottom: 20px;
+        }
+        .config-section h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            color: #333;
+        }
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .config-item {
+            background: #f8f8f8;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        .config-item label {
+            display: block;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .config-item .value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+            color: #666;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e0e0e0;
+            border-top-color: #4CAF50;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 15px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        #oem-frame {
+            width: 100%;
+            height: 600px;
+            border: none;
+            background: white;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.2s;
+        }
+        .tab:hover {
+            color: #4CAF50;
+        }
+        .tab.active {
+            color: #4CAF50;
+            border-bottom-color: #4CAF50;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>emonTx Configuration</h1>
+            <p>Configure your OpenEnergyMonitor emonTx device via ESP32 serial bridge</p>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <div id="ws-status" class="status-dot disconnected"></div>
+                <span>Home Assistant: <strong id="ws-status-text">Disconnected</strong></span>
+            </div>
+            <div class="status-item">
+                <div id="emontx-status" class="status-dot disconnected"></div>
+                <span>emonTx: <strong id="emontx-status-text">Unknown</strong></span>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="terminal">Serial Terminal</div>
+            <div class="tab" data-tab="oem">OEM Interface</div>
+            <div class="tab" data-tab="config">Configuration</div>
+        </div>
+
+        <div id="terminal-tab" class="tab-content active">
+            <div class="main-content">
+                <div class="card">
+                    <div class="card-header">Serial Monitor</div>
+                    <div class="card-body">
+                        <div id="terminal" class="terminal"></div>
+                        <div class="command-input">
+                            <input type="text" id="cmd-input" placeholder="Enter command..." onkeypress="handleKeyPress(event)">
+                            <button class="btn btn-primary" onclick="sendCommand()">Send</button>
+                        </div>
+                        <div class="quick-commands">
+                            <span class="quick-cmd" onclick="sendQuickCmd('l')">l - List Config</span>
+                            <span class="quick-cmd" onclick="sendQuickCmd('v')">v - Firmware Version</span>
+                            <span class="quick-cmd" onclick="sendQuickCmd('s')">s - Save Config</span>
+                            <span class="quick-cmd" onclick="sendQuickCmd('d')">d - Defaults</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">Last Received Data</div>
+                    <div class="card-body">
+                        <div id="last-data" class="config-grid">
+                            <div class="loading">
+                                <div class="spinner"></div>
+                                Waiting for data...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="oem-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">OpenEnergyMonitor Serial Configuration Interface</div>
+                <div class="card-body" style="padding: 0;">
+                    <div id="oem-loading" class="loading">
+                        <div class="spinner"></div>
+                        Loading OEM interface...
+                    </div>
+                    <iframe id="oem-frame" style="display: none;"></iframe>
+                </div>
+            </div>
+        </div>
+
+        <div id="config-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">Device Configuration</div>
+                <div class="card-body">
+                    <div class="config-section">
+                        <h3>ESPHome Device</h3>
+                        <div class="config-grid">
+                            <div class="config-item">
+                                <label>Device Name</label>
+                                <div class="value" id="device-name">-</div>
+                            </div>
+                            <div class="config-item">
+                                <label>Status</label>
+                                <div class="value" id="device-status">-</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="config-section">
+                        <h3>Connection Settings</h3>
+                        <p>The integration connects to your emonTx device through an ESP32 running ESPHome.</p>
+                        <p>Make sure the ESPHome device is online and connected to Home Assistant.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Home Assistant WebSocket connection
+        let ws = null;
+        let wsMessageId = 1;
+        let subscriptionId = null;
+        let deviceName = '';
+        let lastDataTime = null;
+
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab + '-tab').classList.add('active');
+
+                // Load OEM interface when tab is selected
+                if (tab.dataset.tab === 'oem') {
+                    loadOEMInterface();
+                }
+            });
+        });
+
+        // Initialize WebSocket connection
+        function connectWebSocket() {
+            // Get the access token from the URL or use parent window
+            const urlParams = new URLSearchParams(window.location.search);
+            let token = urlParams.get('token');
+
+            // Try to get token from parent window
+            if (!token && window.parent && window.parent.hassConnection) {
+                token = window.parent.hassConnection.options.auth.accessToken;
+            }
+
+            // Use the HA WebSocket URL
+            const wsUrl = `ws://${window.location.host}/api/websocket`;
+
+            log('Connecting to Home Assistant...', 'info');
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => {
+                log('WebSocket connected', 'info');
+            };
+
+            ws.onmessage = (event) => {
+                const msg = JSON.parse(event.data);
+                handleMessage(msg);
+            };
+
+            ws.onerror = (error) => {
+                log('WebSocket error: ' + error, 'error');
+                updateStatus('ws', false);
+            };
+
+            ws.onclose = () => {
+                log('WebSocket closed, reconnecting in 5s...', 'error');
+                updateStatus('ws', false);
+                setTimeout(connectWebSocket, 5000);
+            };
+        }
+
+        function handleMessage(msg) {
+            switch (msg.type) {
+                case 'auth_required':
+                    // Try to authenticate using the HA frontend auth
+                    authenticateWithHA();
+                    break;
+
+                case 'auth_ok':
+                    log('Authenticated with Home Assistant', 'info');
+                    updateStatus('ws', true);
+                    subscribeToEvents();
+                    getDeviceInfo();
+                    break;
+
+                case 'auth_invalid':
+                    log('Authentication failed: ' + msg.message, 'error');
+                    updateStatus('ws', false);
+                    break;
+
+                case 'result':
+                    if (msg.success && msg.result) {
+                        // Handle service list result
+                        if (Array.isArray(msg.result)) {
+                            findEmontxDevice(msg.result);
+                        }
+                    }
+                    break;
+
+                case 'event':
+                    if (msg.event && msg.event.event_type === 'esphome.emontx_data') {
+                        handleEmontxData(msg.event.data);
+                    }
+                    break;
+            }
+        }
+
+        function authenticateWithHA() {
+            // Try to use the Supervisor token or get from parent
+            let token = null;
+
+            // Check if running in HA frontend
+            if (window.parent && window.parent.document) {
+                // Try to get token from HA frontend
+                const hassObj = window.parent.document.querySelector('home-assistant');
+                if (hassObj && hassObj.hass) {
+                    token = hassObj.hass.auth.data.access_token;
+                }
+            }
+
+            // Try localStorage
+            if (!token) {
+                const hassTokens = localStorage.getItem('hassTokens');
+                if (hassTokens) {
+                    try {
+                        const tokens = JSON.parse(hassTokens);
+                        token = tokens.access_token;
+                    } catch (e) {}
+                }
+            }
+
+            // Try to get from URL
+            if (!token) {
+                const urlParams = new URLSearchParams(window.location.search);
+                token = urlParams.get('token');
+            }
+
+            if (token) {
+                ws.send(JSON.stringify({
+                    type: 'auth',
+                    access_token: token
+                }));
+            } else {
+                log('No authentication token available. Please ensure you are logged into Home Assistant.', 'error');
+            }
+        }
+
+        function subscribeToEvents() {
+            const id = wsMessageId++;
+            subscriptionId = id;
+            ws.send(JSON.stringify({
+                id: id,
+                type: 'subscribe_events',
+                event_type: 'esphome.emontx_data'
+            }));
+            log('Subscribed to emonTx events', 'info');
+        }
+
+        function getDeviceInfo() {
+            // Get list of services to find emonTx device
+            const id = wsMessageId++;
+            ws.send(JSON.stringify({
+                id: id,
+                type: 'get_services'
+            }));
+        }
+
+        function findEmontxDevice(services) {
+            // Look for esphome services with send_command
+            if (services.esphome) {
+                for (const [serviceName, serviceInfo] of Object.entries(services.esphome)) {
+                    if (serviceName.endsWith('_send_command')) {
+                        deviceName = serviceName.replace('_send_command', '');
+                        document.getElementById('device-name').textContent = deviceName;
+                        document.getElementById('device-status').textContent = 'Connected';
+                        log(`Found emonTx device: ${deviceName}`, 'info');
+                        updateStatus('emontx', true);
+                        return;
+                    }
+                }
+            }
+            log('No emonTx device found. Make sure ESPHome is configured correctly.', 'error');
+        }
+
+        function handleEmontxData(data) {
+            const payload = data.payload || JSON.stringify(data);
+            log('RX: ' + payload);
+            lastDataTime = new Date();
+            updateStatus('emontx', true);
+
+            // Parse and display the data
+            try {
+                const jsonData = typeof payload === 'string' ? JSON.parse(payload) : payload;
+                displayData(jsonData);
+            } catch (e) {
+                // Not JSON, just display as is
+            }
+        }
+
+        function displayData(data) {
+            const container = document.getElementById('last-data');
+            let html = '';
+
+            for (const [key, value] of Object.entries(data)) {
+                html += `
+                    <div class="config-item">
+                        <label>${key}</label>
+                        <div class="value">${value}</div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html || '<div class="loading">No data received yet</div>';
+        }
+
+        function sendCommand() {
+            const input = document.getElementById('cmd-input');
+            const cmd = input.value.trim();
+            if (!cmd) return;
+
+            sendQuickCmd(cmd);
+            input.value = '';
+        }
+
+        function sendQuickCmd(cmd) {
+            if (!deviceName) {
+                log('No device connected', 'error');
+                return;
+            }
+
+            log('TX: ' + cmd, 'sent');
+
+            const id = wsMessageId++;
+            ws.send(JSON.stringify({
+                id: id,
+                type: 'call_service',
+                domain: 'esphome',
+                service: deviceName + '_send_command',
+                service_data: {
+                    command: cmd
+                }
+            }));
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendCommand();
+            }
+        }
+
+        function log(message, type = '') {
+            const terminal = document.getElementById('terminal');
+            const time = new Date().toLocaleTimeString();
+            const line = document.createElement('div');
+            line.className = type;
+            line.textContent = `[${time}] ${message}`;
+            terminal.appendChild(line);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        function updateStatus(element, connected) {
+            const dot = document.getElementById(element + '-status');
+            const text = document.getElementById(element + '-status-text');
+
+            if (connected) {
+                dot.classList.remove('disconnected');
+                dot.classList.add('connected');
+                text.textContent = 'Connected';
+            } else {
+                dot.classList.remove('connected');
+                dot.classList.add('disconnected');
+                text.textContent = 'Disconnected';
+            }
+        }
+
+        function loadOEMInterface() {
+            const frame = document.getElementById('oem-frame');
+            const loading = document.getElementById('oem-loading');
+
+            // The OEM interface will be loaded in an iframe
+            // We need to create a proxy that patches the interface
+            frame.src = '/emontx_config_static/oem_proxy.html';
+            frame.onload = () => {
+                loading.style.display = 'none';
+                frame.style.display = 'block';
+            };
+        }
+
+        // Check emonTx status periodically
+        setInterval(() => {
+            if (lastDataTime) {
+                const elapsed = new Date() - lastDataTime;
+                if (elapsed > 30000) { // No data for 30 seconds
+                    updateStatus('emontx', false);
+                    document.getElementById('emontx-status-text').textContent = 'No data';
+                }
+            }
+        }, 5000);
+
+        // Start connection
+        connectWebSocket();
+    </script>
+</body>
+</html>
