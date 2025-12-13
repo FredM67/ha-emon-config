@@ -40,11 +40,17 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         # Get list of ESPHome devices for selection
         esphome_devices = await self._get_esphome_devices()
 
+        # Convert to SelectOptionDict format
+        options = [
+            selector.SelectOptionDict(value=device, label=device)
+            for device in esphome_devices
+        ]
+
         data_schema = vol.Schema(
             {
                 vol.Required(CONF_ESPHOME_DEVICE): selector.SelectSelector(
                     selector.SelectSelectorConfig(
-                        options=esphome_devices,
+                        options=options,
                         mode=selector.SelectSelectorMode.DROPDOWN,
                         custom_value=True,
                     ),
