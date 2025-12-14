@@ -557,6 +557,9 @@
                 },
 
                 handleMessage(msg) {
+                    // Debug: log all messages
+                    console.log('WS msg:', msg.type, msg);
+
                     switch (msg.type) {
                         case 'auth_required':
                             this.authenticateWithHA();
@@ -572,11 +575,13 @@
                             this.wsConnected = false;
                             break;
                         case 'result':
+                            console.log('Result:', msg);
                             if (msg.success && msg.result && typeof msg.result === 'object') {
                                 this.findEmontxDevice(msg.result);
                             }
                             break;
                         case 'event':
+                            console.log('Event received:', msg.event);
                             if (msg.event && msg.event.event_type === 'esphome.emontx_data') {
                                 this.handleEmontxData(msg.event.data);
                             }
