@@ -917,6 +917,7 @@
 
                 log(message, type = '') {
                     const terminal = document.getElementById('terminal');
+                    console.log('log() called, terminal element:', terminal);
                     if (terminal) {
                         const time = new Date().toLocaleTimeString();
                         const line = document.createElement('div');
@@ -924,6 +925,9 @@
                         line.textContent = `[${time}] ${message}`;
                         terminal.appendChild(line);
                         terminal.scrollTop = terminal.scrollHeight;
+                        console.log('Added line to terminal');
+                    } else {
+                        console.error('Terminal element not found!');
                     }
                 }
             }
