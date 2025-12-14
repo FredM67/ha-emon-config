@@ -566,8 +566,18 @@
 
             // Parse and display the data
             try {
-                const jsonData = typeof payload === 'string' ? JSON.parse(payload) : payload;
-                displayData(jsonData);
+                let jsonData = typeof payload === 'string' ? JSON.parse(payload) : payload;
+
+                // If data is wrapped with device_id and data fields, extract the inner data
+                if (jsonData.device_id && jsonData.data) {
+                    const innerData = typeof jsonData.data === 'string' ? JSON.parse(jsonData.data) : jsonData.data;
+                    jsonData = innerData;
+                }
+
+                // Only display if we have actual sensor data (has MSG or V1 field)
+                if (jsonData.MSG !== undefined || jsonData.V1 !== undefined) {
+                    displayData(jsonData);
+                }
             } catch (e) {
                 // Not JSON, just display as is
             }
