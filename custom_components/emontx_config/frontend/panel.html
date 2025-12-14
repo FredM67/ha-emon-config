@@ -649,18 +649,25 @@
                 },
 
                 handleEmontxData(data) {
+                    console.log('handleEmontxData called with:', data);
+
                     // Get payload from various possible formats
                     let payload;
                     if (data.payload) {
                         payload = data.payload;
+                        console.log('Using data.payload:', payload);
                     } else if (data.data) {
                         payload = data.data;
+                        console.log('Using data.data:', payload);
                     } else {
                         payload = JSON.stringify(data);
+                        console.log('Using stringified data:', payload);
                     }
 
                     // Log raw data for debugging
-                    this.log('RX: ' + (typeof payload === 'string' ? payload : JSON.stringify(payload)));
+                    const logMsg = 'RX: ' + (typeof payload === 'string' ? payload : JSON.stringify(payload));
+                    console.log('Logging to terminal:', logMsg);
+                    this.log(logMsg);
 
                     // Parse the payload
                     try {
