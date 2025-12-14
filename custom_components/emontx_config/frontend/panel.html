@@ -4,20 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>emonTx Configuration</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.min.js"></script>
     <style>
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
         body {
             margin: 0;
             padding: 20px;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
             background-color: #f5f5f5;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1200px; margin: 0 auto; }
         .header {
             background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
             color: white;
@@ -26,14 +22,8 @@
             margin-bottom: 20px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .header h1 {
-            margin: 0 0 10px 0;
-            font-size: 24px;
-        }
-        .header p {
-            margin: 0;
-            opacity: 0.9;
-        }
+        .header h1 { margin: 0 0 10px 0; font-size: 24px; }
+        .header p { margin: 0; opacity: 0.9; }
         .status-bar {
             display: flex;
             gap: 20px;
@@ -55,27 +45,14 @@
             border-radius: 50%;
             background: #ccc;
         }
-        .status-dot.connected {
-            background: #4CAF50;
-        }
-        .status-dot.disconnected {
-            background: #f44336;
-        }
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        @media (max-width: 900px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-        }
+        .status-dot.connected { background: #4CAF50; }
+        .status-dot.disconnected { background: #f44336; }
         .card {
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             overflow: hidden;
+            margin-bottom: 20px;
         }
         .card-header {
             background: #f8f8f8;
@@ -83,29 +60,21 @@
             border-bottom: 1px solid #e0e0e0;
             font-weight: 600;
         }
-        .card-body {
-            padding: 20px;
-        }
+        .card-body { padding: 20px; }
         .terminal {
             background: #1e1e1e;
             color: #00ff00;
             font-family: 'Consolas', 'Monaco', monospace;
             padding: 15px;
             border-radius: 4px;
-            height: 300px;
+            height: 200px;
             overflow-y: auto;
             font-size: 13px;
             line-height: 1.4;
         }
-        .terminal .error {
-            color: #ff6b6b;
-        }
-        .terminal .info {
-            color: #4ecdc4;
-        }
-        .terminal .sent {
-            color: #ffd93d;
-        }
+        .terminal .error { color: #ff6b6b; }
+        .terminal .info { color: #4ecdc4; }
+        .terminal .sent { color: #ffd93d; }
         .command-input {
             display: flex;
             gap: 10px;
@@ -113,7 +82,7 @@
         }
         .command-input input {
             flex: 1;
-            padding: 12px 15px;
+            padding: 10px 15px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 14px;
@@ -124,7 +93,7 @@
             border-color: #4CAF50;
         }
         .btn {
-            padding: 12px 24px;
+            padding: 10px 20px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
@@ -132,93 +101,15 @@
             font-weight: 500;
             transition: all 0.2s;
         }
-        .btn-primary {
-            background: #4CAF50;
-            color: white;
-        }
-        .btn-primary:hover {
-            background: #45a049;
-        }
-        .btn-secondary {
-            background: #e0e0e0;
-            color: #333;
-        }
-        .btn-secondary:hover {
-            background: #d0d0d0;
-        }
-        .quick-commands {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 15px;
-        }
-        .quick-cmd {
-            padding: 8px 16px;
-            background: #e8f5e9;
-            border: 1px solid #4CAF50;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 13px;
-            transition: all 0.2s;
-        }
-        .quick-cmd:hover {
-            background: #4CAF50;
-            color: white;
-        }
-        .config-section {
-            margin-bottom: 20px;
-        }
-        .config-section h3 {
-            margin: 0 0 10px 0;
-            font-size: 16px;
-            color: #333;
-        }
-        .config-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-        .config-item {
-            background: #f8f8f8;
-            padding: 15px;
-            border-radius: 4px;
-        }
-        .config-item label {
-            display: block;
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 5px;
-        }
-        .config-item .value {
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-        }
-        .loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 200px;
-            color: #666;
-        }
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #e0e0e0;
-            border-top-color: #4CAF50;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 15px;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        #oem-frame {
-            width: 100%;
-            height: 600px;
-            border: none;
-            background: white;
-        }
+        .btn-primary { background: #4CAF50; color: white; }
+        .btn-primary:hover { background: #45a049; }
+        .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-warning { background: #ff9800; color: white; }
+        .btn-warning:hover { background: #f57c00; }
+        .btn-danger { background: #f44336; color: white; }
+        .btn-danger:hover { background: #d32f2f; }
+        .btn-info { background: #2196F3; color: white; }
+        .btn-info:hover { background: #1976D2; }
         .tabs {
             display: flex;
             border-bottom: 2px solid #e0e0e0;
@@ -233,23 +124,123 @@
             color: #666;
             transition: all 0.2s;
         }
-        .tab:hover {
-            color: #4CAF50;
+        .tab:hover { color: #4CAF50; }
+        .tab.active { color: #4CAF50; border-bottom-color: #4CAF50; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Config table styles */
+        .config-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
         }
-        .tab.active {
-            color: #4CAF50;
-            border-bottom-color: #4CAF50;
+        .config-table th, .config-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
         }
-        .tab-content {
-            display: none;
+        .config-table th {
+            background: #f8f8f8;
+            font-weight: 600;
         }
-        .tab-content.active {
+        .config-table input[type="text"],
+        .config-table input[type="number"],
+        .config-table select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 80px;
+        }
+        .config-table input:focus,
+        .config-table select:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+        .config-table input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+        .device-info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .device-info-table th, .device-info-table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #e0e0e0;
+        }
+        .device-info-table th { background: #f8f8f8; }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            min-width: 150px;
+            font-weight: 500;
+        }
+        .form-group input, .form-group select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .form-group .unit {
+            color: #666;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .alert-info { background: #e3f2fd; color: #1565c0; }
+        .alert-warning { background: #fff3e0; color: #e65100; }
+        .alert-danger { background: #ffebee; color: #c62828; }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 900px) {
+            .main-content { grid-template-columns: 1fr; }
+        }
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+        .config-item {
+            background: #f8f8f8;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .config-item label {
             display: block;
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 3px;
         }
+        .config-item .value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        h4 { margin: 20px 0 10px 0; color: #333; }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div id="app" class="container">
         <div class="header">
             <h1>emonTx Configuration</h1>
             <p>Configure your OpenEnergyMonitor emonTx device via ESP32 serial bridge</p>
@@ -257,88 +248,235 @@
 
         <div class="status-bar">
             <div class="status-item">
-                <div id="ws-status" class="status-dot disconnected"></div>
-                <span>Home Assistant: <strong id="ws-status-text">Disconnected</strong></span>
+                <div :class="['status-dot', wsConnected ? 'connected' : 'disconnected']"></div>
+                <span>Home Assistant: <strong>{{ wsConnected ? 'Connected' : 'Disconnected' }}</strong></span>
             </div>
             <div class="status-item">
-                <div id="emontx-status" class="status-dot disconnected"></div>
-                <span>emonTx: <strong id="emontx-status-text">Unknown</strong></span>
+                <div :class="['status-dot', emontxConnected ? 'connected' : 'disconnected']"></div>
+                <span>emonTx: <strong>{{ emontxStatus }}</strong></span>
             </div>
         </div>
 
         <div class="tabs">
-            <div class="tab active" data-tab="terminal">Serial Terminal</div>
-            <div class="tab" data-tab="oem">OEM Interface</div>
-            <div class="tab" data-tab="config">Configuration</div>
+            <div :class="['tab', activeTab === 'config' ? 'active' : '']" @click="activeTab = 'config'">Device Config</div>
+            <div :class="['tab', activeTab === 'terminal' ? 'active' : '']" @click="activeTab = 'terminal'">Serial Terminal</div>
+            <div :class="['tab', activeTab === 'data' ? 'active' : '']" @click="activeTab = 'data'">Live Data</div>
         </div>
 
-        <div id="terminal-tab" class="tab-content active">
-            <div class="main-content">
+        <!-- Device Configuration Tab -->
+        <div v-show="activeTab === 'config'" class="tab-content active">
+            <div v-if="!configReceived" class="alert alert-info">
+                Waiting for configuration from device... Click "Load Config" to request configuration.
+                <button class="btn btn-primary" style="margin-left: 15px;" @click="loadConfig" :disabled="!emontxConnected">Load Config</button>
+            </div>
+
+            <div v-if="upgradeRequired" class="alert alert-danger">
+                <b>Firmware update required:</b> Looks like you are running an older firmware version. Please upgrade the device firmware to use this tool.
+            </div>
+
+            <div v-if="configReceived && !upgradeRequired">
+                <!-- Device Info -->
                 <div class="card">
-                    <div class="card-header">Serial Monitor</div>
+                    <div class="card-header">Device Information</div>
                     <div class="card-body">
-                        <div id="terminal" class="terminal"></div>
-                        <div class="command-input">
-                            <input type="text" id="cmd-input" placeholder="Enter command..." onkeypress="handleKeyPress(event)">
-                            <button class="btn btn-primary" onclick="sendCommand()">Send</button>
-                        </div>
-                        <div class="quick-commands">
-                            <span class="quick-cmd" onclick="sendQuickCmd('l')">l - List Config</span>
-                            <span class="quick-cmd" onclick="sendQuickCmd('v')">v - Firmware Version</span>
-                            <span class="quick-cmd" onclick="sendQuickCmd('s')">s - Save Config</span>
-                            <span class="quick-cmd" onclick="sendQuickCmd('d')">d - Defaults</span>
+                        <table class="device-info-table">
+                            <tr>
+                                <th>Hardware</th>
+                                <th>Firmware</th>
+                                <th>Version</th>
+                                <th>Voltage</th>
+                                <th>Library</th>
+                            </tr>
+                            <tr>
+                                <td>{{ device.hardware || '-' }}</td>
+                                <td>{{ device.firmware || '-' }}</td>
+                                <td>{{ device.firmware_version || '-' }}</td>
+                                <td>{{ device.voltage || '-' }}</td>
+                                <td>{{ device.emon_library || '-' }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Voltage Calibration -->
+                <div class="card" v-if="device.hardware !== 'emonPi3'">
+                    <div class="card-header">Voltage Calibration</div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>Voltage calibration</label>
+                            <input type="number" step="0.001" v-model="device.vcal" @change="setVcal" :disabled="!emontxConnected" />
+                            <span class="unit">%</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="card">
-                    <div class="card-header">Last Received Data</div>
+                <!-- Multi-voltage for emonPi3 -->
+                <div class="card" v-if="device.hardware === 'emonPi3'">
+                    <div class="card-header">Voltage Channels</div>
                     <div class="card-body">
-                        <div id="last-data" class="config-grid">
-                            <div class="loading">
-                                <div class="spinner"></div>
-                                Waiting for data...
-                            </div>
+                        <table class="config-table">
+                            <tr>
+                                <th>Active</th>
+                                <th>Channel</th>
+                                <th>Calibration</th>
+                            </tr>
+                            <tr v-for="(vchannel, index) in device.vchannels" :key="'v'+index">
+                                <td><input type="checkbox" v-model="vchannel.active" @change="setVchannel(index)" :disabled="!emontxConnected" /></td>
+                                <td>V{{ index + 1 }}</td>
+                                <td>
+                                    <input type="number" step="0.001" v-model="vchannel.vcal" @change="setVchannel(index)" :disabled="!emontxConnected" />
+                                    <span class="unit">%</span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Current Channels -->
+                <div class="card">
+                    <div class="card-header">Current Channels</div>
+                    <div class="card-body">
+                        <table class="config-table">
+                            <tr>
+                                <th v-if="device.hardware === 'emonPi3'">Active</th>
+                                <th>Channel</th>
+                                <th>CT Type</th>
+                                <th>Phase</th>
+                                <th v-if="device.hardware === 'emonPi3'">V1</th>
+                                <th v-if="device.hardware === 'emonPi3'">V2</th>
+                                <th>Power</th>
+                                <th>Energy</th>
+                            </tr>
+                            <tr v-for="(channel, index) in device.ichannels" :key="'i'+index">
+                                <td v-if="device.hardware === 'emonPi3'">
+                                    <input type="checkbox" v-model="channel.active" @change="setIcal(index)" :disabled="!emontxConnected" />
+                                </td>
+                                <td>CT {{ index + 1 }}</td>
+                                <td>
+                                    <select v-model="channel.ical" @change="setIcal(index)" :disabled="!emontxConnected">
+                                        <option v-for="rating in ctsAvailable" :value="rating" :key="rating">{{ rating }}A</option>
+                                    </select>
+                                </td>
+                                <td><input type="number" step="0.1" v-model="channel.ilead" @change="setIcal(index)" style="width:60px" :disabled="!emontxConnected" /></td>
+                                <td v-if="device.hardware === 'emonPi3'">
+                                    <select v-model="channel.vchan1" @change="setIcal(index)" :disabled="!emontxConnected">
+                                        <option v-for="v in [1,2,3]" :value="v" :key="v">{{ v }}</option>
+                                    </select>
+                                </td>
+                                <td v-if="device.hardware === 'emonPi3'">
+                                    <select v-model="channel.vchan2" @change="setIcal(index)" :disabled="!emontxConnected">
+                                        <option v-for="v in [1,2,3]" :value="v" :key="v">{{ v }}</option>
+                                    </select>
+                                </td>
+                                <td>{{ channel.power }}</td>
+                                <td>{{ channel.energy }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Radio Settings -->
+                <div class="card" v-if="device.hardware !== 'emonPi2'">
+                    <div class="card-header">Radio Settings</div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>Radio enabled</label>
+                            <input type="checkbox" v-model="device.RF" @change="setRadio" :disabled="!emontxConnected" />
+                        </div>
+                        <div v-if="device.RF">
+                            <table class="device-info-table">
+                                <tr>
+                                    <th>Node ID</th>
+                                    <th>Group</th>
+                                    <th>Frequency</th>
+                                    <th>Format</th>
+                                </tr>
+                                <tr>
+                                    <td><input type="number" v-model="device.rfNode" @change="setRfNode" :disabled="!emontxConnected" style="width:60px" /></td>
+                                    <td><input type="number" v-model="device.rfGroup" @change="setRfGroup" :disabled="!emontxConnected" style="width:60px" /></td>
+                                    <td>
+                                        <select v-model="device.rfBand" @change="setRfBand" :disabled="!emontxConnected">
+                                            <option>433 MHz</option>
+                                            <option>868 MHz</option>
+                                            <option>915 MHz</option>
+                                        </select>
+                                    </td>
+                                    <td>{{ device.rfFormat }}</td>
+                                </tr>
+                            </table>
                         </div>
                     </div>
+                </div>
+
+                <!-- Other Settings -->
+                <div class="card">
+                    <div class="card-header">Other Settings</div>
+                    <div class="card-body">
+                        <table class="device-info-table">
+                            <tr>
+                                <th>Pulse enabled</th>
+                                <th>Pulse period</th>
+                                <th>Datalog</th>
+                                <th>Serial format</th>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" v-model="device.pulse" @change="setPulse" :disabled="!emontxConnected" /></td>
+                                <td><input type="number" v-model="device.pulsePeriod" @change="setPulsePeriod" :disabled="!emontxConnected" style="width:80px" /></td>
+                                <td><input type="number" step="0.1" v-model="device.datalog" @change="setDatalog" :disabled="!emontxConnected" style="width:80px" /></td>
+                                <td>
+                                    <select v-model="device.json" @change="setJson" :disabled="!emontxConnected">
+                                        <option :value="0">Key:value pairs</option>
+                                        <option :value="1">Full JSON</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="button-group">
+                    <button class="btn btn-warning" @click="saveConfig" :disabled="!changes || !emontxConnected">Save Changes</button>
+                    <button class="btn btn-info" @click="zeroEnergy" :disabled="!emontxConnected">Zero Energy Values</button>
+                    <button class="btn btn-danger" @click="resetDefaults" :disabled="!emontxConnected">Reset to Defaults</button>
+                    <button class="btn btn-primary" @click="loadConfig" :disabled="!emontxConnected">Reload Config</button>
                 </div>
             </div>
         </div>
 
-        <div id="oem-tab" class="tab-content">
+        <!-- Serial Terminal Tab -->
+        <div v-show="activeTab === 'terminal'" class="tab-content">
             <div class="card">
-                <div class="card-header">OpenEnergyMonitor Serial Configuration Interface</div>
-                <div class="card-body" style="padding: 0;">
-                    <div id="oem-loading" class="loading">
-                        <div class="spinner"></div>
-                        Loading OEM interface...
-                    </div>
-                    <iframe id="oem-frame" style="display: none;"></iframe>
-                </div>
-            </div>
-        </div>
-
-        <div id="config-tab" class="tab-content">
-            <div class="card">
-                <div class="card-header">Device Configuration</div>
+                <div class="card-header">Serial Monitor</div>
                 <div class="card-body">
-                    <div class="config-section">
-                        <h3>ESPHome Device</h3>
-                        <div class="config-grid">
-                            <div class="config-item">
-                                <label>Device Name</label>
-                                <div class="value" id="device-name">-</div>
-                            </div>
-                            <div class="config-item">
-                                <label>Status</label>
-                                <div class="value" id="device-status">-</div>
-                            </div>
-                        </div>
+                    <div id="terminal" class="terminal"></div>
+                    <div class="command-input">
+                        <input type="text" v-model="cmdInput" @keypress.enter="sendCmd" placeholder="Enter command..." />
+                        <button class="btn btn-primary" @click="sendCmd" :disabled="!emontxConnected">Send</button>
                     </div>
-                    <div class="config-section">
-                        <h3>Connection Settings</h3>
-                        <p>The integration connects to your emonTx device through an ESP32 running ESPHome.</p>
-                        <p>Make sure the ESPHome device is online and connected to Home Assistant.</p>
+                    <div style="margin-top: 15px; display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button class="btn btn-primary" @click="sendQuickCmd('l')">l - List Config</button>
+                        <button class="btn btn-primary" @click="sendQuickCmd('v')">v - Version</button>
+                        <button class="btn btn-primary" @click="sendQuickCmd('s')">s - Save</button>
+                        <button class="btn btn-primary" @click="sendQuickCmd('?')">? - Help</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Data Tab -->
+        <div v-show="activeTab === 'data'" class="tab-content">
+            <div class="card">
+                <div class="card-header">Live Sensor Data</div>
+                <div class="card-body">
+                    <div v-if="Object.keys(liveData).length === 0" class="alert alert-info">
+                        Waiting for data from emonTx...
+                    </div>
+                    <div v-else class="config-grid">
+                        <div class="config-item" v-for="(value, key) in liveData" :key="key">
+                            <label>{{ key }}</label>
+                            <div class="value">{{ value }}</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -346,345 +484,428 @@
     </div>
 
     <script>
-        // Home Assistant WebSocket connection
-        let ws = null;
-        let wsMessageId = 1;
-        let subscriptionId = null;
-        let deviceName = '';
-        let lastDataTime = null;
+        var app = new Vue({
+            el: '#app',
+            data: {
+                activeTab: 'config',
+                wsConnected: false,
+                emontxConnected: false,
+                emontxStatus: 'Unknown',
+                configReceived: false,
+                upgradeRequired: false,
+                changes: false,
+                cmdInput: '',
+                liveData: {},
+                ctsAvailable: [200, 100, 50, 25, 20],
+                device: {
+                    firmware: '',
+                    firmware_version: '',
+                    hardware: '',
+                    voltage: '',
+                    emon_library: 'emonLibDB',
+                    RF: false,
+                    rfNode: '',
+                    rfGroup: '',
+                    rfBand: '',
+                    rfFormat: '',
+                    pulse: false,
+                    pulsePeriod: '',
+                    datalog: '',
+                    json: 0,
+                    vcal: '',
+                    vchannels: [
+                        { vcal: 100, active: true },
+                        { vcal: 100, active: false },
+                        { vcal: 100, active: false }
+                    ],
+                    ichannels: []
+                },
+                // WebSocket
+                ws: null,
+                wsMessageId: 1,
+                deviceName: ''
+            },
+            mounted() {
+                this.populateChannels(6);
+                this.connectWebSocket();
+            },
+            methods: {
+                connectWebSocket() {
+                    const wsUrl = `ws://${window.location.host}/api/websocket`;
+                    this.log('Connecting to Home Assistant...', 'info');
+                    this.ws = new WebSocket(wsUrl);
 
-        // Tab switching
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                tab.classList.add('active');
-                document.getElementById(tab.dataset.tab + '-tab').classList.add('active');
+                    this.ws.onopen = () => {
+                        this.log('WebSocket connected', 'info');
+                    };
 
-                // Load OEM interface when tab is selected
-                if (tab.dataset.tab === 'oem') {
-                    loadOEMInterface();
-                }
-            });
-        });
+                    this.ws.onmessage = (event) => {
+                        const msg = JSON.parse(event.data);
+                        this.handleMessage(msg);
+                    };
 
-        // Initialize WebSocket connection
-        function connectWebSocket() {
-            // Get the access token from the URL or use parent window
-            const urlParams = new URLSearchParams(window.location.search);
-            let token = urlParams.get('token');
+                    this.ws.onerror = (error) => {
+                        this.log('WebSocket error', 'error');
+                        this.wsConnected = false;
+                    };
 
-            // Try to get token from parent window (with safe access)
-            if (!token && window.parent && window.parent.hassConnection) {
-                try {
-                    token = window.parent.hassConnection?.options?.auth?.accessToken;
-                } catch (e) {
-                    // Ignore access errors
-                }
-            }
+                    this.ws.onclose = () => {
+                        this.log('WebSocket closed, reconnecting...', 'error');
+                        this.wsConnected = false;
+                        setTimeout(() => this.connectWebSocket(), 5000);
+                    };
+                },
 
-            // Use the HA WebSocket URL
-            const wsUrl = `ws://${window.location.host}/api/websocket`;
+                handleMessage(msg) {
+                    switch (msg.type) {
+                        case 'auth_required':
+                            this.authenticateWithHA();
+                            break;
+                        case 'auth_ok':
+                            this.log('Authenticated with Home Assistant', 'info');
+                            this.wsConnected = true;
+                            this.subscribeToEvents();
+                            this.getDeviceInfo();
+                            break;
+                        case 'auth_invalid':
+                            this.log('Authentication failed', 'error');
+                            this.wsConnected = false;
+                            break;
+                        case 'result':
+                            if (msg.success && msg.result && typeof msg.result === 'object') {
+                                this.findEmontxDevice(msg.result);
+                            }
+                            break;
+                        case 'event':
+                            if (msg.event && msg.event.event_type === 'esphome.emontx_data') {
+                                this.handleEmontxData(msg.event.data);
+                            }
+                            break;
+                    }
+                },
 
-            log('Connecting to Home Assistant...', 'info');
-            ws = new WebSocket(wsUrl);
+                authenticateWithHA() {
+                    let token = null;
+                    try {
+                        if (window.parent && window.parent.document) {
+                            const hassObj = window.parent.document.querySelector('home-assistant');
+                            if (hassObj && hassObj.hass && hassObj.hass.auth && hassObj.hass.auth.data) {
+                                token = hassObj.hass.auth.data.access_token;
+                            }
+                        }
+                    } catch (e) {}
 
-            ws.onopen = () => {
-                log('WebSocket connected', 'info');
-            };
+                    if (!token) {
+                        try {
+                            const hassTokens = localStorage.getItem('hassTokens');
+                            if (hassTokens) {
+                                token = JSON.parse(hassTokens).access_token;
+                            }
+                        } catch (e) {}
+                    }
 
-            ws.onmessage = (event) => {
-                const msg = JSON.parse(event.data);
-                handleMessage(msg);
-            };
+                    if (token) {
+                        this.ws.send(JSON.stringify({ type: 'auth', access_token: token }));
+                    } else {
+                        this.log('No authentication token available', 'error');
+                    }
+                },
 
-            ws.onerror = (error) => {
-                log('WebSocket error: ' + error, 'error');
-                updateStatus('ws', false);
-            };
+                subscribeToEvents() {
+                    this.ws.send(JSON.stringify({
+                        id: this.wsMessageId++,
+                        type: 'subscribe_events',
+                        event_type: 'esphome.emontx_data'
+                    }));
+                },
 
-            ws.onclose = () => {
-                log('WebSocket closed, reconnecting in 5s...', 'error');
-                updateStatus('ws', false);
-                setTimeout(connectWebSocket, 5000);
-            };
-        }
+                getDeviceInfo() {
+                    this.ws.send(JSON.stringify({
+                        id: this.wsMessageId++,
+                        type: 'get_services'
+                    }));
+                },
 
-        function handleMessage(msg) {
-            switch (msg.type) {
-                case 'auth_required':
-                    // Try to authenticate using the HA frontend auth
-                    authenticateWithHA();
-                    break;
-
-                case 'auth_ok':
-                    log('Authenticated with Home Assistant', 'info');
-                    updateStatus('ws', true);
-                    subscribeToEvents();
-                    getDeviceInfo();
-                    break;
-
-                case 'auth_invalid':
-                    log('Authentication failed: ' + msg.message, 'error');
-                    updateStatus('ws', false);
-                    break;
-
-                case 'result':
-                    if (msg.success && msg.result) {
-                        // Handle service list result
-                        if (Array.isArray(msg.result)) {
-                            findEmontxDevice(msg.result);
+                findEmontxDevice(services) {
+                    if (services.esphome) {
+                        for (const serviceName of Object.keys(services.esphome)) {
+                            if (serviceName.endsWith('_send_command')) {
+                                this.deviceName = serviceName.replace('_send_command', '');
+                                this.log(`Found device: ${this.deviceName}`, 'info');
+                                this.emontxConnected = true;
+                                this.emontxStatus = 'Connected';
+                                // Auto-load config
+                                setTimeout(() => this.loadConfig(), 1000);
+                                return;
+                            }
                         }
                     }
-                    break;
+                    this.log('No emonTx device found', 'error');
+                },
 
-                case 'event':
-                    if (msg.event && msg.event.event_type === 'esphome.emontx_data') {
-                        handleEmontxData(msg.event.data);
-                    }
-                    break;
-            }
-        }
+                handleEmontxData(data) {
+                    let payload = data.payload || JSON.stringify(data);
 
-        function authenticateWithHA() {
-            // Try to use the Supervisor token or get from parent
-            let token = null;
+                    // Parse the payload
+                    try {
+                        let jsonData = typeof payload === 'string' ? JSON.parse(payload) : payload;
 
-            // Method 1: Try parent window's home-assistant element
-            try {
-                if (window.parent && window.parent.document) {
-                    const hassObj = window.parent.document.querySelector('home-assistant');
-                    if (hassObj && hassObj.hass && hassObj.hass.auth && hassObj.hass.auth.data) {
-                        token = hassObj.hass.auth.data.access_token;
-                        log('Got token from parent home-assistant element', 'info');
-                    }
-                }
-            } catch (e) {
-                log('Cannot access parent frame: ' + e.message, 'error');
-            }
+                        // Handle wrapped format
+                        if (jsonData.device_id && jsonData.data) {
+                            jsonData = typeof jsonData.data === 'string' ? JSON.parse(jsonData.data) : jsonData.data;
+                        }
 
-            // Method 2: Try grandparent (in case of nested iframes)
-            if (!token) {
-                try {
-                    if (window.parent && window.parent.parent && window.parent.parent.document) {
-                        const hassObj = window.parent.parent.document.querySelector('home-assistant');
-                        if (hassObj && hassObj.hass && hassObj.hass.auth && hassObj.hass.auth.data) {
-                            token = hassObj.hass.auth.data.access_token;
-                            log('Got token from grandparent home-assistant element', 'info');
+                        // Check if it's sensor data (has MSG or V1)
+                        if (jsonData.MSG !== undefined || jsonData.V1 !== undefined) {
+                            this.liveData = jsonData;
+                            this.emontxConnected = true;
+                            this.emontxStatus = 'Connected';
+
+                            // Update power/energy in config table
+                            for (let c = 0; c < this.device.ichannels.length; c++) {
+                                const pKey = 'P' + (c + 1);
+                                const eKey = 'E' + (c + 1);
+                                if (jsonData[pKey] !== undefined) {
+                                    this.device.ichannels[c].power = jsonData[pKey] + 'W';
+                                }
+                                if (jsonData[eKey] !== undefined) {
+                                    this.device.ichannels[c].energy = jsonData[eKey] + 'Wh';
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        // Not JSON, process as config line
+                        if (typeof payload === 'string') {
+                            this.processLine(payload);
                         }
                     }
-                } catch (e) {}
-            }
 
-            // Method 3: Try parent localStorage
-            if (!token) {
-                try {
-                    const parentStorage = window.parent.localStorage;
-                    const hassTokens = parentStorage.getItem('hassTokens');
-                    if (hassTokens) {
-                        const tokens = JSON.parse(hassTokens);
-                        token = tokens.access_token;
-                        log('Got token from parent localStorage', 'info');
+                    this.log('RX: ' + payload);
+                },
+
+                processLine(line) {
+                    // Process configuration responses
+                    if (line.startsWith('firmware = ')) {
+                        this.device.firmware = line.split('=')[1].trim();
+                        this.configReceived = true;
+
+                        if (this.device.firmware.includes('6CT')) {
+                            this.populateChannels(6);
+                        } else if (this.device.firmware.includes('12CT')) {
+                            this.populateChannels(12);
+                        }
                     }
-                } catch (e) {}
-            }
 
-            // Method 4: Try own localStorage
-            if (!token) {
-                try {
-                    const hassTokens = localStorage.getItem('hassTokens');
-                    if (hassTokens) {
-                        const tokens = JSON.parse(hassTokens);
-                        token = tokens.access_token;
-                        log('Got token from localStorage', 'info');
+                    if (line.startsWith('hardware = ')) {
+                        this.device.hardware = line.split('=')[1].trim();
+                        if (this.device.hardware === 'emonPi3') {
+                            this.populateChannels(12);
+                        }
                     }
-                } catch (e) {}
-            }
 
-            // Method 5: Try to get from URL
-            if (!token) {
-                const urlParams = new URLSearchParams(window.location.search);
-                token = urlParams.get('token');
-                if (token) {
-                    log('Got token from URL', 'info');
-                }
-            }
+                    if (line.startsWith('Settings:')) {
+                        this.configReceived = true;
+                        this.upgradeRequired = true;
+                    }
 
-            if (token) {
-                ws.send(JSON.stringify({
-                    type: 'auth',
-                    access_token: token
-                }));
-            } else {
-                log('No authentication token available. Please ensure you are logged into Home Assistant.', 'error');
-                log('Debug: Check browser console (F12) for more details', 'error');
-            }
-        }
+                    // Parse comma-separated key=value pairs
+                    const sublines = line.split(',');
+                    for (const subline of sublines) {
+                        const keyval = subline.split('=');
+                        if (keyval.length === 2) {
+                            const key = keyval[0].trim();
+                            const val = keyval[1].trim();
 
-        function subscribeToEvents() {
-            const id = wsMessageId++;
-            subscriptionId = id;
-            ws.send(JSON.stringify({
-                id: id,
-                type: 'subscribe_events',
-                event_type: 'esphome.emontx_data'
-            }));
-            log('Subscribed to emonTx events', 'info');
-        }
+                            // CT calibration
+                            if (key.startsWith('iCal')) {
+                                this.configReceived = true;
+                                const c = parseInt(key.substring(4).trim()) - 1;
+                                if (c >= 0 && c < this.device.ichannels.length) {
+                                    this.device.ichannels[c].ical = Math.round(parseFloat(val));
+                                }
+                            }
+                            // CT phase lead
+                            else if (key.startsWith('iLead')) {
+                                const c = parseInt(key.substring(5).trim()) - 1;
+                                if (c >= 0 && c < this.device.ichannels.length) {
+                                    this.device.ichannels[c].ilead = parseFloat(val);
+                                }
+                            }
+                            // Voltage calibration
+                            else if (key === 'vCal') {
+                                this.device.vcal = parseFloat(val);
+                            }
+                            // Version
+                            else if (key === 'version') {
+                                this.device.firmware_version = val;
+                            }
+                            // Voltage
+                            else if (key === 'voltage') {
+                                this.device.voltage = val;
+                            }
+                            // Radio
+                            else if (key === 'RF') {
+                                this.device.RF = val === 'on';
+                            }
+                            else if (key === 'rfNode') {
+                                this.device.rfNode = parseInt(val);
+                            }
+                            else if (key === 'rfGroup') {
+                                this.device.rfGroup = parseInt(val);
+                            }
+                            else if (key === 'rfBand') {
+                                this.device.rfBand = val;
+                            }
+                            else if (key === 'rfFormat') {
+                                this.device.rfFormat = val;
+                            }
+                            // Pulse
+                            else if (key === 'pulse') {
+                                this.device.pulse = val !== 'off';
+                            }
+                            else if (key === 'pulsePeriod') {
+                                this.device.pulsePeriod = parseInt(val);
+                            }
+                            // Datalog
+                            else if (key === 'datalog') {
+                                this.device.datalog = parseFloat(val);
+                            }
+                            else if (key === 'json') {
+                                this.device.json = val === 'off' ? 0 : 1;
+                            }
+                        }
+                    }
+                },
 
-        function getDeviceInfo() {
-            // Get list of services to find emonTx device
-            const id = wsMessageId++;
-            ws.send(JSON.stringify({
-                id: id,
-                type: 'get_services'
-            }));
-        }
+                populateChannels(num) {
+                    this.device.ichannels = [];
+                    for (let i = 0; i < num; i++) {
+                        this.device.ichannels.push({
+                            active: true,
+                            ical: 20,
+                            ilead: 0,
+                            vchan1: 1,
+                            vchan2: 1,
+                            power: '',
+                            energy: ''
+                        });
+                    }
+                },
 
-        function findEmontxDevice(services) {
-            // Look for esphome services with send_command
-            if (services.esphome) {
-                for (const [serviceName, serviceInfo] of Object.entries(services.esphome)) {
-                    if (serviceName.endsWith('_send_command')) {
-                        deviceName = serviceName.replace('_send_command', '');
-                        document.getElementById('device-name').textContent = deviceName;
-                        document.getElementById('device-status').textContent = 'Connected';
-                        log(`Found emonTx device: ${deviceName}`, 'info');
-                        updateStatus('emontx', true);
+                writeToStream(cmd) {
+                    if (!this.deviceName || !this.ws) {
+                        this.log('Not connected', 'error');
                         return;
                     }
+                    this.log('TX: ' + cmd, 'sent');
+                    this.ws.send(JSON.stringify({
+                        id: this.wsMessageId++,
+                        type: 'call_service',
+                        domain: 'esphome',
+                        service: this.deviceName + '_send_command',
+                        service_data: { command: cmd }
+                    }));
+                },
+
+                // Configuration methods
+                loadConfig() {
+                    this.writeToStream('l');
+                },
+                setVcal() {
+                    this.writeToStream('k0 ' + parseFloat(this.device.vcal).toFixed(3) + ' 0');
+                    this.changes = true;
+                },
+                setVchannel(i) {
+                    const active = this.device.vchannels[i].active ? 1 : 0;
+                    const vcal = parseFloat(this.device.vchannels[i].vcal).toFixed(3);
+                    this.writeToStream('k' + (i + 1) + ' ' + active + ' ' + vcal);
+                    this.changes = true;
+                },
+                setIcal(i) {
+                    const ical = parseFloat(this.device.ichannels[i].ical).toFixed(3);
+                    const ilead = parseFloat(this.device.ichannels[i].ilead || 0).toFixed(3);
+                    if (this.device.hardware === 'emonPi3') {
+                        const active = this.device.ichannels[i].active ? 1 : 0;
+                        this.writeToStream('k' + (i + 4) + ' ' + active + ' ' + ical + ' ' + ilead + ' ' + this.device.ichannels[i].vchan1 + ' ' + this.device.ichannels[i].vchan2);
+                    } else {
+                        this.writeToStream('k' + (i + 1) + ' ' + ical + ' ' + ilead);
+                    }
+                    this.changes = true;
+                },
+                setRadio() {
+                    this.writeToStream('w' + (this.device.RF ? 1 : 0));
+                    this.changes = true;
+                },
+                setRfNode() {
+                    this.writeToStream('n' + Math.round(this.device.rfNode));
+                    this.changes = true;
+                },
+                setRfGroup() {
+                    this.writeToStream('g' + Math.round(this.device.rfGroup));
+                    this.changes = true;
+                },
+                setRfBand() {
+                    this.writeToStream('b' + this.device.rfBand[0]);
+                    this.changes = true;
+                },
+                setPulse() {
+                    this.writeToStream('m' + (this.device.pulse ? '1 ' + this.device.pulsePeriod : '0'));
+                    this.changes = true;
+                },
+                setPulsePeriod() {
+                    this.writeToStream('m1 ' + Math.round(this.device.pulsePeriod));
+                    this.changes = true;
+                },
+                setDatalog() {
+                    this.writeToStream('d' + parseFloat(this.device.datalog));
+                    this.changes = true;
+                },
+                setJson() {
+                    this.writeToStream('j' + this.device.json);
+                    this.changes = true;
+                },
+                saveConfig() {
+                    this.writeToStream('s');
+                    this.changes = false;
+                    this.log('Configuration saved!', 'info');
+                },
+                resetDefaults() {
+                    if (confirm('Reset all settings to default values?')) {
+                        this.writeToStream('r');
+                        this.changes = true;
+                        setTimeout(() => this.loadConfig(), 1000);
+                    }
+                },
+                zeroEnergy() {
+                    if (confirm('Zero all energy counters?')) {
+                        this.writeToStream('z');
+                    }
+                },
+
+                // Terminal methods
+                sendCmd() {
+                    if (this.cmdInput.trim()) {
+                        this.sendQuickCmd(this.cmdInput.trim());
+                        this.cmdInput = '';
+                    }
+                },
+                sendQuickCmd(cmd) {
+                    this.writeToStream(cmd);
+                },
+
+                log(message, type = '') {
+                    const terminal = document.getElementById('terminal');
+                    if (terminal) {
+                        const time = new Date().toLocaleTimeString();
+                        const line = document.createElement('div');
+                        line.className = type;
+                        line.textContent = `[${time}] ${message}`;
+                        terminal.appendChild(line);
+                        terminal.scrollTop = terminal.scrollHeight;
+                    }
                 }
             }
-            log('No emonTx device found. Make sure ESPHome is configured correctly.', 'error');
-        }
-
-        function handleEmontxData(data) {
-            const payload = data.payload || JSON.stringify(data);
-            log('RX: ' + payload);
-            lastDataTime = new Date();
-            updateStatus('emontx', true);
-
-            // Parse and display the data
-            try {
-                let jsonData = typeof payload === 'string' ? JSON.parse(payload) : payload;
-
-                // If data is wrapped with device_id and data fields, extract the inner data
-                if (jsonData.device_id && jsonData.data) {
-                    const innerData = typeof jsonData.data === 'string' ? JSON.parse(jsonData.data) : jsonData.data;
-                    jsonData = innerData;
-                }
-
-                // Only display if we have actual sensor data (has MSG or V1 field)
-                if (jsonData.MSG !== undefined || jsonData.V1 !== undefined) {
-                    displayData(jsonData);
-                }
-            } catch (e) {
-                // Not JSON, just display as is
-            }
-        }
-
-        function displayData(data) {
-            const container = document.getElementById('last-data');
-            let html = '';
-
-            for (const [key, value] of Object.entries(data)) {
-                html += `
-                    <div class="config-item">
-                        <label>${key}</label>
-                        <div class="value">${value}</div>
-                    </div>
-                `;
-            }
-
-            container.innerHTML = html || '<div class="loading">No data received yet</div>';
-        }
-
-        function sendCommand() {
-            const input = document.getElementById('cmd-input');
-            const cmd = input.value.trim();
-            if (!cmd) return;
-
-            sendQuickCmd(cmd);
-            input.value = '';
-        }
-
-        function sendQuickCmd(cmd) {
-            if (!deviceName) {
-                log('No device connected', 'error');
-                return;
-            }
-
-            log('TX: ' + cmd, 'sent');
-
-            const id = wsMessageId++;
-            ws.send(JSON.stringify({
-                id: id,
-                type: 'call_service',
-                domain: 'esphome',
-                service: deviceName + '_send_command',
-                service_data: {
-                    command: cmd
-                }
-            }));
-        }
-
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') {
-                sendCommand();
-            }
-        }
-
-        function log(message, type = '') {
-            const terminal = document.getElementById('terminal');
-            const time = new Date().toLocaleTimeString();
-            const line = document.createElement('div');
-            line.className = type;
-            line.textContent = `[${time}] ${message}`;
-            terminal.appendChild(line);
-            terminal.scrollTop = terminal.scrollHeight;
-        }
-
-        function updateStatus(element, connected) {
-            const dot = document.getElementById(element + '-status');
-            const text = document.getElementById(element + '-status-text');
-
-            if (connected) {
-                dot.classList.remove('disconnected');
-                dot.classList.add('connected');
-                text.textContent = 'Connected';
-            } else {
-                dot.classList.remove('connected');
-                dot.classList.add('disconnected');
-                text.textContent = 'Disconnected';
-            }
-        }
-
-        function loadOEMInterface() {
-            const frame = document.getElementById('oem-frame');
-            const loading = document.getElementById('oem-loading');
-
-            // The OEM interface will be loaded in an iframe
-            // We need to create a proxy that patches the interface
-            frame.src = '/emontx_config_static/oem_proxy.html';
-            frame.onload = () => {
-                loading.style.display = 'none';
-                frame.style.display = 'block';
-            };
-        }
-
-        // Check emonTx status periodically
-        setInterval(() => {
-            if (lastDataTime) {
-                const elapsed = new Date() - lastDataTime;
-                if (elapsed > 30000) { // No data for 30 seconds
-                    updateStatus('emontx', false);
-                    document.getElementById('emontx-status-text').textContent = 'No data';
-                }
-            }
-        }, 5000);
-
-        // Start connection
-        connectWebSocket();
+        });
     </script>
 </body>
 </html>
