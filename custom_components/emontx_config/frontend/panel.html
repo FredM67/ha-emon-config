@@ -446,30 +446,64 @@
             // Try to use the Supervisor token or get from parent
             let token = null;
 
-            // Check if running in HA frontend
-            if (window.parent && window.parent.document) {
-                // Try to get token from HA frontend
-                const hassObj = window.parent.document.querySelector('home-assistant');
-                if (hassObj && hassObj.hass) {
-                    token = hassObj.hass.auth.data.access_token;
+            // Method 1: Try parent window's home-assistant element
+            try {
+                if (window.parent && window.parent.document) {
+                    const hassObj = window.parent.document.querySelector('home-assistant');
+                    if (hassObj && hassObj.hass && hassObj.hass.auth && hassObj.hass.auth.data) {
+                        token = hassObj.hass.auth.data.access_token;
+                        log('Got token from parent home-assistant element', 'info');
+                    }
                 }
+            } catch (e) {
+                log('Cannot access parent frame: ' + e.message, 'error');
             }
 
-            // Try localStorage
+            // Method 2: Try grandparent (in case of nested iframes)
             if (!token) {
-                const hassTokens = localStorage.getItem('hassTokens');
-                if (hassTokens) {
-                    try {
+                try {
+                    if (window.parent && window.parent.parent && window.parent.parent.document) {
+                        const hassObj = window.parent.parent.document.querySelector('home-assistant');
+                        if (hassObj && hassObj.hass && hassObj.hass.auth && hassObj.hass.auth.data) {
+                            token = hassObj.hass.auth.data.access_token;
+                            log('Got token from grandparent home-assistant element', 'info');
+                        }
+                    }
+                } catch (e) {}
+            }
+
+            // Method 3: Try parent localStorage
+            if (!token) {
+                try {
+                    const parentStorage = window.parent.localStorage;
+                    const hassTokens = parentStorage.getItem('hassTokens');
+                    if (hassTokens) {
                         const tokens = JSON.parse(hassTokens);
                         token = tokens.access_token;
-                    } catch (e) {}
-                }
+                        log('Got token from parent localStorage', 'info');
+                    }
+                } catch (e) {}
             }
 
-            // Try to get from URL
+            // Method 4: Try own localStorage
+            if (!token) {
+                try {
+                    const hassTokens = localStorage.getItem('hassTokens');
+                    if (hassTokens) {
+                        const tokens = JSON.parse(hassTokens);
+                        token = tokens.access_token;
+                        log('Got token from localStorage', 'info');
+                    }
+                } catch (e) {}
+            }
+
+            // Method 5: Try to get from URL
             if (!token) {
                 const urlParams = new URLSearchParams(window.location.search);
                 token = urlParams.get('token');
+                if (token) {
+                    log('Got token from URL', 'info');
+                }
             }
 
             if (token) {
@@ -479,6 +513,7 @@
                 }));
             } else {
                 log('No authentication token available. Please ensure you are logged into Home Assistant.', 'error');
+                log('Debug: Check browser console (F12) for more details', 'error');
             }
         }
 
