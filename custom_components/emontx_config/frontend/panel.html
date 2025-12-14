@@ -374,9 +374,13 @@
             const urlParams = new URLSearchParams(window.location.search);
             let token = urlParams.get('token');
 
-            // Try to get token from parent window
+            // Try to get token from parent window (with safe access)
             if (!token && window.parent && window.parent.hassConnection) {
-                token = window.parent.hassConnection.options.auth.accessToken;
+                try {
+                    token = window.parent.hassConnection?.options?.auth?.accessToken;
+                } catch (e) {
+                    // Ignore access errors
+                }
             }
 
             // Use the HA WebSocket URL
