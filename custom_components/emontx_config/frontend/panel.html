@@ -644,15 +644,27 @@
                 },
 
                 handleEmontxData(data) {
-                    let payload = data.payload || JSON.stringify(data);
+                    // Get payload from various possible formats
+                    let payload;
+                    if (data.payload) {
+                        payload = data.payload;
+                    } else if (data.data) {
+                        payload = data.data;
+                    } else {
+                        payload = JSON.stringify(data);
+                    }
+
+                    // Log raw data for debugging
+                    this.log('RX: ' + (typeof payload === 'string' ? payload : JSON.stringify(payload)));
 
                     // Parse the payload
                     try {
                         let jsonData = typeof payload === 'string' ? JSON.parse(payload) : payload;
 
-                        // Handle wrapped format
+                        // Handle wrapped format (device_id + data)
                         if (jsonData.device_id && jsonData.data) {
-                            jsonData = typeof jsonData.data === 'string' ? JSON.parse(jsonData.data) : jsonData.data;
+                            const innerData = typeof jsonData.data === 'string' ? JSON.parse(jsonData.data) : jsonData.data;
+                            jsonData = innerData;
                         }
 
                         // Check if it's sensor data (has MSG or V1)
@@ -666,10 +678,10 @@
                                 const pKey = 'P' + (c + 1);
                                 const eKey = 'E' + (c + 1);
                                 if (jsonData[pKey] !== undefined) {
-                                    this.device.ichannels[c].power = jsonData[pKey] + 'W';
+                                    this.$set(this.device.ichannels[c], 'power', jsonData[pKey] + 'W');
                                 }
                                 if (jsonData[eKey] !== undefined) {
-                                    this.device.ichannels[c].energy = jsonData[eKey] + 'Wh';
+                                    this.$set(this.device.ichannels[c], 'energy', jsonData[eKey] + 'Wh');
                                 }
                             }
                         }
@@ -679,8 +691,6 @@
                             this.processLine(payload);
                         }
                     }
-
-                    this.log('RX: ' + payload);
                 },
 
                 processLine(line) {
