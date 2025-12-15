@@ -979,6 +979,10 @@
                 zeroEnergy() {
                     if (confirm('Zero all energy counters?')) {
                         this.writeToStream('z');
+                        // emonTx requires 'y' confirmation after 'z'
+                        setTimeout(() => {
+                            this.writeToStream('y');
+                        }, 100);
                     }
                 },
 
