@@ -575,9 +575,13 @@
                             break;
                         case 'result':
                             console.log('Result:', msg);
+                            console.log('Comparing msg.id', msg.id, 'with servicesRequestId', this.servicesRequestId);
                             // Only process services list from get_services call
                             if (msg.id === this.servicesRequestId && msg.success && msg.result && typeof msg.result === 'object') {
+                                console.log('IDs match, calling findEmontxDevice');
                                 this.findEmontxDevice(msg.result);
+                            } else {
+                                console.log('Skipping findEmontxDevice - IDs dont match or invalid result');
                             }
                             break;
                         case 'event':
