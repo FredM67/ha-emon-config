@@ -97,10 +97,11 @@ api:
       variables:
         command: string
       then:
-        - uart.write: !lambda |-
-            std::string cmd = command + "\r\n";
-            return std::vector<uint8_t>(cmd.begin(), cmd.end());
+        - emontx.send_command:
+            command: !lambda 'return command;'
 ```
+
+> **Note**: The `emontx.send_command` action automatically appends CR+LF line endings required by the emonTx firmware.
 
 ### Home Assistant Setup
 
@@ -175,7 +176,7 @@ Refer to the [emonTx documentation](https://docs.openenergymonitor.org/) for a c
 ### Commands not working
 
 - Verify the TX pin is connected and configured in ESPHome
-- Check that the `send_command` service includes `\r\n` line ending
+- Make sure you're using `emontx.send_command` action (CR+LF is added automatically)
 - Monitor the serial output with an FTDI adapter to verify commands are being sent
 
 ### Phase values showing incorrect numbers
