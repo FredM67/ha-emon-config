@@ -556,9 +556,6 @@
                 },
 
                 handleMessage(msg) {
-                    // Debug: log all messages
-                    console.log('WS msg:', msg.type, msg);
-
                     switch (msg.type) {
                         case 'auth_required':
                             this.authenticateWithHA();
@@ -574,18 +571,12 @@
                             this.wsConnected = false;
                             break;
                         case 'result':
-                            console.log('Result:', msg);
-                            console.log('Comparing msg.id', msg.id, 'with servicesRequestId', this.servicesRequestId);
                             // Only process services list from get_services call
                             if (msg.id === this.servicesRequestId && msg.success && msg.result && typeof msg.result === 'object') {
-                                console.log('IDs match, calling findEmontxDevice');
                                 this.findEmontxDevice(msg.result);
-                            } else {
-                                console.log('Skipping findEmontxDevice - IDs dont match or invalid result');
                             }
                             break;
                         case 'event':
-                            console.log('Event received:', msg.event);
                             if (msg.event && msg.event.event_type === 'esphome.emontx_data') {
                                 this.handleEmontxData(msg.event.data);
                             }
@@ -654,25 +645,18 @@
                 },
 
                 handleEmontxData(data) {
-                    console.log('handleEmontxData called with:', data);
-
                     // Get payload from various possible formats
                     let payload;
                     if (data.payload) {
                         payload = data.payload;
-                        console.log('Using data.payload:', payload);
                     } else if (data.data) {
                         payload = data.data;
-                        console.log('Using data.data:', payload);
                     } else {
                         payload = JSON.stringify(data);
-                        console.log('Using stringified data:', payload);
                     }
 
-                    // Log raw data for debugging
-                    const logMsg = 'RX: ' + (typeof payload === 'string' ? payload : JSON.stringify(payload));
-                    console.log('Logging to terminal:', logMsg);
-                    this.log(logMsg);
+                    // Log raw data
+                    this.log('RX: ' + (typeof payload === 'string' ? payload : JSON.stringify(payload)));
 
                     // Parse the payload
                     try {
@@ -924,7 +908,6 @@
 
                 log(message, type = '') {
                     const terminal = document.getElementById('terminal');
-                    console.log('log() called, terminal element:', terminal);
                     if (terminal) {
                         const time = new Date().toLocaleTimeString();
                         const line = document.createElement('div');
@@ -932,9 +915,6 @@
                         line.textContent = `[${time}] ${message}`;
                         terminal.appendChild(line);
                         terminal.scrollTop = terminal.scrollHeight;
-                        console.log('Added line to terminal');
-                    } else {
-                        console.error('Terminal element not found!');
                     }
                 }
             }
