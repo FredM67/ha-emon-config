@@ -280,17 +280,15 @@
                         <table class="device-info-table">
                             <tr>
                                 <th>{{ t.config.hardware }}</th>
-                                <th>{{ t.config.firmware }}</th>
+                                <th>{{ t.config.hardwareRev }}</th>
                                 <th>{{ t.config.version }}</th>
                                 <th>{{ t.config.voltageLabel }}</th>
-                                <th>{{ t.config.library }}</th>
                             </tr>
                             <tr>
                                 <td>{{ device.hardware || '-' }}</td>
-                                <td>{{ device.firmware || '-' }}</td>
+                                <td>{{ device.hardware_rev || '-' }}</td>
                                 <td>{{ device.firmware_version || '-' }}</td>
                                 <td>{{ device.voltage || '-' }}</td>
-                                <td>{{ device.emon_library || '-' }}</td>
                             </tr>
                         </table>
                     </div>
@@ -543,7 +541,7 @@
                             firmwareUpdateMessage: 'Looks like you are running an older firmware version. Please upgrade the device firmware to use this tool.',
                             deviceInfo: 'Device Information',
                             hardware: 'Hardware',
-                            firmware: 'Firmware',
+                            hardwareRev: 'Revision',
                             version: 'Version',
                             voltageLabel: 'Voltage',
                             library: 'Library',
@@ -618,7 +616,7 @@
                             firmwareUpdateMessage: 'Il semble que vous utilisez une ancienne version du firmware. Veuillez mettre à jour le firmware de l\'appareil pour utiliser cet outil.',
                             deviceInfo: 'Informations sur l\'Appareil',
                             hardware: 'Matériel',
-                            firmware: 'Firmware',
+                            hardwareRev: 'Révision',
                             version: 'Version',
                             voltageLabel: 'Tension',
                             library: 'Bibliothèque',
@@ -693,7 +691,7 @@
                             firmwareUpdateMessage: 'Es scheint, dass Sie eine ältere Firmware-Version verwenden. Bitte aktualisieren Sie die Geräte-Firmware, um dieses Tool zu nutzen.',
                             deviceInfo: 'Geräteinformationen',
                             hardware: 'Hardware',
-                            firmware: 'Firmware',
+                            hardwareRev: 'Revision',
                             version: 'Version',
                             voltageLabel: 'Spannung',
                             library: 'Bibliothek',
@@ -746,6 +744,7 @@
                     firmware: '',
                     firmware_version: '',
                     hardware: '',
+                    hardware_rev: '',
                     voltage: '',
                     emon_library: 'emonLibDB',
                     RF: false,
@@ -1034,6 +1033,10 @@
                         if (this.device.hardware === 'emonPi3') {
                             this.populateChannels(12);
                         }
+                    }
+
+                    if (line.startsWith('hardware_rev = ')) {
+                        this.device.hardware_rev = line.split('=')[1].trim();
                     }
 
                     if (line.startsWith('Settings:')) {
