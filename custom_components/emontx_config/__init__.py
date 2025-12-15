@@ -108,7 +108,7 @@ async def _async_register_panel(hass: HomeAssistant, entry: ConfigEntry) -> None
     frontend.async_register_built_in_panel(
         hass,
         component_name="iframe",
-        sidebar_title="emonTx Config",
+        sidebar_title="emonPi/Tx Config",
         sidebar_icon="mdi:lightning-bolt",
         frontend_url_path="emontx-config",
         config={"url": "/emontx_config_static/panel.html"},
