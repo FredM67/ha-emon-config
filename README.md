@@ -6,15 +6,16 @@ A Home Assistant integration that provides a web-based configuration interface f
 
 ## Features
 
-- **Serial Terminal**: Send commands and receive data from your emonTx device
-- **Real-time Data Display**: View live readings from your emonTx
-- **OEM Interface**: Access the official OpenEnergyMonitor serial configuration interface
-- **Quick Commands**: One-click buttons for common emonTx commands
+- **Device Configuration**: Full configuration interface for CT calibration, voltage calibration, radio settings, and more
+- **Serial Terminal**: Send commands and receive responses from your emonTx device
+- **Live Data Display**: View real-time power and energy readings from all channels
+- **Zero Energy**: Reset energy counters with confirmation countdown (matching firmware behavior)
+- **Multi-phase Support**: Full support for emonPi3 with 3-phase voltage monitoring
 
 ## Requirements
 
 - Home Assistant 2023.1.0 or newer
-- An ESP32 running ESPHome with the emonTx component configured
+- An ESP32 running ESPHome with the [emonTx component](https://github.com/FredM67/esphome) configured
 - An emonTx device connected to the ESP32 via UART
 
 ## Installation
@@ -41,16 +42,53 @@ A Home Assistant integration that provides a web-based configuration interface f
 
 ### ESPHome Setup
 
-First, ensure your ESP32 is configured with the emonTx component and exposes the `send_command` service. Example ESPHome configuration:
+Your ESP32 needs to be configured with the emonTx component from the FredM67 fork. Add this to your ESPHome configuration:
 
 ```yaml
-esphome:
-  name: emontx-config
-  friendly_name: emonTx Configuration
+external_components:
+  - source:
+      type: git
+      url: https://github.com/FredM67/esphome
+      ref: emontx-web-config
+    components: [emontx]
+    refresh: 0s
 
-esp32:
-  board: esp32dev
+uart:
+  id: emontx_uart
+  rx_pin: GPIO20
+  tx_pin: GPIO21
+  baud_rate: 115200
 
+emontx:
+  # on_line trigger captures ALL serial lines (JSON + plain text config responses)
+  on_line:
+    - then:
+        - homeassistant.event:
+            event: esphome.emontx_line
+            data:
+              device_id: !lambda "return App.get_name();"
+              line: !lambda "return line;"
+
+  # on_json trigger for sensor data (optional, for backward compatibility)
+  on_json:
+    - then:
+        - homeassistant.event:
+            event: esphome.emontx_data
+            data:
+              device_id: !lambda "return App.get_name();"
+              data: !lambda "return raw_json;"
+
+# Optional: Define sensors for individual values
+sensor:
+  - platform: emontx
+    tag_name: "V1"
+    name: "Voltage L1"
+  - platform: emontx
+    tag_name: "P1"
+    name: "Power 1"
+  # ... add more sensors as needed
+
+# Required: API for Home Assistant communication
 api:
   encryption:
     key: !secret api_encryption_key
@@ -59,25 +97,9 @@ api:
       variables:
         command: string
       then:
-        - emontx.send_command:
-            id: emontx_device
-            command: !lambda 'return command;'
-
-uart:
-  tx_pin: GPIO17
-  rx_pin: GPIO16
-  baud_rate: 115200
-  id: uart_emontx
-
-emontx:
-  id: emontx_device
-  uart_id: uart_emontx
-  on_json:
-    then:
-      - homeassistant.event:
-          event: esphome.emontx_data
-          data:
-            payload: !lambda 'return raw_json;'
+        - uart.write: !lambda |-
+            std::string cmd = command + "\r\n";
+            return std::vector<uint8_t>(cmd.begin(), cmd.end());
 ```
 
 ### Home Assistant Setup
@@ -92,23 +114,35 @@ emontx:
 
 After installation, a new panel called "emonTx Config" will appear in the Home Assistant sidebar.
 
+### Device Config Tab
+
+The main configuration interface with:
+
+- **CT Channels**: Configure calibration (CT Type), phase lead for each current channel
+- **Voltage Channels**: Enable/disable and calibrate voltage inputs (for 3-phase systems)
+- **Radio Settings**: Configure RF module (node ID, group, band, format)
+- **Other Settings**: Pulse input, data logging interval, JSON output format
+
+**Buttons:**
+- **Load Config**: Read current configuration from the emonTx (sends `l` command)
+- **Save**: Save configuration to EEPROM (sends `s` command)
+- **Zero Energy Values**: Reset all energy counters (with 20-second confirmation countdown)
+
 ### Serial Terminal Tab
 
-- **Terminal**: Shows all received data from the emonTx
+A full serial terminal for direct communication:
+
+- **Terminal Output**: Shows all received data from the emonTx
 - **Command Input**: Type commands to send to the emonTx
-- **Quick Commands**: Click buttons to send common commands:
-  - `l` - List current configuration
-  - `v` - Show firmware version
-  - `s` - Save configuration
-  - `d` - Reset to defaults
+- **Quick Commands**: Buttons for common commands (l, v, s, d)
 
-### OEM Interface Tab
+### Live Data Tab
 
-This tab attempts to load the official OpenEnergyMonitor serial configuration interface. Due to browser security restrictions (CORS), this may not work in all cases. Use the Serial Terminal tab as an alternative.
-
-### Configuration Tab
-
-Shows the connection status and device information.
+Real-time display of all sensor values received from the emonTx, including:
+- Voltage readings (V1, V2, V3)
+- Power readings (P1-P6)
+- Energy totals (E1-E6)
+- Message counter (MSG)
 
 ## Common emonTx Commands
 
@@ -118,7 +152,8 @@ Shows the connection status and device information.
 | `v` | Show firmware version |
 | `s` | Save configuration to EEPROM |
 | `d` | Reset to default values |
-| `k<n> <value>` | Set configuration parameter (e.g., `k1 100.0`) |
+| `z` | Zero energy counters (requires `y` confirmation) |
+| `k<n> <ical> <ilead>` | Set CT channel calibration |
 
 Refer to the [emonTx documentation](https://docs.openenergymonitor.org/) for a complete list of commands.
 
@@ -130,15 +165,23 @@ Refer to the [emonTx documentation](https://docs.openenergymonitor.org/) for a c
 - Check that the `send_command` service is exposed in your ESPHome configuration
 - Verify the API encryption key matches in ESPHome and Home Assistant
 
-### No data received
+### No data received / Config not loading
 
 - Check the UART connections between ESP32 and emonTx
 - Verify the baud rate is correct (115200 by default)
+- **Important**: Make sure you have the `on_line` trigger configured in ESPHome (not just `on_json`)
 - Look at the ESPHome logs for any errors
 
-### OEM Interface not loading
+### Commands not working
 
-This is expected due to browser CORS restrictions. Use the Serial Terminal tab instead, which provides full functionality for configuring your emonTx.
+- Verify the TX pin is connected and configured in ESPHome
+- Check that the `send_command` service includes `\r\n` line ending
+- Monitor the serial output with an FTDI adapter to verify commands are being sent
+
+### Phase values showing incorrect numbers
+
+- Make sure your ESPHome component is up to date (clean build and reinstall)
+- Hard refresh the browser (Ctrl+Shift+R) to clear cached panel files
 
 ## Support
 
