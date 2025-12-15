@@ -521,7 +521,8 @@
                 // WebSocket
                 ws: null,
                 wsMessageId: 1,
-                deviceName: ''
+                deviceName: '',
+                servicesRequestId: null
             },
             mounted() {
                 this.populateChannels(6);
@@ -574,7 +575,8 @@
                             break;
                         case 'result':
                             console.log('Result:', msg);
-                            if (msg.success && msg.result && typeof msg.result === 'object') {
+                            // Only process services list from get_services call
+                            if (msg.id === this.servicesRequestId && msg.success && msg.result && typeof msg.result === 'object') {
                                 this.findEmontxDevice(msg.result);
                             }
                             break;
@@ -623,8 +625,9 @@
                 },
 
                 getDeviceInfo() {
+                    this.servicesRequestId = this.wsMessageId++;
                     this.ws.send(JSON.stringify({
-                        id: this.wsMessageId++,
+                        id: this.servicesRequestId,
                         type: 'get_services'
                     }));
                 },
