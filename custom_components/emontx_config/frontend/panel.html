@@ -479,6 +479,20 @@
                 </div>
             </div>
         </div>
+
+        <!-- Zero Energy Confirmation Modal -->
+        <div v-if="showZeroConfirm" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+            <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); max-width: 400px; text-align: center;">
+                <h3 style="margin-top: 0; color: #f44336;">⚠️ Confirm Zero Energy</h3>
+                <p style="font-size: 16px; margin: 20px 0;">Are you sure you want to zero all energy counters?</p>
+                <p style="font-size: 14px; color: #666; margin-bottom: 20px;">This action cannot be undone.</p>
+                <p style="font-size: 24px; font-weight: bold; color: #ff9800; margin: 20px 0;">{{ zeroCountdown }}s</p>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button class="btn btn-danger" @click="confirmZero" style="padding: 12px 30px; font-size: 16px;">Yes, Zero Counters</button>
+                    <button class="btn" @click="cancelZero" style="padding: 12px 30px; font-size: 16px; background: #ccc;">Cancel</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -495,6 +509,10 @@
                 cmdInput: '',
                 liveData: {},
                 ctsAvailable: [200, 100, 50, 25, 20],
+                // Zero energy confirmation
+                showZeroConfirm: false,
+                zeroCountdown: 20,
+                zeroCountdownInterval: null,
                 device: {
                     firmware: '',
                     firmware_version: '',
@@ -977,12 +995,33 @@
                     }
                 },
                 zeroEnergy() {
-                    if (confirm('Zero all energy counters?')) {
-                        this.writeToStream('z');
-                        // emonTx requires 'y' confirmation after 'z'
-                        setTimeout(() => {
-                            this.writeToStream('y');
-                        }, 100);
+                    // Send 'z' command first
+                    this.writeToStream('z');
+                    // Show confirmation dialog with countdown
+                    this.showZeroConfirm = true;
+                    this.zeroCountdown = 20;
+                    this.zeroCountdownInterval = setInterval(() => {
+                        this.zeroCountdown--;
+                        if (this.zeroCountdown <= 0) {
+                            this.cancelZero(); // Auto-cancel on timeout
+                        }
+                    }, 1000);
+                },
+                confirmZero() {
+                    // User confirmed - send 'y'
+                    this.writeToStream('y');
+                    this.closeZeroConfirm();
+                },
+                cancelZero() {
+                    // User cancelled or timeout - send 'n'
+                    this.writeToStream('n');
+                    this.closeZeroConfirm();
+                },
+                closeZeroConfirm() {
+                    this.showZeroConfirm = false;
+                    if (this.zeroCountdownInterval) {
+                        clearInterval(this.zeroCountdownInterval);
+                        this.zeroCountdownInterval = null;
                     }
                 },
 
