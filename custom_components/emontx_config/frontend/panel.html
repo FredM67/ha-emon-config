@@ -818,8 +818,8 @@
                         return;
                     }
                     this.log('TX: ' + cmd, 'sent');
-                    // Add newline to command (emonTx expects \n terminator)
-                    const cmdWithNewline = cmd + '\n';
+                    // Add CR+LF to command (emonTx expects \r\n terminator)
+                    const cmdWithNewline = cmd + '\r\n';
                     this.ws.send(JSON.stringify({
                         id: this.wsMessageId++,
                         type: 'call_service',
