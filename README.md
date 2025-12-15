@@ -137,10 +137,10 @@ A full serial terminal for direct communication:
 ### Live Data Tab
 
 Real-time display of all sensor values received from the emonPi/Tx, including:
-- Voltage readings (V1, V2, V3)
-- Power readings (P1-P6)
-- Energy totals (E1-E6)
-- Message counter (MSG)
+- Voltage readings (V1-V3, depending on single/three phase)
+- Power readings (P1-P12, depending on device)
+- Energy totals (E1-E12, depending on device)
+- Other sensors: temperature, pulse, message counter (MSG)
 
 ## Common emonPi/Tx Commands
 
