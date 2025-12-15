@@ -20,17 +20,14 @@ A Home Assistant integration that provides a web-based configuration interface f
 
 ## Installation
 
-### HACS (Recommended)
+### With HACS (Recommended)
 
-1. Open HACS in Home Assistant
-2. Click on "Integrations"
-3. Click the three dots menu in the top right corner
-4. Select "Custom repositories"
-5. Add this repository URL: `https://github.com/FredM67/ha-emon-config`
-6. Select "Integration" as the category
-7. Click "Add"
-8. Search for "emonTx Configuration" and install it
-9. Restart Home Assistant
+1. Install the integration through HACS using the button below or by adding `https://github.com/FredM67/ha-emon-config` to HACS as a custom repository.
+
+   [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=FredM67&repository=ha-emon-config&category=integration)
+
+2. Restart Home Assistant
+3. Go to Settings > Devices & Services > Add Integration > Search for "emonTx Configuration"
 
 ### Manual Installation
 
