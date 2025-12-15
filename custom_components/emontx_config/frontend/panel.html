@@ -579,6 +579,8 @@
                         case 'event':
                             if (msg.event && msg.event.event_type === 'esphome.emontx_data') {
                                 this.handleEmontxData(msg.event.data);
+                            } else if (msg.event && msg.event.event_type === 'esphome.emontx_line') {
+                                this.handleEmontxLine(msg.event.data);
                             }
                             break;
                     }
@@ -612,10 +614,17 @@
                 },
 
                 subscribeToEvents() {
+                    // Subscribe to JSON sensor data events
                     this.ws.send(JSON.stringify({
                         id: this.wsMessageId++,
                         type: 'subscribe_events',
                         event_type: 'esphome.emontx_data'
+                    }));
+                    // Subscribe to line events (includes config responses)
+                    this.ws.send(JSON.stringify({
+                        id: this.wsMessageId++,
+                        type: 'subscribe_events',
+                        event_type: 'esphome.emontx_line'
                     }));
                 },
 
@@ -691,6 +700,49 @@
                         if (typeof payload === 'string') {
                             this.processLine(payload);
                         }
+                    }
+                },
+
+                handleEmontxLine(data) {
+                    // Handle line events from on_line trigger
+                    // Expected format: { device_id: "...", line: "..." }
+                    let line = '';
+                    if (data.line) {
+                        line = data.line;
+                    } else if (typeof data === 'string') {
+                        line = data;
+                    } else {
+                        console.log('Unknown line event format:', data);
+                        return;
+                    }
+
+                    // Log the received line
+                    this.log('RX: ' + line);
+
+                    // Try to parse as JSON first (for sensor data)
+                    try {
+                        let jsonData = JSON.parse(line);
+                        // Check if it's sensor data
+                        if (jsonData.MSG !== undefined || jsonData.V1 !== undefined) {
+                            this.liveData = jsonData;
+                            this.emontxConnected = true;
+                            this.emontxStatus = 'Connected';
+
+                            // Update power/energy in config table
+                            for (let c = 0; c < this.device.ichannels.length; c++) {
+                                const pKey = 'P' + (c + 1);
+                                const eKey = 'E' + (c + 1);
+                                if (jsonData[pKey] !== undefined) {
+                                    this.$set(this.device.ichannels[c], 'power', jsonData[pKey] + 'W');
+                                }
+                                if (jsonData[eKey] !== undefined) {
+                                    this.$set(this.device.ichannels[c], 'energy', jsonData[eKey] + 'Wh');
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        // Not JSON, process as config line (plain text)
+                        this.processLine(line);
                     }
                 },
 
