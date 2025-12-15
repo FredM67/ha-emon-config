@@ -794,9 +794,44 @@
                                     this.device.ichannels[c].ilead = parseFloat(val);
                                 }
                             }
+                            // CT active state (emonPi3)
+                            else if (key.startsWith('iActive')) {
+                                const c = parseInt(key.substring(7).trim()) - 1;
+                                if (c >= 0 && c < this.device.ichannels.length) {
+                                    this.$set(this.device.ichannels[c], 'active', val === '1');
+                                }
+                            }
+                            // Voltage channel 1 assignment (emonPi3)
+                            else if (key.startsWith('v1Chan')) {
+                                const c = parseInt(key.substring(6).trim()) - 1;
+                                if (c >= 0 && c < this.device.ichannels.length) {
+                                    this.$set(this.device.ichannels[c], 'vchan1', parseInt(val));
+                                }
+                            }
+                            // Voltage channel 2 assignment (emonPi3)
+                            else if (key.startsWith('v2Chan')) {
+                                const c = parseInt(key.substring(6).trim()) - 1;
+                                if (c >= 0 && c < this.device.ichannels.length) {
+                                    this.$set(this.device.ichannels[c], 'vchan2', parseInt(val));
+                                }
+                            }
                             // Voltage calibration
                             else if (key === 'vCal') {
                                 this.device.vcal = parseFloat(val);
+                            }
+                            // Multi-voltage calibration (emonPi3)
+                            else if (key.startsWith('vCal') && key.length > 4) {
+                                const c = parseInt(key.substring(4).trim()) - 1;
+                                if (c >= 0 && c < this.device.vchannels.length) {
+                                    this.$set(this.device.vchannels[c], 'vcal', parseFloat(val));
+                                }
+                            }
+                            // Multi-voltage active state (emonPi3)
+                            else if (key.startsWith('vActive')) {
+                                const c = parseInt(key.substring(7).trim()) - 1;
+                                if (c >= 0 && c < this.device.vchannels.length) {
+                                    this.$set(this.device.vchannels[c], 'active', val === '1');
+                                }
                             }
                             // Version
                             else if (key === 'version') {
