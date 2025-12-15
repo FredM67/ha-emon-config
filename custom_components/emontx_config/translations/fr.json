@@ -1,0 +1,30 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configuration emonPi/Tx",
+        "description": "Configurez l'intégration du pont série emonTx. Sélectionnez l'appareil ESPHome connecté à votre emonTx.",
+        "data": {
+          "esphome_device": "Nom de l'appareil ESPHome"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Impossible de se connecter à l'appareil ESPHome",
+      "unknown": "Erreur inattendue"
+    },
+    "abort": {
+      "already_configured": "La configuration emonPi/Tx est déjà effectuée"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options de configuration emonPi/Tx",
+        "data": {
+          "esphome_device": "Nom de l'appareil ESPHome"
+        }
+      }
+    }
+  }
+}

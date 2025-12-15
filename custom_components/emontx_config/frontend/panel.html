@@ -240,50 +240,50 @@
 <body>
     <div id="app" class="container">
         <div class="header">
-            <h1>emonPi/Tx Configuration</h1>
-            <p>Configure your OpenEnergyMonitor emonPi/Tx device via ESP32 serial bridge</p>
+            <h1>{{ t.title }}</h1>
+            <p>{{ t.subtitle }}</p>
         </div>
 
         <div class="status-bar">
             <div class="status-item">
                 <div :class="['status-dot', wsConnected ? 'connected' : 'disconnected']"></div>
-                <span>Home Assistant: <strong>{{ wsConnected ? 'Connected' : 'Disconnected' }}</strong></span>
+                <span>{{ t.haStatus }}: <strong>{{ wsConnected ? t.connected : t.disconnected }}</strong></span>
             </div>
             <div class="status-item">
                 <div :class="['status-dot', emontxConnected ? 'connected' : 'disconnected']"></div>
-                <span>emonPi/Tx: <strong>{{ emontxStatus }}</strong></span>
+                <span>{{ t.deviceStatus }}: <strong>{{ emontxConnected ? t.connected : t.unknown }}</strong></span>
             </div>
         </div>
 
         <div class="tabs">
-            <div :class="['tab', activeTab === 'config' ? 'active' : '']" @click="activeTab = 'config'">Device Config</div>
-            <div :class="['tab', activeTab === 'terminal' ? 'active' : '']" @click="activeTab = 'terminal'">Serial Terminal</div>
-            <div :class="['tab', activeTab === 'data' ? 'active' : '']" @click="activeTab = 'data'">Live Data</div>
+            <div :class="['tab', activeTab === 'config' ? 'active' : '']" @click="activeTab = 'config'">{{ t.tabs.config }}</div>
+            <div :class="['tab', activeTab === 'terminal' ? 'active' : '']" @click="activeTab = 'terminal'">{{ t.tabs.terminal }}</div>
+            <div :class="['tab', activeTab === 'data' ? 'active' : '']" @click="activeTab = 'data'">{{ t.tabs.liveData }}</div>
         </div>
 
         <!-- Device Configuration Tab -->
         <div v-show="activeTab === 'config'" class="tab-content active">
             <div v-if="!configReceived" class="alert alert-info">
-                Waiting for configuration from device... Click "Load Config" to request configuration.
-                <button class="btn btn-primary" style="margin-left: 15px;" @click="loadConfig" :disabled="!emontxConnected">Load Config</button>
+                {{ t.config.waiting }} {{ t.config.clickLoad }}
+                <button class="btn btn-primary" style="margin-left: 15px;" @click="loadConfig" :disabled="!emontxConnected">{{ t.buttons.loadConfig }}</button>
             </div>
 
             <div v-if="upgradeRequired" class="alert alert-danger">
-                <b>Firmware update required:</b> Looks like you are running an older firmware version. Please upgrade the device firmware to use this tool.
+                <b>{{ t.config.firmwareUpdateRequired }}</b> {{ t.config.firmwareUpdateMessage }}
             </div>
 
             <div v-if="configReceived && !upgradeRequired">
                 <!-- Device Info -->
                 <div class="card">
-                    <div class="card-header">Device Information</div>
+                    <div class="card-header">{{ t.config.deviceInfo }}</div>
                     <div class="card-body">
                         <table class="device-info-table">
                             <tr>
-                                <th>Hardware</th>
-                                <th>Firmware</th>
-                                <th>Version</th>
-                                <th>Voltage</th>
-                                <th>Library</th>
+                                <th>{{ t.config.hardware }}</th>
+                                <th>{{ t.config.firmware }}</th>
+                                <th>{{ t.config.version }}</th>
+                                <th>{{ t.config.voltageLabel }}</th>
+                                <th>{{ t.config.library }}</th>
                             </tr>
                             <tr>
                                 <td>{{ device.hardware || '-' }}</td>
@@ -298,10 +298,10 @@
 
                 <!-- Voltage Calibration -->
                 <div class="card" v-if="device.hardware !== 'emonPi3'">
-                    <div class="card-header">Voltage Calibration</div>
+                    <div class="card-header">{{ t.config.voltageCalibration }}</div>
                     <div class="card-body">
                         <div class="form-group">
-                            <label>Voltage calibration</label>
+                            <label>{{ t.config.vCal }}</label>
                             <input type="number" step="0.001" v-model="device.vcal" @change="setVcal" :disabled="!emontxConnected" />
                             <span class="unit">%</span>
                         </div>
@@ -310,13 +310,13 @@
 
                 <!-- Multi-voltage for emonPi3 -->
                 <div class="card" v-if="device.hardware === 'emonPi3'">
-                    <div class="card-header">Voltage Channels</div>
+                    <div class="card-header">{{ t.config.voltageChannels }}</div>
                     <div class="card-body">
                         <table class="config-table">
                             <tr>
-                                <th>Active</th>
-                                <th>Channel</th>
-                                <th>Calibration</th>
+                                <th>{{ t.config.active }}</th>
+                                <th>{{ t.config.channel }}</th>
+                                <th>{{ t.config.calibration }}</th>
                             </tr>
                             <tr v-for="(vchannel, index) in device.vchannels" :key="'v'+index">
                                 <td><input type="checkbox" v-model="vchannel.active" @change="setVchannel(index)" :disabled="!emontxConnected" /></td>
@@ -332,18 +332,18 @@
 
                 <!-- Current Channels -->
                 <div class="card">
-                    <div class="card-header">Current Channels</div>
+                    <div class="card-header">{{ t.config.ctChannels }}</div>
                     <div class="card-body">
                         <table class="config-table">
                             <tr>
-                                <th v-if="device.hardware === 'emonPi3'">Active</th>
-                                <th>Channel</th>
-                                <th>CT Type</th>
-                                <th>Phase</th>
-                                <th v-if="device.hardware === 'emonPi3'">V1</th>
-                                <th v-if="device.hardware === 'emonPi3'">V2</th>
-                                <th>Power</th>
-                                <th>Energy</th>
+                                <th v-if="device.hardware === 'emonPi3'">{{ t.config.active }}</th>
+                                <th>{{ t.config.channel }}</th>
+                                <th>{{ t.config.ctType }}</th>
+                                <th>{{ t.config.phase }}</th>
+                                <th v-if="device.hardware === 'emonPi3'">{{ t.config.vChan1 }}</th>
+                                <th v-if="device.hardware === 'emonPi3'">{{ t.config.vChan2 }}</th>
+                                <th>{{ t.config.power }}</th>
+                                <th>{{ t.config.energy }}</th>
                             </tr>
                             <tr v-for="(channel, index) in device.ichannels" :key="'i'+index">
                                 <td v-if="device.hardware === 'emonPi3'">
@@ -375,19 +375,19 @@
 
                 <!-- Radio Settings -->
                 <div class="card" v-if="device.hardware !== 'emonPi2'">
-                    <div class="card-header">Radio Settings</div>
+                    <div class="card-header">{{ t.config.radioSettings }}</div>
                     <div class="card-body">
                         <div class="form-group">
-                            <label>Radio enabled</label>
+                            <label>{{ t.config.radioEnabled }}</label>
                             <input type="checkbox" v-model="device.RF" @change="setRadio" :disabled="!emontxConnected" />
                         </div>
                         <div v-if="device.RF">
                             <table class="device-info-table">
                                 <tr>
-                                    <th>Node ID</th>
-                                    <th>Group</th>
-                                    <th>Frequency</th>
-                                    <th>Format</th>
+                                    <th>{{ t.config.nodeId }}</th>
+                                    <th>{{ t.config.group }}</th>
+                                    <th>{{ t.config.frequency }}</th>
+                                    <th>{{ t.config.format }}</th>
                                 </tr>
                                 <tr>
                                     <td><input type="number" v-model="device.rfNode" @change="setRfNode" :disabled="!emontxConnected" style="width:60px" /></td>
@@ -408,14 +408,14 @@
 
                 <!-- Other Settings -->
                 <div class="card">
-                    <div class="card-header">Other Settings</div>
+                    <div class="card-header">{{ t.config.otherSettings }}</div>
                     <div class="card-body">
                         <table class="device-info-table">
                             <tr>
-                                <th>Pulse enabled</th>
-                                <th>Pulse period</th>
-                                <th>Datalog</th>
-                                <th>Serial format</th>
+                                <th>{{ t.config.pulseInput }}</th>
+                                <th>{{ t.config.pulsePeriod }}</th>
+                                <th>{{ t.config.datalogInterval }}</th>
+                                <th>{{ t.config.serialFormat }}</th>
                             </tr>
                             <tr>
                                 <td><input type="checkbox" v-model="device.pulse" @change="setPulse" :disabled="!emontxConnected" /></td>
@@ -423,8 +423,8 @@
                                 <td><input type="number" step="0.1" v-model="device.datalog" @change="setDatalog" :disabled="!emontxConnected" style="width:80px" /></td>
                                 <td>
                                     <select v-model="device.json" @change="setJson" :disabled="!emontxConnected">
-                                        <option :value="0">Key:value pairs</option>
-                                        <option :value="1">Full JSON</option>
+                                        <option :value="0">{{ t.config.keyValuePairs }}</option>
+                                        <option :value="1">{{ t.config.fullJson }}</option>
                                     </select>
                                 </td>
                             </tr>
@@ -434,10 +434,10 @@
 
                 <!-- Action Buttons -->
                 <div class="button-group">
-                    <button class="btn btn-warning" @click="saveConfig" :disabled="!changes || !emontxConnected">Save Changes</button>
-                    <button class="btn btn-info" @click="zeroEnergy" :disabled="!emontxConnected">Zero Energy Values</button>
-                    <button class="btn btn-danger" @click="resetDefaults" :disabled="!emontxConnected">Reset to Defaults</button>
-                    <button class="btn btn-primary" @click="loadConfig" :disabled="!emontxConnected">Reload Config</button>
+                    <button class="btn btn-warning" @click="saveConfig" :disabled="!changes || !emontxConnected">{{ t.buttons.save }}</button>
+                    <button class="btn btn-info" @click="zeroEnergy" :disabled="!emontxConnected">{{ t.buttons.zeroEnergy }}</button>
+                    <button class="btn btn-danger" @click="resetDefaults" :disabled="!emontxConnected">{{ t.buttons.resetDefaults }}</button>
+                    <button class="btn btn-primary" @click="loadConfig" :disabled="!emontxConnected">{{ t.buttons.reloadConfig }}</button>
                 </div>
             </div>
         </div>
@@ -445,12 +445,12 @@
         <!-- Serial Terminal Tab -->
         <div v-show="activeTab === 'terminal'" class="tab-content">
             <div class="card">
-                <div class="card-header">Serial Monitor</div>
+                <div class="card-header">{{ t.terminal.title }}</div>
                 <div class="card-body">
                     <div id="terminal" class="terminal"></div>
                     <div class="command-input">
-                        <input type="text" v-model="cmdInput" @keypress.enter="sendCmd" placeholder="Enter command..." />
-                        <button class="btn btn-primary" @click="sendCmd" :disabled="!emontxConnected">Send</button>
+                        <input type="text" v-model="cmdInput" @keypress.enter="sendCmd" :placeholder="t.terminal.placeholder" />
+                        <button class="btn btn-primary" @click="sendCmd" :disabled="!emontxConnected">{{ t.terminal.send }}</button>
                     </div>
                     <div style="margin-top: 15px; display: flex; gap: 8px; flex-wrap: wrap;">
                         <button class="btn btn-primary" @click="sendQuickCmd('l')">l - List Config</button>
@@ -465,10 +465,10 @@
         <!-- Live Data Tab -->
         <div v-show="activeTab === 'data'" class="tab-content">
             <div class="card">
-                <div class="card-header">Live Sensor Data</div>
+                <div class="card-header">{{ t.liveData.title }}</div>
                 <div class="card-body">
                     <div v-if="Object.keys(liveData).length === 0" class="alert alert-info">
-                        Waiting for data from emonTx...
+                        {{ t.liveData.waiting }}
                     </div>
                     <div v-else class="config-grid">
                         <div class="config-item" v-for="(value, key) in liveData" :key="key">
@@ -483,13 +483,13 @@
         <!-- Zero Energy Confirmation Modal -->
         <div v-if="showZeroConfirm" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999;">
             <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); max-width: 400px; text-align: center;">
-                <h3 style="margin-top: 0; color: #f44336;">⚠️ Confirm Zero Energy</h3>
-                <p style="font-size: 16px; margin: 20px 0;">Are you sure you want to zero all energy counters?</p>
-                <p style="font-size: 14px; color: #666; margin-bottom: 20px;">This action cannot be undone.</p>
+                <h3 style="margin-top: 0; color: #f44336;">⚠️ {{ t.zeroConfirm.title }}</h3>
+                <p style="font-size: 16px; margin: 20px 0;">{{ t.zeroConfirm.message }}</p>
+                <p style="font-size: 14px; color: #666; margin-bottom: 20px;">{{ t.zeroConfirm.warning }}</p>
                 <p style="font-size: 24px; font-weight: bold; color: #ff9800; margin: 20px 0;">{{ zeroCountdown }}s</p>
                 <div style="display: flex; gap: 10px; justify-content: center;">
-                    <button class="btn btn-danger" @click="confirmZero" style="padding: 12px 30px; font-size: 16px;">Yes, Zero Counters</button>
-                    <button class="btn" @click="cancelZero" style="padding: 12px 30px; font-size: 16px; background: #ccc;">Cancel</button>
+                    <button class="btn btn-danger" @click="confirmZero" style="padding: 12px 30px; font-size: 16px;">{{ t.zeroConfirm.confirm }}</button>
+                    <button class="btn" @click="cancelZero" style="padding: 12px 30px; font-size: 16px; background: #ccc;">{{ t.zeroConfirm.cancel }}</button>
                 </div>
             </div>
         </div>
@@ -513,6 +513,235 @@
                 showZeroConfirm: false,
                 zeroCountdown: 20,
                 zeroCountdownInterval: null,
+                // i18n
+                lang: 'en',
+                translations: {
+                    en: {
+                        title: 'emonPi/Tx Configuration',
+                        subtitle: 'Configure your OpenEnergyMonitor emonPi/Tx device via ESP32 serial bridge',
+                        haStatus: 'Home Assistant',
+                        deviceStatus: 'emonPi/Tx',
+                        connected: 'Connected',
+                        disconnected: 'Disconnected',
+                        unknown: 'Unknown',
+                        tabs: {
+                            config: 'Device Config',
+                            terminal: 'Serial Terminal',
+                            liveData: 'Live Data'
+                        },
+                        buttons: {
+                            loadConfig: 'Load Config',
+                            save: 'Save Changes',
+                            zeroEnergy: 'Zero Energy Values',
+                            resetDefaults: 'Reset to Defaults',
+                            reloadConfig: 'Reload Config'
+                        },
+                        config: {
+                            waiting: 'Waiting for configuration data...',
+                            clickLoad: 'Click "Load Config" to read the current device configuration.',
+                            firmwareUpdateRequired: 'Firmware update required:',
+                            firmwareUpdateMessage: 'Looks like you are running an older firmware version. Please upgrade the device firmware to use this tool.',
+                            deviceInfo: 'Device Information',
+                            hardware: 'Hardware',
+                            firmware: 'Firmware',
+                            version: 'Version',
+                            voltageLabel: 'Voltage',
+                            library: 'Library',
+                            voltageCalibration: 'Voltage Calibration',
+                            calibration: 'Calibration',
+                            ctChannels: 'CT Channels',
+                            channel: 'Channel',
+                            ctType: 'CT Type',
+                            phase: 'Phase',
+                            vChan1: 'V Chan 1',
+                            vChan2: 'V Chan 2',
+                            power: 'Power',
+                            energy: 'Energy',
+                            voltageChannels: 'Voltage Channels',
+                            active: 'Active',
+                            vCal: 'V Cal',
+                            radioSettings: 'Radio Settings',
+                            radioEnabled: 'Radio Enabled',
+                            nodeId: 'Node ID',
+                            group: 'Group',
+                            frequency: 'Frequency',
+                            format: 'Format',
+                            otherSettings: 'Other Settings',
+                            pulseInput: 'Pulse Input',
+                            pulsePeriod: 'Pulse Period',
+                            datalogInterval: 'Datalog Interval',
+                            serialFormat: 'Serial Format',
+                            keyValuePairs: 'Key:value pairs',
+                            fullJson: 'Full JSON'
+                        },
+                        terminal: {
+                            title: 'Serial Monitor',
+                            placeholder: 'Enter command...',
+                            send: 'Send'
+                        },
+                        liveData: {
+                            title: 'Live Sensor Data',
+                            waiting: 'Waiting for data from emonPi/Tx...'
+                        },
+                        zeroConfirm: {
+                            title: 'Confirm Zero Energy',
+                            message: 'Are you sure you want to zero all energy counters?',
+                            warning: 'This action cannot be undone.',
+                            confirm: 'Yes, Zero Counters',
+                            cancel: 'Cancel'
+                        }
+                    },
+                    fr: {
+                        title: 'Configuration emonPi/Tx',
+                        subtitle: 'Configurez votre appareil OpenEnergyMonitor emonPi/Tx via le pont série ESP32',
+                        haStatus: 'Home Assistant',
+                        deviceStatus: 'emonPi/Tx',
+                        connected: 'Connecté',
+                        disconnected: 'Déconnecté',
+                        unknown: 'Inconnu',
+                        tabs: {
+                            config: 'Configuration',
+                            terminal: 'Terminal Série',
+                            liveData: 'Données en Direct'
+                        },
+                        buttons: {
+                            loadConfig: 'Charger Config',
+                            save: 'Enregistrer les Modifications',
+                            zeroEnergy: 'Remettre à Zéro',
+                            resetDefaults: 'Réinitialiser',
+                            reloadConfig: 'Recharger Config'
+                        },
+                        config: {
+                            waiting: 'En attente des données de configuration...',
+                            clickLoad: 'Cliquez sur "Charger Config" pour lire la configuration actuelle.',
+                            firmwareUpdateRequired: 'Mise à jour du firmware requise :',
+                            firmwareUpdateMessage: 'Il semble que vous utilisez une ancienne version du firmware. Veuillez mettre à jour le firmware de l\'appareil pour utiliser cet outil.',
+                            deviceInfo: 'Informations sur l\'Appareil',
+                            hardware: 'Matériel',
+                            firmware: 'Firmware',
+                            version: 'Version',
+                            voltageLabel: 'Tension',
+                            library: 'Bibliothèque',
+                            voltageCalibration: 'Calibration de Tension',
+                            calibration: 'Calibration',
+                            ctChannels: 'Canaux CT',
+                            channel: 'Canal',
+                            ctType: 'Type CT',
+                            phase: 'Phase',
+                            vChan1: 'V Canal 1',
+                            vChan2: 'V Canal 2',
+                            power: 'Puissance',
+                            energy: 'Énergie',
+                            voltageChannels: 'Canaux de Tension',
+                            active: 'Actif',
+                            vCal: 'Cal V',
+                            radioSettings: 'Paramètres Radio',
+                            radioEnabled: 'Radio Activée',
+                            nodeId: 'ID Nœud',
+                            group: 'Groupe',
+                            frequency: 'Fréquence',
+                            format: 'Format',
+                            otherSettings: 'Autres Paramètres',
+                            pulseInput: 'Entrée Impulsion',
+                            pulsePeriod: 'Période Impulsion',
+                            datalogInterval: 'Intervalle Datalog',
+                            serialFormat: 'Format Série',
+                            keyValuePairs: 'Paires clé:valeur',
+                            fullJson: 'JSON Complet'
+                        },
+                        terminal: {
+                            title: 'Moniteur Série',
+                            placeholder: 'Entrez une commande...',
+                            send: 'Envoyer'
+                        },
+                        liveData: {
+                            title: 'Données en Temps Réel',
+                            waiting: 'En attente des données de l\'emonPi/Tx...'
+                        },
+                        zeroConfirm: {
+                            title: 'Confirmer la Remise à Zéro',
+                            message: 'Êtes-vous sûr de vouloir remettre à zéro tous les compteurs d\'énergie ?',
+                            warning: 'Cette action est irréversible.',
+                            confirm: 'Oui, Remettre à Zéro',
+                            cancel: 'Annuler'
+                        }
+                    },
+                    de: {
+                        title: 'emonPi/Tx Konfiguration',
+                        subtitle: 'Konfigurieren Sie Ihr OpenEnergyMonitor emonPi/Tx Gerät über die ESP32 Serielle Brücke',
+                        haStatus: 'Home Assistant',
+                        deviceStatus: 'emonPi/Tx',
+                        connected: 'Verbunden',
+                        disconnected: 'Getrennt',
+                        unknown: 'Unbekannt',
+                        tabs: {
+                            config: 'Gerätekonfiguration',
+                            terminal: 'Serielles Terminal',
+                            liveData: 'Live-Daten'
+                        },
+                        buttons: {
+                            loadConfig: 'Konfig Laden',
+                            save: 'Änderungen Speichern',
+                            zeroEnergy: 'Energie Nullstellen',
+                            resetDefaults: 'Auf Standard Zurücksetzen',
+                            reloadConfig: 'Konfig Neu Laden'
+                        },
+                        config: {
+                            waiting: 'Warte auf Konfigurationsdaten...',
+                            clickLoad: 'Klicken Sie auf "Konfig Laden" um die aktuelle Konfiguration zu lesen.',
+                            firmwareUpdateRequired: 'Firmware-Update erforderlich:',
+                            firmwareUpdateMessage: 'Es scheint, dass Sie eine ältere Firmware-Version verwenden. Bitte aktualisieren Sie die Geräte-Firmware, um dieses Tool zu nutzen.',
+                            deviceInfo: 'Geräteinformationen',
+                            hardware: 'Hardware',
+                            firmware: 'Firmware',
+                            version: 'Version',
+                            voltageLabel: 'Spannung',
+                            library: 'Bibliothek',
+                            voltageCalibration: 'Spannungskalibrierung',
+                            calibration: 'Kalibrierung',
+                            ctChannels: 'CT-Kanäle',
+                            channel: 'Kanal',
+                            ctType: 'CT-Typ',
+                            phase: 'Phase',
+                            vChan1: 'V Kanal 1',
+                            vChan2: 'V Kanal 2',
+                            power: 'Leistung',
+                            energy: 'Energie',
+                            voltageChannels: 'Spannungskanäle',
+                            active: 'Aktiv',
+                            vCal: 'V Kal',
+                            radioSettings: 'Funk-Einstellungen',
+                            radioEnabled: 'Funk Aktiviert',
+                            nodeId: 'Knoten-ID',
+                            group: 'Gruppe',
+                            frequency: 'Frequenz',
+                            format: 'Format',
+                            otherSettings: 'Weitere Einstellungen',
+                            pulseInput: 'Impulseingang',
+                            pulsePeriod: 'Impulsperiode',
+                            datalogInterval: 'Datalog-Intervall',
+                            serialFormat: 'Serielles Format',
+                            keyValuePairs: 'Schlüssel:Wert Paare',
+                            fullJson: 'Vollständiges JSON'
+                        },
+                        terminal: {
+                            title: 'Serieller Monitor',
+                            placeholder: 'Befehl eingeben...',
+                            send: 'Senden'
+                        },
+                        liveData: {
+                            title: 'Live Sensordaten',
+                            waiting: 'Warte auf Daten vom emonPi/Tx...'
+                        },
+                        zeroConfirm: {
+                            title: 'Energie Nullstellen Bestätigen',
+                            message: 'Sind Sie sicher, dass Sie alle Energiezähler zurücksetzen möchten?',
+                            warning: 'Diese Aktion kann nicht rückgängig gemacht werden.',
+                            confirm: 'Ja, Nullstellen',
+                            cancel: 'Abbrechen'
+                        }
+                    }
+                },
                 device: {
                     firmware: '',
                     firmware_version: '',
@@ -542,11 +771,34 @@
                 deviceName: '',
                 servicesRequestId: null
             },
+            computed: {
+                t() {
+                    return this.translations[this.lang] || this.translations.en;
+                }
+            },
             mounted() {
+                this.detectLanguage();
                 this.populateChannels(6);
                 this.connectWebSocket();
             },
             methods: {
+                detectLanguage() {
+                    // Try to get language from Home Assistant
+                    try {
+                        if (window.parent && window.parent.document) {
+                            const hassObj = window.parent.document.querySelector('home-assistant');
+                            if (hassObj && hassObj.hass && hassObj.hass.language) {
+                                const haLang = hassObj.hass.language.split('-')[0]; // Get 'fr' from 'fr-FR'
+                                if (this.translations[haLang]) {
+                                    this.lang = haLang;
+                                    console.log('Detected language:', haLang);
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        console.log('Could not detect HA language, using default');
+                    }
+                },
                 connectWebSocket() {
                     const wsUrl = `ws://${window.location.host}/api/websocket`;
                     this.log('Connecting to Home Assistant...', 'info');

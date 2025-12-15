@@ -1,0 +1,30 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "emonPi/Tx Konfiguration",
+        "description": "Konfigurieren Sie die emonTx Seriell-Bridge-Integration. Wählen Sie das ESPHome-Gerät, das mit Ihrem emonTx verbunden ist.",
+        "data": {
+          "esphome_device": "ESPHome-Gerätename"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Verbindung zum ESPHome-Gerät fehlgeschlagen",
+      "unknown": "Unerwarteter Fehler"
+    },
+    "abort": {
+      "already_configured": "emonPi/Tx Konfiguration ist bereits eingerichtet"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "emonPi/Tx Konfigurationsoptionen",
+        "data": {
+          "esphome_device": "ESPHome-Gerätename"
+        }
+      }
+    }
+  }
+}
