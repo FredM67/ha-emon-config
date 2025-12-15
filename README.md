@@ -1,8 +1,8 @@
-# emonTx Configuration for Home Assistant
+# emonPi/Tx Configuration for Home Assistant
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
 
-A Home Assistant integration that provides a web-based configuration interface for OpenEnergyMonitor emonTx devices connected via an ESP32 serial bridge running ESPHome.
+A Home Assistant integration that provides a web-based configuration interface for OpenEnergyMonitor emonPi/Tx devices connected via an ESP32 serial bridge running ESPHome.
 
 ## Features
 
@@ -113,7 +113,7 @@ api:
 
 ## Usage
 
-After installation, a new panel called "emonTx Config" will appear in the Home Assistant sidebar.
+After installation, a new panel called "emonPi/Tx Config" will appear in the Home Assistant sidebar.
 
 ### Device Config Tab
 
@@ -125,7 +125,7 @@ The main configuration interface with:
 - **Other Settings**: Pulse input, data logging interval, JSON output format
 
 **Buttons:**
-- **Load Config**: Read current configuration from the emonTx (sends `l` command)
+- **Load Config**: Read current configuration from the emonPi/Tx (sends `l` command)
 - **Save**: Save configuration to EEPROM (sends `s` command)
 - **Zero Energy Values**: Reset all energy counters (with 20-second confirmation countdown)
 
@@ -133,19 +133,19 @@ The main configuration interface with:
 
 A full serial terminal for direct communication:
 
-- **Terminal Output**: Shows all received data from the emonTx
-- **Command Input**: Type commands to send to the emonTx
+- **Terminal Output**: Shows all received data from the emonPi/Tx
+- **Command Input**: Type commands to send to the emonPi/Tx
 - **Quick Commands**: Buttons for common commands (l, v, s, d)
 
 ### Live Data Tab
 
-Real-time display of all sensor values received from the emonTx, including:
+Real-time display of all sensor values received from the emonPi/Tx, including:
 - Voltage readings (V1, V2, V3)
 - Power readings (P1-P6)
 - Energy totals (E1-E6)
 - Message counter (MSG)
 
-## Common emonTx Commands
+## Common emonPi/Tx Commands
 
 | Command | Description |
 |---------|-------------|

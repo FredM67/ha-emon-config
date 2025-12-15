@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>emonTx Configuration</title>
+    <title>emonPi/Tx Configuration</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.min.js"></script>
     <style>
         * { box-sizing: border-box; }
@@ -240,8 +240,8 @@
 <body>
     <div id="app" class="container">
         <div class="header">
-            <h1>emonTx Configuration</h1>
-            <p>Configure your OpenEnergyMonitor emonTx device via ESP32 serial bridge</p>
+            <h1>emonPi/Tx Configuration</h1>
+            <p>Configure your OpenEnergyMonitor emonPi/Tx device via ESP32 serial bridge</p>
         </div>
 
         <div class="status-bar">
@@ -251,7 +251,7 @@
             </div>
             <div class="status-item">
                 <div :class="['status-dot', emontxConnected ? 'connected' : 'disconnected']"></div>
-                <span>emonTx: <strong>{{ emontxStatus }}</strong></span>
+                <span>emonPi/Tx: <strong>{{ emontxStatus }}</strong></span>
             </div>
         </div>
 
