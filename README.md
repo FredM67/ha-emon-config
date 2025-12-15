@@ -27,7 +27,7 @@ A Home Assistant integration that provides a web-based configuration interface f
    [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=FredM67&repository=ha-emon-config&category=integration)
 
 2. Restart Home Assistant
-3. Go to Settings > Devices & Services > Add Integration > Search for "emonTx Configuration"
+3. Go to Settings > Devices & Services > Add Integration > Search for "emonPi/Tx Configuration"
 
 ### Manual Installation
 
@@ -104,7 +104,7 @@ api:
 
 1. Go to Settings > Devices & Services
 2. Click "Add Integration"
-3. Search for "emonTx Configuration"
+3. Search for "emonPi/Tx Configuration"
 4. Select your ESPHome device from the dropdown
 5. Click "Submit"
 

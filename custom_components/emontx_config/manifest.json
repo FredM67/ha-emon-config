@@ -1,6 +1,6 @@
 {
   "domain": "emontx_config",
-  "name": "emonTx Configuration",
+  "name": "emonPi/Tx Configuration",
   "codeowners": ["@FredM67"],
   "config_flow": true,
   "dependencies": [],

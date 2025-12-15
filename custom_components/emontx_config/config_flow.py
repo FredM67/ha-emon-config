@@ -1,4 +1,4 @@
-"""Config flow for emonTx Configuration integration."""
+"""Config flow for emonPi/Tx Configuration integration."""
 from __future__ import annotations
 
 import logging
@@ -17,7 +17,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for emonTx Configuration."""
+    """Handle a config flow for emonPi/Tx Configuration."""
 
     VERSION = 1
 
@@ -33,7 +33,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             self._abort_if_unique_id_configured()
 
             return self.async_create_entry(
-                title="emonTx Configuration",
+                title="emonPi/Tx Configuration",
                 data=user_input,
             )
 
@@ -94,7 +94,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
 
 class OptionsFlowHandler(config_entries.OptionsFlow):
-    """Handle options flow for emonTx Configuration."""
+    """Handle options flow for emonPi/Tx Configuration."""
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None

@@ -2,7 +2,7 @@
   "config": {
     "step": {
       "user": {
-        "title": "emonTx Configuration",
+        "title": "emonPi/Tx Configuration",
         "description": "Configure the emonTx serial bridge integration. Select the ESPHome device that is connected to your emonTx.",
         "data": {
           "esphome_device": "ESPHome Device Name"
@@ -14,13 +14,13 @@
       "unknown": "Unexpected error"
     },
     "abort": {
-      "already_configured": "emonTx Configuration is already set up"
+      "already_configured": "emonPi/Tx Configuration is already set up"
     }
   },
   "options": {
     "step": {
       "init": {
-        "title": "emonTx Configuration Options",
+        "title": "emonPi/Tx Configuration Options",
         "data": {
           "esphome_device": "ESPHome Device Name"
         }

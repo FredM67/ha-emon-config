@@ -1,4 +1,4 @@
-"""emonTx Configuration integration for Home Assistant.
+"""emonPi/Tx Configuration integration for Home Assistant.
 
 This integration provides a web-based configuration interface for OpenEnergyMonitor
 emonTx devices connected via an ESP32 serial bridge running ESPHome.
@@ -24,13 +24,13 @@ PLATFORMS: list[Platform] = []
 
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
-    """Set up the emonTx Configuration component."""
+    """Set up the emonPi/Tx Configuration component."""
     hass.data.setdefault(DOMAIN, {})
     return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Set up emonTx Configuration from a config entry."""
+    """Set up emonPi/Tx Configuration from a config entry."""
     hass.data.setdefault(DOMAIN, {})
 
     esphome_device = entry.data.get(CONF_ESPHOME_DEVICE, "")
@@ -115,4 +115,4 @@ async def _async_register_panel(hass: HomeAssistant, entry: ConfigEntry) -> None
         require_admin=True,
     )
 
-    _LOGGER.info("emonTx Configuration panel registered")
+    _LOGGER.info("emonPi/Tx Configuration panel registered")

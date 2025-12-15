@@ -1,4 +1,4 @@
-"""Constants for the emonTx Configuration integration."""
+"""Constants for the emonPi/Tx Configuration integration."""
 
 DOMAIN = "emontx_config"
 
