@@ -931,20 +931,23 @@
                     this.log('RX: ' + line);
 
                     // Parse sensor data - works for both JSON and key:value formats
+                    // Sensor data always starts with MSG key
                     // Matches: "key":value, "key":"value", key:value
                     const sensorRegex = /"?(\w+)"?\s*:\s*"?([^",}\s]+)"?/g;
                     let match;
                     const sensorData = {};
+                    let firstKey = null;
 
                     while ((match = sensorRegex.exec(line)) !== null) {
                         const key = match[1];
                         const value = match[2];
+                        if (firstKey === null) firstKey = key;
                         const numValue = parseFloat(value);
                         sensorData[key] = isNaN(numValue) ? value : numValue;
                     }
 
-                    // Check if it's sensor data (has MSG or V1)
-                    if (sensorData.MSG !== undefined || sensorData.V1 !== undefined) {
+                    // Check if it's sensor data (must start with MSG)
+                    if (firstKey === 'MSG') {
                         this.liveData = sensorData;
                         this.emontxConnected = true;
                         this.emontxStatus = 'Connected';
