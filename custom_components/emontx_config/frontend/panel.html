@@ -952,8 +952,43 @@
                             }
                         }
                     } catch (e) {
-                        // Not JSON, process as config line (plain text)
-                        this.processLine(line);
+                        // Not JSON - try key:value format (e.g., "MSG:4880,V1:233.27,P1:15,E1:225")
+                        if (line.includes(':') && (line.includes('MSG:') || line.includes('V1:'))) {
+                            const kvData = {};
+                            const pairs = line.split(',');
+                            for (const pair of pairs) {
+                                const [key, value] = pair.split(':');
+                                if (key && value !== undefined) {
+                                    const trimmedKey = key.trim();
+                                    const trimmedValue = value.trim();
+                                    // Try to convert to number if possible
+                                    const numValue = parseFloat(trimmedValue);
+                                    kvData[trimmedKey] = isNaN(numValue) ? trimmedValue : numValue;
+                                }
+                            }
+
+                            // Check if it's sensor data
+                            if (kvData.MSG !== undefined || kvData.V1 !== undefined) {
+                                this.liveData = kvData;
+                                this.emontxConnected = true;
+                                this.emontxStatus = 'Connected';
+
+                                // Update power/energy in config table
+                                for (let c = 0; c < this.device.ichannels.length; c++) {
+                                    const pKey = 'P' + (c + 1);
+                                    const eKey = 'E' + (c + 1);
+                                    if (kvData[pKey] !== undefined) {
+                                        this.$set(this.device.ichannels[c], 'power', kvData[pKey] + 'W');
+                                    }
+                                    if (kvData[eKey] !== undefined) {
+                                        this.$set(this.device.ichannels[c], 'energy', kvData[eKey] + 'Wh');
+                                    }
+                                }
+                            }
+                        } else {
+                            // Plain text config line
+                            this.processLine(line);
+                        }
                     }
                 },
 
