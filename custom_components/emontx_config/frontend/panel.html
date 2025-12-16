@@ -846,10 +846,8 @@
                             }
                             break;
                         case 'event':
-                            if (msg.event && msg.event.event_type === 'esphome.emontx_data') {
+                            if (msg.event && msg.event.event_type === 'esphome.emontx_raw') {
                                 this.handleEmontxData(msg.event.data);
-                            } else if (msg.event && msg.event.event_type === 'esphome.emontx_line') {
-                                this.handleEmontxLine(msg.event.data);
                             }
                             break;
                     }
@@ -883,17 +881,11 @@
                 },
 
                 subscribeToEvents() {
-                    // Subscribe to JSON sensor data events
+                    // Subscribe to raw data events (includes all serial data: JSON sensor data and config responses)
                     this.ws.send(JSON.stringify({
                         id: this.wsMessageId++,
                         type: 'subscribe_events',
-                        event_type: 'esphome.emontx_data'
-                    }));
-                    // Subscribe to line events (includes config responses)
-                    this.ws.send(JSON.stringify({
-                        id: this.wsMessageId++,
-                        type: 'subscribe_events',
-                        event_type: 'esphome.emontx_line'
+                        event_type: 'esphome.emontx_raw'
                     }));
                 },
 
@@ -923,57 +915,7 @@
                 },
 
                 handleEmontxData(data) {
-                    // Get payload from various possible formats
-                    let payload;
-                    if (data.payload) {
-                        payload = data.payload;
-                    } else if (data.data) {
-                        payload = data.data;
-                    } else {
-                        payload = JSON.stringify(data);
-                    }
-
-                    // Log raw data
-                    this.log('RX: ' + (typeof payload === 'string' ? payload : JSON.stringify(payload)));
-
-                    // Parse the payload
-                    try {
-                        let jsonData = typeof payload === 'string' ? JSON.parse(payload) : payload;
-
-                        // Handle wrapped format (device_id + data)
-                        if (jsonData.device_id && jsonData.data) {
-                            const innerData = typeof jsonData.data === 'string' ? JSON.parse(jsonData.data) : jsonData.data;
-                            jsonData = innerData;
-                        }
-
-                        // Check if it's sensor data (has MSG or V1)
-                        if (jsonData.MSG !== undefined || jsonData.V1 !== undefined) {
-                            this.liveData = jsonData;
-                            this.emontxConnected = true;
-                            this.emontxStatus = 'Connected';
-
-                            // Update power/energy in config table
-                            for (let c = 0; c < this.device.ichannels.length; c++) {
-                                const pKey = 'P' + (c + 1);
-                                const eKey = 'E' + (c + 1);
-                                if (jsonData[pKey] !== undefined) {
-                                    this.$set(this.device.ichannels[c], 'power', jsonData[pKey] + 'W');
-                                }
-                                if (jsonData[eKey] !== undefined) {
-                                    this.$set(this.device.ichannels[c], 'energy', jsonData[eKey] + 'Wh');
-                                }
-                            }
-                        }
-                    } catch (e) {
-                        // Not JSON, process as config line
-                        if (typeof payload === 'string') {
-                            this.processLine(payload);
-                        }
-                    }
-                },
-
-                handleEmontxLine(data) {
-                    // Handle line events from on_line trigger
+                    // Handle data events from on_data trigger
                     // Expected format: { device_id: "...", line: "..." }
                     let line = '';
                     if (data.line) {
