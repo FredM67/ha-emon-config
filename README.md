@@ -56,6 +56,13 @@ uart:
   tx_pin: GPIO21
   baud_rate: 115200
 
+# Required: API for Home Assistant communication
+api:
+  encryption:
+    key: !secret api_encryption_key
+  # Required for auto-registered send_command service
+  custom_services: true
+
 emontx:
   # Enable config panel - automatically registers send_command service
   # and fires esphome.emontx_raw events for all serial data
@@ -70,13 +77,6 @@ sensor:
     tag_name: "P1"
     name: "Power 1"
   # ... add more sensors as needed
-
-# Required: API for Home Assistant communication
-api:
-  encryption:
-    key: !secret api_encryption_key
-  # Required for auto-registered send_command service
-  custom_services: true
 ```
 
 > **Note**: When `config_panel: true` is set, the `send_command` service is automatically registered. The `custom_services: true` option is required to enable this feature. Commands sent via this service automatically have CR+LF line endings appended as required by the emonTx firmware.
