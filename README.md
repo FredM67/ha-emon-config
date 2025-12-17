@@ -57,7 +57,8 @@ uart:
   baud_rate: 115200
 
 emontx:
-  # Enable config panel - automatically fires esphome.emontx_raw events
+  # Enable config panel - automatically registers send_command service
+  # and fires esphome.emontx_raw events for all serial data
   config_panel: true
 
 # Optional: Define sensors for individual values
@@ -74,16 +75,9 @@ sensor:
 api:
   encryption:
     key: !secret api_encryption_key
-  services:
-    - service: send_command
-      variables:
-        command: string
-      then:
-        - emontx.send_command:
-            command: !lambda 'return command;'
 ```
 
-> **Note**: The `emontx.send_command` action automatically appends CR+LF line endings required by the emonTx firmware.
+> **Note**: When `config_panel: true` is set, the `send_command` service is automatically registered. Commands sent via this service automatically have CR+LF line endings appended as required by the emonTx firmware.
 
 ### Home Assistant Setup
 
