@@ -75,9 +75,11 @@ sensor:
 api:
   encryption:
     key: !secret api_encryption_key
+  # Required for auto-registered send_command service
+  custom_services: true
 ```
 
-> **Note**: When `config_panel: true` is set, the `send_command` service is automatically registered. Commands sent via this service automatically have CR+LF line endings appended as required by the emonTx firmware.
+> **Note**: When `config_panel: true` is set, the `send_command` service is automatically registered. The `custom_services: true` option is required to enable this feature. Commands sent via this service automatically have CR+LF line endings appended as required by the emonTx firmware.
 
 ### Home Assistant Setup
 
