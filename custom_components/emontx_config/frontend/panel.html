@@ -452,6 +452,7 @@
                     <button class="btn btn-info" @click="zeroEnergy" :disabled="!emontxConnected">{{ t.buttons.zeroEnergy }}</button>
                     <button class="btn btn-danger" @click="resetDefaults" :disabled="!emontxConnected">{{ t.buttons.resetDefaults }}</button>
                     <button class="btn btn-primary" @click="loadConfig" :disabled="!emontxConnected">{{ t.buttons.reloadConfig }}</button>
+                    <button class="btn btn-primary" @click="generateYaml" :disabled="!configReceived" style="background: #9c27b0;">{{ t.buttons.generateYaml }}</button>
                 </div>
             </div>
         </div>
@@ -507,6 +508,19 @@
                 </div>
             </div>
         </div>
+
+        <!-- YAML Generator Modal -->
+        <div v-if="showYamlModal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+            <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); max-width: 600px; width: 90%; max-height: 80vh; display: flex; flex-direction: column;">
+                <h3 style="margin-top: 0; color: #9c27b0;">{{ t.yamlModal.title }}</h3>
+                <p style="font-size: 14px; color: #666;">{{ t.yamlModal.description }}</p>
+                <textarea readonly style="flex: 1; min-height: 300px; font-family: monospace; font-size: 12px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; background: #f5f5f5; resize: none;">{{ generatedYaml }}</textarea>
+                <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+                    <button class="btn btn-primary" @click="copyYaml" style="padding: 12px 30px; font-size: 16px; background: #9c27b0;">{{ t.yamlModal.copy }}</button>
+                    <button class="btn" @click="showYamlModal = false" style="padding: 12px 30px; font-size: 16px; background: #ccc;">{{ t.yamlModal.close }}</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -527,6 +541,9 @@
                 showZeroConfirm: false,
                 zeroCountdown: 20,
                 zeroCountdownInterval: null,
+                // YAML generator
+                showYamlModal: false,
+                generatedYaml: '',
                 // i18n
                 lang: 'en',
                 translations: {
@@ -548,7 +565,15 @@
                             save: 'Save Changes',
                             zeroEnergy: 'Zero Energy Values',
                             resetDefaults: 'Reset to Defaults',
-                            reloadConfig: 'Reload Config'
+                            reloadConfig: 'Reload Config',
+                            generateYaml: 'Generate YAML'
+                        },
+                        yamlModal: {
+                            title: 'ESPHome Sensor YAML',
+                            description: 'Copy this YAML into your ESPHome configuration to add sensors for active channels:',
+                            copy: 'Copy to Clipboard',
+                            close: 'Close',
+                            copied: 'Copied!'
                         },
                         config: {
                             waiting: 'Waiting for configuration data...',
@@ -623,7 +648,15 @@
                             save: 'Enregistrer les Modifications',
                             zeroEnergy: 'Remettre à Zéro',
                             resetDefaults: 'Réinitialiser',
-                            reloadConfig: 'Recharger Config'
+                            reloadConfig: 'Recharger Config',
+                            generateYaml: 'Générer YAML'
+                        },
+                        yamlModal: {
+                            title: 'YAML Capteurs ESPHome',
+                            description: 'Copiez ce YAML dans votre configuration ESPHome pour ajouter des capteurs pour les canaux actifs :',
+                            copy: 'Copier',
+                            close: 'Fermer',
+                            copied: 'Copié !'
                         },
                         config: {
                             waiting: 'En attente des données de configuration...',
@@ -698,7 +731,15 @@
                             save: 'Änderungen Speichern',
                             zeroEnergy: 'Energie Nullstellen',
                             resetDefaults: 'Auf Standard Zurücksetzen',
-                            reloadConfig: 'Konfig Neu Laden'
+                            reloadConfig: 'Konfig Neu Laden',
+                            generateYaml: 'YAML Generieren'
+                        },
+                        yamlModal: {
+                            title: 'ESPHome Sensor YAML',
+                            description: 'Kopieren Sie dieses YAML in Ihre ESPHome-Konfiguration, um Sensoren für aktive Kanäle hinzuzufügen:',
+                            copy: 'In Zwischenablage',
+                            close: 'Schließen',
+                            copied: 'Kopiert!'
                         },
                         config: {
                             waiting: 'Warte auf Konfigurationsdaten...',
@@ -1297,6 +1338,54 @@
                         clearInterval(this.zeroCountdownInterval);
                         this.zeroCountdownInterval = null;
                     }
+                },
+
+                // YAML Generator methods
+                generateYaml() {
+                    let yaml = 'sensor:\n';
+
+                    // Add voltage sensors (always V1, V2, V3 for 3-phase, just V1 for single phase)
+                    const numVoltages = this.device.hardware === 'emonPi3' ? 3 : 1;
+                    for (let i = 0; i < numVoltages; i++) {
+                        // For emonPi3, check if voltage channel is active
+                        if (this.device.hardware === 'emonPi3' && this.device.vchannels[i] && !this.device.vchannels[i].active) {
+                            continue;
+                        }
+                        yaml += `  - platform: emontx\n`;
+                        yaml += `    tag_name: "V${i + 1}"\n`;
+                        yaml += `    name: "Voltage${numVoltages > 1 ? ' L' + (i + 1) : ''}"\n`;
+                    }
+
+                    // Add power and energy sensors for active CT channels
+                    for (let i = 0; i < this.device.ichannels.length; i++) {
+                        const channel = this.device.ichannels[i];
+                        // Skip inactive channels (for emonPi3, check active flag; for others, assume all active)
+                        if (this.device.hardware === 'emonPi3' && channel.active === false) {
+                            continue;
+                        }
+
+                        // Power sensor
+                        yaml += `  - platform: emontx\n`;
+                        yaml += `    tag_name: "P${i + 1}"\n`;
+                        yaml += `    name: "Power ${i + 1}"\n`;
+
+                        // Energy sensor
+                        yaml += `  - platform: emontx\n`;
+                        yaml += `    tag_name: "E${i + 1}"\n`;
+                        yaml += `    name: "Energy ${i + 1}"\n`;
+                    }
+
+                    this.generatedYaml = yaml;
+                    this.showYamlModal = true;
+                },
+                copyYaml() {
+                    navigator.clipboard.writeText(this.generatedYaml).then(() => {
+                        // Show brief feedback
+                        const btn = event.target;
+                        const originalText = btn.textContent;
+                        btn.textContent = this.t.yamlModal.copied;
+                        setTimeout(() => { btn.textContent = originalText; }, 1500);
+                    });
                 },
 
                 // Terminal methods
