@@ -237,15 +237,17 @@
         .config-item.inactive {
             opacity: 0.5;
             position: relative;
+            overflow: hidden;
         }
         .config-item.inactive::after {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(to top right, transparent calc(50% - 1px), #999 calc(50% - 1px), #999 calc(50% + 1px), transparent calc(50% + 1px));
+            top: 50%;
+            left: -25%;
+            width: 150%;
+            height: 2px;
+            background: #c00;
+            transform: rotate(-25deg);
             pointer-events: none;
         }
         h4 { margin: 20px 0 10px 0; color: #333; }
