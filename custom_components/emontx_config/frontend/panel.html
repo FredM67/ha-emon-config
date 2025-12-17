@@ -236,8 +236,17 @@
         }
         .config-item.inactive {
             opacity: 0.5;
-            text-decoration: line-through;
-            text-decoration-color: #999;
+            position: relative;
+        }
+        .config-item.inactive::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top right, transparent calc(50% - 1px), #999 calc(50% - 1px), #999 calc(50% + 1px), transparent calc(50% + 1px));
+            pointer-events: none;
         }
         h4 { margin: 20px 0 10px 0; color: #333; }
     </style>
