@@ -234,6 +234,14 @@
             font-weight: 600;
             color: #333;
         }
+        .config-item.inactive {
+            opacity: 0.4;
+        }
+        .config-item.inactive label::after {
+            content: ' (off)';
+            font-size: 9px;
+            color: #999;
+        }
         h4 { margin: 20px 0 10px 0; color: #333; }
     </style>
 </head>
@@ -469,7 +477,7 @@
                         {{ t.liveData.waiting }}
                     </div>
                     <div v-else class="config-grid">
-                        <div class="config-item" v-for="(value, key) in liveData" :key="key">
+                        <div :class="['config-item', isChannelInactive(key) ? 'inactive' : '']" v-for="(value, key) in liveData" :key="key">
                             <label>{{ key }}</label>
                             <div class="value">{{ value }}</div>
                         </div>
@@ -1292,6 +1300,19 @@
                 },
                 sendQuickCmd(cmd) {
                     this.writeToStream(cmd);
+                },
+
+                isChannelInactive(key) {
+                    // Check if this key corresponds to an inactive CT channel
+                    // Keys like P1, P2, E1, E2, etc. map to ichannels[0], ichannels[1], etc.
+                    const match = key.match(/^[PE](\d+)$/);
+                    if (match) {
+                        const channelNum = parseInt(match[1]) - 1; // Convert to 0-based index
+                        if (channelNum >= 0 && channelNum < this.device.ichannels.length) {
+                            return this.device.ichannels[channelNum].active === false;
+                        }
+                    }
+                    return false;
                 },
 
                 log(message, type = '') {
