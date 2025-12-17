@@ -764,7 +764,8 @@
                     ],
                     ichannels: []
                 },
-                // WebSocket
+                // Connection
+                hass: null,
                 ws: null,
                 wsMessageId: 1,
                 deviceName: '',
@@ -778,7 +779,7 @@
             mounted() {
                 this.detectLanguage();
                 this.populateChannels(6);
-                this.connectWebSocket();
+                this.initHassConnection();
             },
             methods: {
                 detectLanguage() {
@@ -798,9 +799,34 @@
                         console.log('Could not detect HA language, using default');
                     }
                 },
-                connectWebSocket() {
-                    const wsUrl = `ws://${window.location.host}/api/websocket`;
+                initHassConnection() {
                     this.log('Connecting to Home Assistant...', 'info');
+
+                    // Try to get hass object from parent (preferred method for HA panels)
+                    try {
+                        if (window.parent && window.parent.document) {
+                            const hassObj = window.parent.document.querySelector('home-assistant');
+                            if (hassObj && hassObj.hass && hassObj.hass.connection) {
+                                this.hass = hassObj.hass;
+                                this.log('Connected via parent hass object', 'info');
+                                this.wsConnected = true;
+                                this.subscribeToEvents();
+                                this.getDeviceInfo();
+                                return;
+                            }
+                        }
+                    } catch (e) {
+                        console.log('Could not get hass from parent:', e);
+                    }
+
+                    // Fallback to WebSocket connection
+                    this.log('Falling back to WebSocket connection...', 'info');
+                    this.connectWebSocket();
+                },
+
+                connectWebSocket() {
+                    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                    const wsUrl = `${wsProtocol}//${window.location.host}/api/websocket`;
                     this.ws = new WebSocket(wsUrl);
 
                     this.ws.onopen = () => {
@@ -809,7 +835,7 @@
 
                     this.ws.onmessage = (event) => {
                         const msg = JSON.parse(event.data);
-                        this.handleMessage(msg);
+                        this.handleWsMessage(msg);
                     };
 
                     this.ws.onerror = (error) => {
@@ -824,10 +850,10 @@
                     };
                 },
 
-                handleMessage(msg) {
+                handleWsMessage(msg) {
                     switch (msg.type) {
                         case 'auth_required':
-                            this.authenticateWithHA();
+                            this.authenticateWebSocket();
                             break;
                         case 'auth_ok':
                             this.log('Authenticated with Home Assistant', 'info');
@@ -840,7 +866,6 @@
                             this.wsConnected = false;
                             break;
                         case 'result':
-                            // Only process services list from get_services call
                             if (msg.id === this.servicesRequestId && msg.success && msg.result && typeof msg.result === 'object') {
                                 this.findEmontxDevice(msg.result);
                             }
@@ -853,7 +878,7 @@
                     }
                 },
 
-                authenticateWithHA() {
+                authenticateWebSocket() {
                     let token = null;
                     try {
                         if (window.parent && window.parent.document) {
@@ -864,15 +889,6 @@
                         }
                     } catch (e) {}
 
-                    if (!token) {
-                        try {
-                            const hassTokens = localStorage.getItem('hassTokens');
-                            if (hassTokens) {
-                                token = JSON.parse(hassTokens).access_token;
-                            }
-                        } catch (e) {}
-                    }
-
                     if (token) {
                         this.ws.send(JSON.stringify({ type: 'auth', access_token: token }));
                     } else {
@@ -882,19 +898,35 @@
 
                 subscribeToEvents() {
                     // Subscribe to raw data events (includes all serial data: JSON sensor data and config responses)
-                    this.ws.send(JSON.stringify({
-                        id: this.wsMessageId++,
-                        type: 'subscribe_events',
-                        event_type: 'esphome.emontx_raw'
-                    }));
+                    if (this.hass && this.hass.connection) {
+                        // Use hass connection (preferred)
+                        this.hass.connection.subscribeEvents(
+                            (event) => this.handleEmontxData(event.data),
+                            'esphome.emontx_raw'
+                        );
+                    } else if (this.ws) {
+                        // Fallback to WebSocket
+                        this.ws.send(JSON.stringify({
+                            id: this.wsMessageId++,
+                            type: 'subscribe_events',
+                            event_type: 'esphome.emontx_raw'
+                        }));
+                    }
                 },
 
                 getDeviceInfo() {
-                    this.servicesRequestId = this.wsMessageId++;
-                    this.ws.send(JSON.stringify({
-                        id: this.servicesRequestId,
-                        type: 'get_services'
-                    }));
+                    if (this.hass && this.hass.connection) {
+                        // Use hass connection (preferred)
+                        this.hass.connection.sendMessagePromise({ type: 'get_services' })
+                            .then(result => this.findEmontxDevice(result));
+                    } else if (this.ws) {
+                        // Fallback to WebSocket
+                        this.servicesRequestId = this.wsMessageId++;
+                        this.ws.send(JSON.stringify({
+                            id: this.servicesRequestId,
+                            type: 'get_services'
+                        }));
+                    }
                 },
 
                 findEmontxDevice(services) {
@@ -1119,20 +1151,25 @@
                 },
 
                 writeToStream(cmd) {
-                    if (!this.deviceName || !this.ws) {
+                    if (!this.deviceName || (!this.hass && !this.ws)) {
                         this.log('Not connected', 'error');
                         return;
                     }
                     this.log('TX: ' + cmd, 'sent');
-                    // Add CR+LF to command (emonTx expects \r\n terminator)
-                    const cmdWithNewline = cmd + '\r\n';
-                    this.ws.send(JSON.stringify({
-                        id: this.wsMessageId++,
-                        type: 'call_service',
-                        domain: 'esphome',
-                        service: this.deviceName + '_send_command',
-                        service_data: { command: cmdWithNewline }
-                    }));
+
+                    if (this.hass && this.hass.callService) {
+                        // Use hass.callService (preferred)
+                        this.hass.callService('esphome', this.deviceName + '_send_command', { command: cmd });
+                    } else if (this.ws) {
+                        // Fallback to WebSocket
+                        this.ws.send(JSON.stringify({
+                            id: this.wsMessageId++,
+                            type: 'call_service',
+                            domain: 'esphome',
+                            service: this.deviceName + '_send_command',
+                            service_data: { command: cmd }
+                        }));
+                    }
                 },
 
                 // Configuration methods
