@@ -900,12 +900,21 @@
                     // Subscribe to raw data events (includes all serial data: JSON sensor data and config responses)
                     if (this.hass && this.hass.connection) {
                         // Use hass connection (preferred)
+                        console.log('Subscribing to esphome.emontx_raw via hass.connection');
                         this.hass.connection.subscribeEvents(
-                            (event) => this.handleEmontxData(event.data),
+                            (event) => {
+                                console.log('Received event:', event);
+                                this.handleEmontxData(event.data);
+                            },
                             'esphome.emontx_raw'
-                        );
+                        ).then(() => {
+                            console.log('Successfully subscribed to events');
+                        }).catch((err) => {
+                            console.error('Failed to subscribe:', err);
+                        });
                     } else if (this.ws) {
                         // Fallback to WebSocket
+                        console.log('Subscribing to esphome.emontx_raw via WebSocket');
                         this.ws.send(JSON.stringify({
                             id: this.wsMessageId++,
                             type: 'subscribe_events',
