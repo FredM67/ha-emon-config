@@ -57,23 +57,8 @@ uart:
   baud_rate: 115200
 
 emontx:
-  # on_data trigger captures ALL serial lines (JSON + plain text config responses)
-  on_data:
-    - then:
-        - homeassistant.event:
-            event: esphome.emontx_raw
-            data:
-              device_id: !lambda "return App.get_name();"
-              line: !lambda "return data;"
-
-  # on_json trigger for sensor data only (optional, for automations)
-  on_json:
-    - then:
-        - homeassistant.event:
-            event: esphome.emontx_json
-            data:
-              device_id: !lambda "return App.get_name();"
-              data: !lambda "return raw_json;"
+  # Enable config panel - automatically fires esphome.emontx_raw events
+  config_panel: true
 
 # Optional: Define sensors for individual values
 sensor:
