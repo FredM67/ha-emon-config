@@ -79,7 +79,23 @@ sensor:
   # ... add more sensors as needed
 ```
 
-> **Note**: When `config_panel: true` is set, the `send_command` service is automatically registered. The `custom_services: true` option is required to enable this feature. Commands sent via this service automatically have CR+LF line endings appended as required by the emonTx firmware.
+> **Note**: When `config_panel: true` is set with **ESP-IDF framework**, the `send_command` service is automatically registered. The `custom_services: true` option is required to enable this feature.
+>
+> **Arduino Framework Users**: Auto-registration is not supported. Add this to your configuration:
+> ```yaml
+> api:
+>   encryption:
+>     key: !secret api_encryption_key
+>   services:
+>     - service: send_command
+>       variables:
+>         command: string
+>       then:
+>         - lambda: 'id(emontx_id).send_command(command);'
+> ```
+> Replace `emontx_id` with your actual emontx component ID.
+>
+> Commands sent via this service automatically have CR+LF line endings appended as required by the emonTx firmware.
 
 ### Home Assistant Setup
 
