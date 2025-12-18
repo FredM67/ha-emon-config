@@ -910,6 +910,7 @@
                 switchDevice() {
                     // Save selection and reset state
                     localStorage.setItem('emontx_selected_device', this.selectedDevice);
+                    this.deviceName = this.selectedDevice; // Update immediately for commands
                     this.configReceived = false;
                     this.emontxConnected = false;
                     this.liveData = {};
@@ -1077,6 +1078,13 @@
                 handleEmontxData(data) {
                     // Handle data events from on_data trigger
                     // Expected format: { device_id: "...", line: "..." }
+
+                    // Filter by selected device
+                    if (data.device_id && data.device_id !== this.selectedDevice) {
+                        // Event is from a different device, ignore it
+                        return;
+                    }
+
                     let line = '';
                     if (data.line) {
                         line = data.line;
