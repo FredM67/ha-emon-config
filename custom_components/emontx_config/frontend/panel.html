@@ -269,6 +269,12 @@
                 <div :class="['status-dot', emontxConnected ? 'connected' : 'disconnected']"></div>
                 <span>{{ t.deviceStatus }}: <strong>{{ emontxConnected ? t.connected : t.unknown }}</strong></span>
             </div>
+            <div class="status-item" style="margin-left: auto;">
+                <label style="margin-right: 8px;">{{ t.deviceSelector }}:</label>
+                <select v-model="selectedDevice" @change="switchDevice" style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 4px; background: white;">
+                    <option v-for="device in availableDevices" :key="device" :value="device">{{ device }}</option>
+                </select>
+            </div>
         </div>
 
         <div class="tabs">
@@ -537,6 +543,9 @@
                 cmdInput: '',
                 liveData: {},
                 ctsAvailable: [200, 100, 50, 25, 20],
+                // Device selection
+                selectedDevice: localStorage.getItem('emontx_selected_device') || 'emontx6',
+                availableDevices: [],
                 // Zero energy confirmation
                 showZeroConfirm: false,
                 zeroCountdown: 20,
@@ -552,6 +561,7 @@
                         subtitle: 'Configure your OpenEnergyMonitor emonPi/Tx device via ESP32 serial bridge',
                         haStatus: 'Home Assistant',
                         deviceStatus: 'emonPi/Tx',
+                        deviceSelector: 'Device',
                         connected: 'Connected',
                         disconnected: 'Disconnected',
                         unknown: 'Unknown',
@@ -635,6 +645,7 @@
                         subtitle: 'Configurez votre appareil OpenEnergyMonitor emonPi/Tx via le pont série ESP32',
                         haStatus: 'Home Assistant',
                         deviceStatus: 'emonPi/Tx',
+                        deviceSelector: 'Appareil',
                         connected: 'Connecté',
                         disconnected: 'Déconnecté',
                         unknown: 'Inconnu',
@@ -718,6 +729,7 @@
                         subtitle: 'Konfigurieren Sie Ihr OpenEnergyMonitor emonPi/Tx Gerät über die ESP32 Serielle Brücke',
                         haStatus: 'Home Assistant',
                         deviceStatus: 'emonPi/Tx',
+                        deviceSelector: 'Gerät',
                         connected: 'Verbunden',
                         disconnected: 'Getrennt',
                         unknown: 'Unbekannt',
@@ -836,6 +848,7 @@
             mounted() {
                 this.detectLanguage();
                 this.populateChannels(6);
+                this.discoverDevices();
                 this.initHassConnection();
             },
             methods: {
@@ -856,6 +869,56 @@
                         console.log('Could not detect HA language, using default');
                     }
                 },
+
+                async discoverDevices() {
+                    // Discover available ESPHome devices with send_command service
+                    try {
+                        if (!this.hass) {
+                            // Wait for hass connection
+                            setTimeout(() => this.discoverDevices(), 500);
+                            return;
+                        }
+
+                        const services = await this.hass.callWS({ type: 'get_services' });
+                        const esphomeServices = services.esphome || {};
+
+                        const devices = [];
+                        for (const serviceName in esphomeServices) {
+                            if (serviceName.endsWith('_send_command')) {
+                                const deviceName = serviceName.replace('_send_command', '');
+                                devices.push(deviceName);
+                            }
+                        }
+
+                        if (devices.length > 0) {
+                            this.availableDevices = devices;
+
+                            // If selected device is not in the list, select the first one
+                            if (!devices.includes(this.selectedDevice)) {
+                                this.selectedDevice = devices[0];
+                                localStorage.setItem('emontx_selected_device', this.selectedDevice);
+                            }
+                        } else {
+                            this.availableDevices = [this.selectedDevice];
+                        }
+                    } catch (e) {
+                        console.error('Error discovering devices:', e);
+                        this.availableDevices = [this.selectedDevice];
+                    }
+                },
+
+                switchDevice() {
+                    // Save selection and reset state
+                    localStorage.setItem('emontx_selected_device', this.selectedDevice);
+                    this.configReceived = false;
+                    this.emontxConnected = false;
+                    this.liveData = {};
+                    this.log(`Switched to device: ${this.selectedDevice}`, 'info');
+
+                    // Reload device info
+                    this.getDeviceInfo();
+                },
+
                 initHassConnection() {
                     this.log('Connecting to Home Assistant...', 'info');
 
@@ -997,19 +1060,18 @@
 
                 findEmontxDevice(services) {
                     if (services.esphome) {
-                        for (const serviceName of Object.keys(services.esphome)) {
-                            if (serviceName.endsWith('_send_command')) {
-                                this.deviceName = serviceName.replace('_send_command', '');
-                                this.log(`Found device: ${this.deviceName}`, 'info');
-                                this.emontxConnected = true;
-                                this.emontxStatus = 'Connected';
-                                // Auto-load config
-                                setTimeout(() => this.loadConfig(), 1000);
-                                return;
-                            }
+                        const serviceName = `${this.selectedDevice}_send_command`;
+                        if (services.esphome[serviceName]) {
+                            this.deviceName = this.selectedDevice;
+                            this.log(`Found device: ${this.deviceName}`, 'info');
+                            this.emontxConnected = true;
+                            this.emontxStatus = 'Connected';
+                            // Auto-load config
+                            setTimeout(() => this.loadConfig(), 1000);
+                            return;
                         }
                     }
-                    this.log('No emonTx device found', 'error');
+                    this.log(`Device ${this.selectedDevice} not found`, 'error');
                 },
 
                 handleEmontxData(data) {
