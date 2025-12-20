@@ -16,7 +16,7 @@ from homeassistant.core import HomeAssistant, ServiceCall, callback
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.typing import ConfigType
 
-from .const import DOMAIN, EVENT_EMONTX_DATA, CONF_ESPHOME_DEVICE
+from .const import DOMAIN, EVENT_EMONTX_RAW, CONF_ESPHOME_DEVICE
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -53,7 +53,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Listen for ESPHome events
     entry.async_on_unload(
-        hass.bus.async_listen(EVENT_EMONTX_DATA, handle_emontx_data)
+        hass.bus.async_listen(EVENT_EMONTX_RAW, handle_emontx_data)
     )
 
     # Register service to send commands

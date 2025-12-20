@@ -101,7 +101,7 @@
                             break;
 
                         case 'event':
-                            if (msg.event && msg.event.event_type === 'esphome.emontx_data') {
+                            if (msg.event && msg.event.event_type === 'esphome.emontx_raw') {
                                 handleEmontxData(msg.event.data);
                             }
                             break;
@@ -160,7 +160,7 @@
             ws.send(JSON.stringify({
                 id: wsMessageId++,
                 type: 'subscribe_events',
-                event_type: 'esphome.emontx_data'
+                event_type: 'esphome.emontx_raw'
             }));
         }
 
