@@ -43,10 +43,7 @@ Your ESP32 needs to be configured with the emonTx component from the FredM67 for
 
 ```yaml
 external_components:
-  - source:
-      type: git
-      url: https://github.com/FredM67/esphome
-      ref: emontx-web-config
+  - source: github://pr#9027
     components: [emontx]
     refresh: 0s
 
