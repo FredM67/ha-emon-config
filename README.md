@@ -1,6 +1,6 @@
 # emonPi/Tx Configuration for Home Assistant
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=FredM67&repository=ha-emon-config&category=integration)
 
 A Home Assistant integration that provides a web-based configuration interface for OpenEnergyMonitor emonPi/Tx devices connected via an ESP32 serial bridge running ESPHome.
 
@@ -64,16 +64,6 @@ emontx:
   # Enable config panel - automatically registers send_command service
   # and fires esphome.emontx_raw events for all serial data
   config_panel: true
-
-# Optional: Define sensors for individual values
-sensor:
-  - platform: emontx
-    tag_name: "V1"
-    name: "Voltage L1"
-  - platform: emontx
-    tag_name: "P1"
-    name: "Power 1"
-  # ... add more sensors as needed
 ```
 
 > **Note**: When `config_panel: true` is set, the `send_command` service is automatically registered. The `custom_services: true` option is required to enable this feature. Commands sent via this service automatically have CR+LF line endings appended as required by the emonTx firmware.
