@@ -141,17 +141,17 @@ Refer to the [emonTx documentation](https://docs.openenergymonitor.org/) for a c
 - Check that the `send_command` service is exposed in your ESPHome configuration
 - Verify the API encryption key matches in ESPHome and Home Assistant
 
-### No data received / Config not loading
+### No data received
 
 - Check the UART connections between ESP32 and emonTx
 - Verify the baud rate is correct (115200 by default)
-- **Important**: Make sure you have the `on_line` trigger configured in ESPHome (not just `on_json`)
+- **Important**: Make sure you have `config_panel: true` set in your ESPHome emontx configuration
 - Look at the ESPHome logs for any errors
 
-### Commands not working
+### Config not loading / Commands not working
 
 - Verify the TX pin is connected and configured in ESPHome
-- Make sure you're using `emontx.send_command` action (CR+LF is added automatically)
+- Check that `custom_services: true` is set in your `api:` configuration
 - Monitor the serial output with an FTDI adapter to verify commands are being sent
 
 ### Phase values showing incorrect numbers
