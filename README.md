@@ -128,8 +128,8 @@ Refer to the [emonTx documentation](https://docs.openenergymonitor.org/) for a c
 ### No device found
 
 - Ensure the ESPHome device is online and connected to Home Assistant
-- Check that the `send_command` service is exposed in your ESPHome configuration
 - Verify the API encryption key matches in ESPHome and Home Assistant
+- Check that `config_panel: true` is set in your emontx configuration (this registers the required service)
 
 ### No data received
 
