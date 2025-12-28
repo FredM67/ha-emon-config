@@ -491,7 +491,7 @@
                                 <input type="checkbox" v-model="terminalAutoscroll" style="width: 16px; height: 16px;" />
                                 {{ t.terminal.autoscroll }}
                             </label>
-                            <button class="btn btn-sm btn-info" @click="copyTerminal">{{ t.terminal.copy }}</button>
+                            <button class="btn btn-sm btn-info" @click="copyTerminal($event)">{{ t.terminal.copy }}</button>
                             <button class="btn btn-sm btn-info" @click="downloadTerminal">{{ t.terminal.download }}</button>
                             <button class="btn btn-sm btn-danger" @click="clearTerminal">{{ t.terminal.clear }}</button>
                         </div>
@@ -1513,17 +1513,42 @@
                 sendQuickCmd(cmd) {
                     this.writeToStream(cmd);
                 },
-                copyTerminal() {
+                copyTerminal(event) {
                     const terminal = document.getElementById('terminal');
                     if (terminal) {
                         const text = terminal.innerText;
-                        navigator.clipboard.writeText(text).then(() => {
-                            const btn = event.target;
-                            const originalText = btn.textContent;
-                            btn.textContent = this.t.terminal.copied;
-                            setTimeout(() => { btn.textContent = originalText; }, 1500);
-                        });
+                        const btn = event.target;
+                        const originalText = btn.textContent;
+
+                        // Try modern clipboard API first, fallback to execCommand
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            navigator.clipboard.writeText(text).then(() => {
+                                btn.textContent = this.t.terminal.copied;
+                                setTimeout(() => { btn.textContent = originalText; }, 1500);
+                            }).catch(() => {
+                                this.fallbackCopy(text, btn, originalText);
+                            });
+                        } else {
+                            this.fallbackCopy(text, btn, originalText);
+                        }
                     }
+                },
+                fallbackCopy(text, btn, originalText) {
+                    // Fallback for non-HTTPS or older browsers
+                    const textarea = document.createElement('textarea');
+                    textarea.value = text;
+                    textarea.style.position = 'fixed';
+                    textarea.style.opacity = '0';
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    try {
+                        document.execCommand('copy');
+                        btn.textContent = this.t.terminal.copied;
+                        setTimeout(() => { btn.textContent = originalText; }, 1500);
+                    } catch (e) {
+                        console.error('Copy failed:', e);
+                    }
+                    document.body.removeChild(textarea);
                 },
                 downloadTerminal() {
                     const terminal = document.getElementById('terminal');
