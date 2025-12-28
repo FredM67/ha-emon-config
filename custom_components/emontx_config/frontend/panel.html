@@ -67,14 +67,31 @@
             font-family: 'Consolas', 'Monaco', monospace;
             padding: 15px;
             border-radius: 4px;
-            height: 200px;
+            height: 400px;
+            min-height: 150px;
+            max-height: 80vh;
             overflow-y: auto;
             font-size: 13px;
             line-height: 1.4;
+            resize: vertical;
         }
         .terminal .error { color: #ff6b6b; }
         .terminal .info { color: #4ecdc4; }
         .terminal .sent { color: #ffd93d; }
+        .terminal-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .terminal-toolbar .btn-group {
+            display: flex;
+            gap: 8px;
+        }
+        .terminal-toolbar .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
         .command-input {
             display: flex;
             gap: 10px;
@@ -468,6 +485,17 @@
             <div class="card">
                 <div class="card-header">{{ t.terminal.title }}</div>
                 <div class="card-body">
+                    <div class="terminal-toolbar">
+                        <div class="btn-group">
+                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px;">
+                                <input type="checkbox" v-model="terminalAutoscroll" style="width: 16px; height: 16px;" />
+                                {{ t.terminal.autoscroll }}
+                            </label>
+                            <button class="btn btn-sm btn-info" @click="copyTerminal">{{ t.terminal.copy }}</button>
+                            <button class="btn btn-sm btn-info" @click="downloadTerminal">{{ t.terminal.download }}</button>
+                            <button class="btn btn-sm btn-danger" @click="clearTerminal">{{ t.terminal.clear }}</button>
+                        </div>
+                    </div>
                     <div id="terminal" class="terminal"></div>
                     <div class="command-input">
                         <input type="text" v-model="cmdInput" @keypress.enter="sendCmd" :placeholder="t.terminal.placeholder" />
@@ -553,6 +581,8 @@
                 // YAML generator
                 showYamlModal: false,
                 generatedYaml: '',
+                // Terminal
+                terminalAutoscroll: true,
                 // i18n
                 lang: 'en',
                 translations: {
@@ -626,7 +656,12 @@
                         terminal: {
                             title: 'Serial Monitor',
                             placeholder: 'Enter command...',
-                            send: 'Send'
+                            send: 'Send',
+                            autoscroll: 'Autoscroll',
+                            copy: 'Copy',
+                            download: 'Download',
+                            clear: 'Clear',
+                            copied: 'Copied!'
                         },
                         liveData: {
                             title: 'Live Sensor Data',
@@ -710,7 +745,12 @@
                         terminal: {
                             title: 'Moniteur Série',
                             placeholder: 'Entrez une commande...',
-                            send: 'Envoyer'
+                            send: 'Envoyer',
+                            autoscroll: 'Défilement auto',
+                            copy: 'Copier',
+                            download: 'Télécharger',
+                            clear: 'Effacer',
+                            copied: 'Copié !'
                         },
                         liveData: {
                             title: 'Données en Temps Réel',
@@ -794,7 +834,12 @@
                         terminal: {
                             title: 'Serieller Monitor',
                             placeholder: 'Befehl eingeben...',
-                            send: 'Senden'
+                            send: 'Senden',
+                            autoscroll: 'Autoscroll',
+                            copy: 'Kopieren',
+                            download: 'Herunterladen',
+                            clear: 'Löschen',
+                            copied: 'Kopiert!'
                         },
                         liveData: {
                             title: 'Live Sensordaten',
@@ -1468,6 +1513,39 @@
                 sendQuickCmd(cmd) {
                     this.writeToStream(cmd);
                 },
+                copyTerminal() {
+                    const terminal = document.getElementById('terminal');
+                    if (terminal) {
+                        const text = terminal.innerText;
+                        navigator.clipboard.writeText(text).then(() => {
+                            const btn = event.target;
+                            const originalText = btn.textContent;
+                            btn.textContent = this.t.terminal.copied;
+                            setTimeout(() => { btn.textContent = originalText; }, 1500);
+                        });
+                    }
+                },
+                downloadTerminal() {
+                    const terminal = document.getElementById('terminal');
+                    if (terminal) {
+                        const text = terminal.innerText;
+                        const blob = new Blob([text], { type: 'text/plain' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `emontx-serial-${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.log`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                    }
+                },
+                clearTerminal() {
+                    const terminal = document.getElementById('terminal');
+                    if (terminal) {
+                        terminal.innerHTML = '';
+                    }
+                },
 
                 isChannelInactive(key) {
                     // Check if this key corresponds to an inactive CT channel
@@ -1490,7 +1568,10 @@
                         line.className = type;
                         line.textContent = `[${time}] ${message}`;
                         terminal.appendChild(line);
-                        terminal.scrollTop = terminal.scrollHeight;
+                        // Only auto-scroll if enabled
+                        if (this.terminalAutoscroll) {
+                            terminal.scrollTop = terminal.scrollHeight;
+                        }
                     }
                 }
             }
