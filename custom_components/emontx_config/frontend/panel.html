@@ -471,6 +471,12 @@
 
         <!-- Serial Terminal Tab -->
         <div v-show="activeTab === 'terminal'" class="tab-content">
+            <!-- Unsaved Changes Warning Banner -->
+            <div v-if="hasUnsavedChanges" class="alert alert-danger" style="display: flex; align-items: center; justify-content: space-between;">
+                <span><strong>{{ t.unsavedChanges.title }}</strong> {{ t.unsavedChanges.message }}</span>
+                <button class="btn btn-warning" @click="saveConfig" style="margin-left: 15px;">{{ t.buttons.save }}</button>
+            </div>
+
             <div class="card">
                 <div class="card-header">{{ t.terminal.title }}</div>
                 <div class="card-body">
@@ -491,6 +497,12 @@
 
         <!-- Live Data Tab -->
         <div v-show="activeTab === 'data'" class="tab-content">
+            <!-- Unsaved Changes Warning Banner -->
+            <div v-if="hasUnsavedChanges" class="alert alert-danger" style="display: flex; align-items: center; justify-content: space-between;">
+                <span><strong>{{ t.unsavedChanges.title }}</strong> {{ t.unsavedChanges.message }}</span>
+                <button class="btn btn-warning" @click="saveConfig" style="margin-left: 15px;">{{ t.buttons.save }}</button>
+            </div>
+
             <div class="card">
                 <div class="card-header">{{ t.liveData.title }}</div>
                 <div class="card-body">
