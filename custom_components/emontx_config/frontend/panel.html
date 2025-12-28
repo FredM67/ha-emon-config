@@ -285,6 +285,12 @@
 
         <!-- Device Configuration Tab -->
         <div v-show="activeTab === 'config'" class="tab-content active">
+            <!-- Unsaved Changes Warning Banner -->
+            <div v-if="hasUnsavedChanges" class="alert alert-danger" style="display: flex; align-items: center; justify-content: space-between;">
+                <span><strong>{{ t.unsavedChanges.title }}</strong> {{ t.unsavedChanges.message }}</span>
+                <button class="btn btn-warning" @click="saveConfig" style="margin-left: 15px;">{{ t.buttons.save }}</button>
+            </div>
+
             <div v-if="!configReceived" class="alert alert-info">
                 {{ t.config.waiting }} {{ t.config.clickLoad }}
                 <button class="btn btn-primary" style="margin-left: 15px;" @click="loadConfig" :disabled="!emontxConnected">{{ t.buttons.loadConfig }}</button>
@@ -553,6 +559,8 @@
                 // YAML generator
                 showYamlModal: false,
                 generatedYaml: '',
+                // Unsaved changes warning
+                hasUnsavedChanges: false,
                 // i18n
                 lang: 'en',
                 translations: {
@@ -638,6 +646,10 @@
                             warning: 'This action cannot be undone.',
                             confirm: 'Yes, Zero Counters',
                             cancel: 'Cancel'
+                        },
+                        unsavedChanges: {
+                            title: 'Unsaved Changes!',
+                            message: 'There are unsaved changes on the device. Use "Save Changes" to save them.'
                         }
                     },
                     fr: {
@@ -722,6 +734,10 @@
                             warning: 'Cette action est irréversible.',
                             confirm: 'Oui, Remettre à Zéro',
                             cancel: 'Annuler'
+                        },
+                        unsavedChanges: {
+                            title: 'Modifications non enregistrées !',
+                            message: 'Il y a des modifications non enregistrées sur l\'appareil. Utilisez "Enregistrer" pour les sauvegarder.'
                         }
                     },
                     de: {
@@ -806,6 +822,10 @@
                             warning: 'Diese Aktion kann nicht rückgängig gemacht werden.',
                             confirm: 'Ja, Nullstellen',
                             cancel: 'Abbrechen'
+                        },
+                        unsavedChanges: {
+                            title: 'Ungespeicherte Änderungen!',
+                            message: 'Es gibt ungespeicherte Änderungen auf dem Gerät. Verwenden Sie "Speichern" um sie zu sichern.'
                         }
                     }
                 },
@@ -914,6 +934,7 @@
                     this.configReceived = false;
                     this.emontxConnected = false;
                     this.liveData = {};
+                    this.hasUnsavedChanges = false;
                     this.log(`Switched to device: ${this.selectedDevice}`, 'info');
 
                     // Reload device info
@@ -1097,6 +1118,11 @@
 
                     // Log the received line
                     this.log('RX: ' + line);
+
+                    // Check for unsaved changes message from device
+                    if (line.includes('unsaved changes') || line.includes('Unsaved changes')) {
+                        this.hasUnsavedChanges = true;
+                    }
 
                     // Parse sensor data - works for both JSON and key:value formats
                     // Sensor data always starts with MSG key
@@ -1370,6 +1396,7 @@
                 saveConfig() {
                     this.writeToStream('s');
                     this.changes = false;
+                    this.hasUnsavedChanges = false;
                     this.log('Configuration saved!', 'info');
                 },
                 resetDefaults() {
