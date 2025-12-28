@@ -1341,12 +1341,14 @@
                 setVcal() {
                     this.writeToStream('k0 ' + parseFloat(this.device.vcal).toFixed(3) + ' 0');
                     this.changes = true;
+                    this.hasUnsavedChanges = true;
                 },
                 setVchannel(i) {
                     const active = this.device.vchannels[i].active ? 1 : 0;
                     const vcal = parseFloat(this.device.vchannels[i].vcal).toFixed(3);
                     this.writeToStream('k' + (i + 1) + ' ' + active + ' ' + vcal);
                     this.changes = true;
+                    this.hasUnsavedChanges = true;
                 },
                 setIcal(i) {
                     console.log('setIcal called for channel', i, 'ical=', this.device.ichannels[i].ical, 'ilead=', this.device.ichannels[i].ilead);
@@ -1360,38 +1362,47 @@
                         this.writeToStream('k' + (i + 1) + ' ' + ical + ' ' + ilead);
                     }
                     this.changes = true;
+                    this.hasUnsavedChanges = true;
                 },
                 setRadio() {
                     this.writeToStream('w' + (this.device.RF ? 1 : 0));
                     this.changes = true;
+                    this.hasUnsavedChanges = true;
                 },
                 setRfNode() {
                     this.writeToStream('n' + Math.round(this.device.rfNode));
                     this.changes = true;
+                    this.hasUnsavedChanges = true;
                 },
                 setRfGroup() {
                     this.writeToStream('g' + Math.round(this.device.rfGroup));
                     this.changes = true;
+                    this.hasUnsavedChanges = true;
                 },
                 setRfBand() {
                     this.writeToStream('b' + this.device.rfBand[0]);
                     this.changes = true;
+                    this.hasUnsavedChanges = true;
                 },
                 setPulse() {
                     this.writeToStream('m' + (this.device.pulse ? '1 ' + this.device.pulsePeriod : '0'));
                     this.changes = true;
+                    this.hasUnsavedChanges = true;
                 },
                 setPulsePeriod() {
                     this.writeToStream('m1 ' + Math.round(this.device.pulsePeriod));
                     this.changes = true;
+                    this.hasUnsavedChanges = true;
                 },
                 setDatalog() {
                     this.writeToStream('d' + parseFloat(this.device.datalog));
                     this.changes = true;
+                    this.hasUnsavedChanges = true;
                 },
                 setJson() {
                     this.writeToStream('j' + this.device.json);
                     this.changes = true;
+                    this.hasUnsavedChanges = true;
                 },
                 saveConfig() {
                     this.writeToStream('s');
@@ -1403,6 +1414,7 @@
                     if (confirm('Reset all settings to default values?')) {
                         this.writeToStream('r');
                         this.changes = true;
+                        this.hasUnsavedChanges = true;
                         setTimeout(() => this.loadConfig(), 1000);
                     }
                 },
