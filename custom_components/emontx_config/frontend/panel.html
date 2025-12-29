@@ -1189,21 +1189,21 @@
                     this.writeToStream('l');
                 },
                 setVcal() {
-                    this.writeToStream('k0 ' + parseFloat(this.device.vcal).toFixed(3) + ' 0');
+                    this.writeToStream('k0 ' + parseFloat(this.device.vcal).toFixed(2) + ' 0');
                     this.changes = true;
                     this.hasUnsavedChanges = true;
                 },
                 setVchannel(i) {
                     const active = this.device.vchannels[i].active ? 1 : 0;
-                    const vcal = parseFloat(this.device.vchannels[i].vcal).toFixed(3);
+                    const vcal = parseFloat(this.device.vchannels[i].vcal).toFixed(2);
                     this.writeToStream('k' + (i + 1) + ' ' + active + ' ' + vcal);
                     this.changes = true;
                     this.hasUnsavedChanges = true;
                 },
                 setIcal(i) {
                     console.log('setIcal called for channel', i, 'ical=', this.device.ichannels[i].ical, 'ilead=', this.device.ichannels[i].ilead);
-                    const ical = parseFloat(this.device.ichannels[i].ical).toFixed(3);
-                    const ilead = parseFloat(this.device.ichannels[i].ilead || 0).toFixed(3);
+                    const ical = parseFloat(this.device.ichannels[i].ical).toFixed(2);
+                    const ilead = parseFloat(this.device.ichannels[i].ilead || 0).toFixed(2);
                     console.log('Sending: ical=', ical, 'ilead=', ilead);
                     if (this.device.hardware === 'emonPi3') {
                         const active = this.device.ichannels[i].active ? 1 : 0;
