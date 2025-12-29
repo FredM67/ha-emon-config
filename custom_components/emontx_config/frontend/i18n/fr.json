@@ -1,0 +1,93 @@
+{
+    "title": "Configuration emonPi/Tx",
+    "subtitle": "Configurez votre appareil OpenEnergyMonitor emonPi/Tx via le pont série ESP32",
+    "haStatus": "Home Assistant",
+    "deviceStatus": "emonPi/Tx",
+    "deviceSelector": "Appareil",
+    "connected": "Connecté",
+    "disconnected": "Déconnecté",
+    "unknown": "Inconnu",
+    "tabs": {
+        "config": "Configuration",
+        "terminal": "Terminal Série",
+        "liveData": "Données en Direct"
+    },
+    "buttons": {
+        "loadConfig": "Charger Config",
+        "save": "Enregistrer les Modifications",
+        "zeroEnergy": "Remettre à Zéro",
+        "resetDefaults": "Réinitialiser",
+        "reloadConfig": "Recharger Config",
+        "generateYaml": "Générer YAML"
+    },
+    "yamlModal": {
+        "title": "YAML Capteurs ESPHome",
+        "description": "Copiez ce YAML dans votre configuration ESPHome pour ajouter des capteurs pour les canaux actifs :",
+        "copy": "Copier",
+        "close": "Fermer",
+        "copied": "Copié !"
+    },
+    "config": {
+        "waiting": "En attente des données de configuration...",
+        "clickLoad": "Cliquez sur \"Charger Config\" pour lire la configuration actuelle.",
+        "firmwareUpdateRequired": "Mise à jour du firmware requise :",
+        "firmwareUpdateMessage": "Il semble que vous utilisez une ancienne version du firmware. Veuillez mettre à jour le firmware de l'appareil pour utiliser cet outil.",
+        "deviceInfo": "Informations sur l'Appareil",
+        "hardware": "Matériel",
+        "hardwareRev": "Révision",
+        "version": "Version",
+        "voltageLabel": "Tension",
+        "library": "Bibliothèque",
+        "voltageCalibration": "Calibration de Tension",
+        "calibration": "Calibration",
+        "ctChannels": "Canaux CT",
+        "channel": "Canal",
+        "ctType": "Type CT",
+        "phase": "Phase",
+        "vChan1": "V Canal 1",
+        "vChan2": "V Canal 2",
+        "power": "Puissance",
+        "energy": "Énergie",
+        "voltageChannels": "Canaux de Tension",
+        "active": "Actif",
+        "vCal": "Cal V",
+        "radioSettings": "Paramètres Radio",
+        "radioEnabled": "Radio Activée",
+        "nodeId": "ID Nœud",
+        "group": "Groupe",
+        "frequency": "Fréquence",
+        "format": "Format",
+        "otherSettings": "Autres Paramètres",
+        "pulseInput": "Entrée Impulsion",
+        "pulsePeriod": "Période Impulsion",
+        "datalogInterval": "Intervalle Datalog",
+        "serialFormat": "Format Série",
+        "keyValuePairs": "Paires clé:valeur",
+        "fullJson": "JSON Complet"
+    },
+    "terminal": {
+        "title": "Moniteur Série",
+        "placeholder": "Entrez une commande...",
+        "send": "Envoyer",
+        "autoscroll": "Défilement auto",
+        "copy": "Copier",
+        "download": "Télécharger",
+        "clear": "Effacer",
+        "copied": "Copié !"
+    },
+    "liveData": {
+        "title": "Données en Temps Réel",
+        "waiting": "En attente des données de l'emonPi/Tx..."
+    },
+    "zeroConfirm": {
+        "title": "Confirmer la Remise à Zéro",
+        "message": "Êtes-vous sûr de vouloir remettre à zéro tous les compteurs d'énergie ?",
+        "warning": "Cette action est irréversible.",
+        "confirm": "Oui, Remettre à Zéro",
+        "cancel": "Annuler"
+    },
+    "unsavedChanges": {
+        "title": "Modifications non enregistrées !",
+        "message": "Il y a des modifications non enregistrées sur l'appareil. Utilisez \"Enregistrer\" pour les sauvegarder."
+    }
+}
