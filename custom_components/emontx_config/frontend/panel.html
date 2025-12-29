@@ -695,7 +695,7 @@
                             const hassObj = window.parent.document.querySelector('home-assistant');
                             if (hassObj && hassObj.hass && hassObj.hass.language) {
                                 const haLang = hassObj.hass.language.split('-')[0]; // Get 'fr' from 'fr-FR'
-                                if (['en', 'fr', 'de'].includes(haLang)) {
+                                if (['en', 'fr', 'de', 'it'].includes(haLang)) {
                                     detectedLang = haLang;
                                     console.log('Detected language:', haLang);
                                 }
