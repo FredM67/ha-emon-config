@@ -280,11 +280,11 @@
         <div class="status-bar">
             <div class="status-item">
                 <div :class="['status-dot', wsConnected ? 'connected' : 'disconnected']"></div>
-                <span>{{ t.haStatus }}: <strong>{{ wsConnected ? t.connected : t.disconnected }}</strong></span>
+                <span>Home Assistant: <strong>{{ wsConnected ? t.connected : t.disconnected }}</strong></span>
             </div>
             <div class="status-item">
                 <div :class="['status-dot', emontxConnected ? 'connected' : 'disconnected']"></div>
-                <span>{{ t.deviceStatus }}: <strong>{{ emontxConnected ? t.connected : t.unknown }}</strong></span>
+                <span>emonPi/Tx: <strong>{{ emontxConnected ? t.connected : t.unknown }}</strong></span>
             </div>
             <div class="status-item" style="margin-left: auto;">
                 <label style="margin-right: 8px;">{{ t.deviceSelector }}:</label>

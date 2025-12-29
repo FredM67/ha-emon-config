@@ -1,8 +1,6 @@
 {
     "title": "Configuration emonPi/Tx",
     "subtitle": "Configurez votre appareil OpenEnergyMonitor emonPi/Tx via le pont série ESP32",
-    "haStatus": "Home Assistant",
-    "deviceStatus": "emonPi/Tx",
     "deviceSelector": "Appareil",
     "connected": "Connecté",
     "disconnected": "Déconnecté",
