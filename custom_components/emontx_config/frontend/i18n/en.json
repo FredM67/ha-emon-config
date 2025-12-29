@@ -1,0 +1,99 @@
+{
+    "title": "emonPi/Tx Configuration",
+    "subtitle": "Configure your OpenEnergyMonitor emonPi/Tx device via ESP32 serial bridge",
+    "deviceSelector": "Device",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "unknown": "Unknown",
+    "tabs": {
+        "config": "Device Config",
+        "terminal": "Serial Terminal",
+        "liveData": "Live Data"
+    },
+    "buttons": {
+        "loadConfig": "Load Config",
+        "save": "Save Changes",
+        "zeroEnergy": "Zero Energy Values",
+        "resetDefaults": "Reset to Defaults",
+        "reloadConfig": "Reload Config",
+        "generateYaml": "Generate YAML"
+    },
+    "yamlModal": {
+        "title": "ESPHome Sensor YAML",
+        "description": "Copy this YAML into your ESPHome configuration to add sensors for active channels:",
+        "copy": "Copy to Clipboard",
+        "close": "Close",
+        "copied": "Copied!"
+    },
+    "config": {
+        "waiting": "Waiting for configuration data...",
+        "clickLoad": "Click \"Load Config\" to read the current device configuration.",
+        "firmwareUpdateRequired": "Firmware update required:",
+        "firmwareUpdateMessage": "Looks like you are running an older firmware version. Please upgrade the device firmware to use this tool.",
+        "deviceInfo": "Device Information",
+        "hardware": "Hardware",
+        "hardwareRev": "Revision",
+        "version": "Version",
+        "voltageLabel": "Voltage",
+        "library": "Library",
+        "voltageCalibration": "Voltage Calibration",
+        "calibration": "Calibration",
+        "ctChannels": "CT Channels",
+        "channel": "Channel",
+        "ctType": "CT Type",
+        "phase": "Phase",
+        "vChan1": "V Chan 1",
+        "vChan2": "V Chan 2",
+        "power": "Power",
+        "energy": "Energy",
+        "voltageChannels": "Voltage Channels",
+        "active": "Active",
+        "vCal": "V Cal",
+        "radioSettings": "Radio Settings",
+        "radioEnabled": "Radio Enabled",
+        "nodeId": "Node ID",
+        "group": "Group",
+        "frequency": "Frequency",
+        "format": "Format",
+        "otherSettings": "Other Settings",
+        "pulseInput": "Pulse Input",
+        "pulsePeriod": "Pulse Period",
+        "datalogInterval": "Datalog Interval",
+        "serialFormat": "Serial Format",
+        "keyValuePairs": "Key:value pairs",
+        "fullJson": "Full JSON"
+    },
+    "terminal": {
+        "title": "Serial Monitor",
+        "placeholder": "Enter command...",
+        "send": "Send",
+        "autoscroll": "Autoscroll",
+        "copy": "Copy",
+        "download": "Download",
+        "clear": "Clear",
+        "copied": "Copied!"
+    },
+    "liveData": {
+        "title": "Live Sensor Data",
+        "waiting": "Waiting for data from emonPi/Tx...",
+        "groups": {
+            "MSG": "Message",
+            "V": "Voltage",
+            "P": "Power",
+            "E": "Energy",
+            "T": "Temperature",
+            "pulse": "Pulse"
+        }
+    },
+    "zeroConfirm": {
+        "title": "Confirm Zero Energy",
+        "message": "Are you sure you want to zero all energy counters?",
+        "warning": "This action cannot be undone.",
+        "confirm": "Yes, Zero Counters",
+        "cancel": "Cancel"
+    },
+    "unsavedChanges": {
+        "title": "Unsaved Changes!",
+        "message": "There are unsaved changes on the device. Use \"Save Changes\" to save them."
+    }
+}

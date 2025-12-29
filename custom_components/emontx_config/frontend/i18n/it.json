@@ -1,0 +1,99 @@
+{
+    "title": "Configurazione emonPi/Tx",
+    "subtitle": "Configura il tuo dispositivo OpenEnergyMonitor emonPi/Tx tramite bridge seriale ESP32",
+    "deviceSelector": "Dispositivo",
+    "connected": "Connesso",
+    "disconnected": "Disconnesso",
+    "unknown": "Sconosciuto",
+    "tabs": {
+        "config": "Configurazione",
+        "terminal": "Terminale Seriale",
+        "liveData": "Dati in Tempo Reale"
+    },
+    "buttons": {
+        "loadConfig": "Carica Config",
+        "save": "Salva Modifiche",
+        "zeroEnergy": "Azzera Energia",
+        "resetDefaults": "Ripristina Predefiniti",
+        "reloadConfig": "Ricarica Config",
+        "generateYaml": "Genera YAML"
+    },
+    "yamlModal": {
+        "title": "YAML Sensori ESPHome",
+        "description": "Copia questo YAML nella tua configurazione ESPHome per aggiungere sensori per i canali attivi:",
+        "copy": "Copia",
+        "close": "Chiudi",
+        "copied": "Copiato!"
+    },
+    "config": {
+        "waiting": "In attesa dei dati di configurazione...",
+        "clickLoad": "Clicca \"Carica Config\" per leggere la configurazione attuale.",
+        "firmwareUpdateRequired": "Aggiornamento firmware richiesto:",
+        "firmwareUpdateMessage": "Sembra che tu stia usando una versione firmware obsoleta. Aggiorna il firmware del dispositivo per usare questo strumento.",
+        "deviceInfo": "Informazioni Dispositivo",
+        "hardware": "Hardware",
+        "hardwareRev": "Revisione",
+        "version": "Versione",
+        "voltageLabel": "Tensione",
+        "library": "Libreria",
+        "voltageCalibration": "Calibrazione Tensione",
+        "calibration": "Calibrazione",
+        "ctChannels": "Canali CT",
+        "channel": "Canale",
+        "ctType": "Tipo CT",
+        "phase": "Fase",
+        "vChan1": "V Canale 1",
+        "vChan2": "V Canale 2",
+        "power": "Potenza",
+        "energy": "Energia",
+        "voltageChannels": "Canali Tensione",
+        "active": "Attivo",
+        "vCal": "Cal V",
+        "radioSettings": "Impostazioni Radio",
+        "radioEnabled": "Radio Attiva",
+        "nodeId": "ID Nodo",
+        "group": "Gruppo",
+        "frequency": "Frequenza",
+        "format": "Formato",
+        "otherSettings": "Altre Impostazioni",
+        "pulseInput": "Ingresso Impulsi",
+        "pulsePeriod": "Periodo Impulsi",
+        "datalogInterval": "Intervallo Datalog",
+        "serialFormat": "Formato Seriale",
+        "keyValuePairs": "Coppie chiave:valore",
+        "fullJson": "JSON Completo"
+    },
+    "terminal": {
+        "title": "Monitor Seriale",
+        "placeholder": "Inserisci comando...",
+        "send": "Invia",
+        "autoscroll": "Scorrimento auto",
+        "copy": "Copia",
+        "download": "Scarica",
+        "clear": "Cancella",
+        "copied": "Copiato!"
+    },
+    "liveData": {
+        "title": "Dati Sensori in Tempo Reale",
+        "waiting": "In attesa dei dati da emonPi/Tx...",
+        "groups": {
+            "MSG": "Messaggio",
+            "V": "Tensione",
+            "P": "Potenza",
+            "E": "Energia",
+            "T": "Temperatura",
+            "pulse": "Impulso"
+        }
+    },
+    "zeroConfirm": {
+        "title": "Conferma Azzeramento Energia",
+        "message": "Sei sicuro di voler azzerare tutti i contatori di energia?",
+        "warning": "Questa azione non può essere annullata.",
+        "confirm": "Sì, Azzera Contatori",
+        "cancel": "Annulla"
+    },
+    "unsavedChanges": {
+        "title": "Modifiche non salvate!",
+        "message": "Ci sono modifiche non salvate sul dispositivo. Usa \"Salva Modifiche\" per salvarle."
+    }
+}
