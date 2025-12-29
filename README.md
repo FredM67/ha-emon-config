@@ -8,10 +8,19 @@ A Home Assistant integration that provides a web-based configuration interface f
 ## Features
 
 - **Device Configuration**: Full configuration interface for CT calibration, voltage calibration, radio settings, and more
+- **Multi-device Support**: Switch between multiple emonPi/Tx devices from a dropdown selector
 - **Serial Terminal**: Send commands and receive responses from your emonTx device
+  - Autoscroll toggle, copy to clipboard, download log, clear terminal
+  - Resizable terminal window
+  - Quick command buttons for common operations
 - **Live Data Display**: View real-time power and energy readings from all channels
+  - Data grouped by type (Voltage, Power, Energy, Temperature, Pulse)
+  - Inactive channels shown with strikethrough indicator
 - **Zero Energy**: Reset energy counters with confirmation countdown (matching firmware behavior)
+- **Unsaved Changes Warning**: Banner alerts you when device has unsaved changes
+- **YAML Generator**: Generate ESPHome sensor configuration for active channels
 - **Multi-phase Support**: Full support for emonPi3 with 3-phase voltage monitoring
+- **Multi-language**: Supports English, French, German, and Italian
 
 ## Requirements
 
@@ -94,22 +103,30 @@ The main configuration interface with:
 - **Load Config**: Read current configuration from the emonPi/Tx (sends `l` command)
 - **Save**: Save configuration to EEPROM (sends `s` command)
 - **Zero Energy Values**: Reset all energy counters (with 20-second confirmation countdown)
+- **Generate YAML**: Generate ESPHome sensor configuration for active channels
+
+**Other features:**
+- **Device selector**: Switch between multiple emonPi/Tx devices (dropdown in status bar)
+- **Unsaved changes warning**: Banner appears when configuration changes haven't been saved
 
 ### Serial Terminal Tab
 
 A full serial terminal for direct communication:
 
-- **Terminal Output**: Shows all received data from the emonPi/Tx
+- **Terminal Output**: Shows all received data from the emonPi/Tx (resizable window)
 - **Command Input**: Type commands to send to the emonPi/Tx
-- **Quick Commands**: Buttons for common commands (l, v, s, d)
+- **Quick Commands**: Buttons for common commands (l, v, s, ?)
+- **Toolbar**: Autoscroll toggle, copy to clipboard, download log, clear terminal
 
 ### Live Data Tab
 
-Real-time display of all sensor values received from the emonPi/Tx, including:
-- Voltage readings (V1-V3, depending on single/three phase)
-- Power readings (P1-P12, depending on device)
-- Energy totals (E1-E12, depending on device)
-- Other sensors: temperature, pulse, message counter (MSG)
+Real-time display of all sensor values received from the emonPi/Tx, grouped by type:
+- **Voltage** (V1-V3, depending on single/three phase)
+- **Power** (P1-P12, depending on device)
+- **Energy** (E1-E12, depending on device)
+- **Other sensors**: temperature, pulse, message counter (MSG)
+
+Inactive channels are displayed with a strikethrough indicator.
 
 ## Common emonPi/Tx Commands
 
@@ -118,6 +135,7 @@ Real-time display of all sensor values received from the emonPi/Tx, including:
 | `l` | List all configuration parameters |
 | `v` | Show firmware version |
 | `s` | Save configuration to EEPROM |
+| `?` | Show help with available commands |
 | `d` | Reset to default values |
 | `z` | Zero energy counters (requires `y` confirmation) |
 | `k<n> <ical> <ilead>` | Set CT channel calibration |
