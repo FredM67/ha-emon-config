@@ -537,10 +537,15 @@
                     <div v-if="Object.keys(liveData).length === 0" class="alert alert-info">
                         {{ t.liveData.waiting }}
                     </div>
-                    <div v-else class="config-grid">
-                        <div :class="['config-item', isChannelInactive(key) ? 'inactive' : '']" v-for="(value, key) in liveData" :key="key">
-                            <label>{{ key }}</label>
-                            <div class="value">{{ value }}</div>
+                    <div v-else>
+                        <div v-for="(items, group) in groupedLiveData" :key="group" style="margin-bottom: 15px;">
+                            <h4 style="margin: 0 0 8px 0; color: #666; font-size: 14px; text-transform: uppercase;">{{ group }}</h4>
+                            <div class="config-grid">
+                                <div :class="['config-item', isChannelInactive(key) ? 'inactive' : '']" v-for="(value, key) in items" :key="key">
+                                    <label>{{ key }}</label>
+                                    <div class="value">{{ value }}</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -641,6 +646,38 @@
             computed: {
                 t() {
                     return this.translations[this.lang] || this.translations.en || {};
+                },
+                groupedLiveData() {
+                    // Group live data by prefix (V, P, E, etc.)
+                    const groups = {};
+                    const order = ['MSG', 'V', 'P', 'E', 'T', 'pulse']; // Define display order
+
+                    for (const key in this.liveData) {
+                        // Extract prefix (letters at start of key)
+                        const match = key.match(/^([A-Za-z]+)/);
+                        const prefix = match ? match[1] : 'Other';
+
+                        if (!groups[prefix]) {
+                            groups[prefix] = {};
+                        }
+                        groups[prefix][key] = this.liveData[key];
+                    }
+
+                    // Sort groups by defined order
+                    const sortedGroups = {};
+                    for (const prefix of order) {
+                        if (groups[prefix]) {
+                            sortedGroups[prefix] = groups[prefix];
+                        }
+                    }
+                    // Add any remaining groups not in order
+                    for (const prefix in groups) {
+                        if (!sortedGroups[prefix]) {
+                            sortedGroups[prefix] = groups[prefix];
+                        }
+                    }
+
+                    return sortedGroups;
                 }
             },
             mounted() {
