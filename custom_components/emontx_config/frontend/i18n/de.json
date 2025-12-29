@@ -1,8 +1,6 @@
 {
     "title": "emonPi/Tx Konfiguration",
     "subtitle": "Konfigurieren Sie Ihr OpenEnergyMonitor emonPi/Tx Gerät über die ESP32 Serielle Brücke",
-    "haStatus": "Home Assistant",
-    "deviceStatus": "emonPi/Tx",
     "deviceSelector": "Gerät",
     "connected": "Verbunden",
     "disconnected": "Getrennt",
