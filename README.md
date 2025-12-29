@@ -10,7 +10,6 @@
 [![Stars](https://img.shields.io/github/stars/FredM67/ha-emon-config)](https://github.com/FredM67/ha-emon-config/stargazers)
 [![Last Commit](https://img.shields.io/github/last-commit/FredM67/ha-emon-config)](https://github.com/FredM67/ha-emon-config/commits)
 [![Open Issues](https://img.shields.io/github/issues/FredM67/ha-emon-config)](https://github.com/FredM67/ha-emon-config/issues)
-[![Downloads](https://img.shields.io/github/downloads/FredM67/ha-emon-config/total)](https://github.com/FredM67/ha-emon-config/releases)
 
 A Home Assistant integration that provides a web-based configuration interface for OpenEnergyMonitor emonPi/Tx devices connected via an ESP32 serial bridge running ESPHome.
 
