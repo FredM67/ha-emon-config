@@ -2,14 +2,13 @@
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=FredM67&repository=ha-emon-config&category=integration)
 [![GitHub Release](https://img.shields.io/github/v/release/FredM67/ha-emon-config)](https://github.com/FredM67/ha-emon-config/releases)
-[![License](https://img.shields.io/github/license/FredM67/ha-emon-config)](https://github.com/FredM67/ha-emon-config/blob/main/LICENSE)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2023.1+-blue)](https://www.home-assistant.io/)
 [![OpenEnergyMonitor](https://img.shields.io/badge/OpenEnergyMonitor-emonPi%2FTx-green)](https://openenergymonitor.org/)
 [![Maintenance](https://img.shields.io/maintenance/yes/2025)](https://github.com/FredM67/ha-emon-config)
-[![Sponsor](https://img.shields.io/badge/Sponsor-PayPal-blue?logo=paypal)](https://www.paypal.com/donate/?business=CHGDDS5VQUJFN&no_recurring=0&item_name=Optimiser+l%C2%B4autoconsommation+%28photovolta%C3%AFque%2C+%C3%A9olien%2C+...%29&currency_code=EUR)
+[![Sponsor](https://img.shields.io/badge/Sponsor-PayPal-blue?logo=paypal)](https://www.paypal.com/donate/?business=CHGDDS5VQUJFN&no_recurring=0&item_name=Support+emonPi%2FTx+Configuration+for+Home+Assistant&currency_code=EUR)
 
-[![Last Commit](https://img.shields.io/github/last-commit/FredM67/ha-emon-config)](https://github.com/FredM67/ha-emon-config/commits)
 [![Stars](https://img.shields.io/github/stars/FredM67/ha-emon-config)](https://github.com/FredM67/ha-emon-config/stargazers)
+[![Last Commit](https://img.shields.io/github/last-commit/FredM67/ha-emon-config)](https://github.com/FredM67/ha-emon-config/commits)
 [![Open Issues](https://img.shields.io/github/issues/FredM67/ha-emon-config)](https://github.com/FredM67/ha-emon-config/issues)
 [![Downloads](https://img.shields.io/github/downloads/FredM67/ha-emon-config/total)](https://github.com/FredM67/ha-emon-config/releases)
 
