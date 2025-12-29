@@ -603,289 +603,10 @@
                 hasUnsavedChanges: false,
                 // Terminal
                 terminalAutoscroll: true,
-                // i18n
+                // i18n - translations loaded from external JSON files
                 lang: 'en',
-                translations: {
-                    en: {
-                        title: 'emonPi/Tx Configuration',
-                        subtitle: 'Configure your OpenEnergyMonitor emonPi/Tx device via ESP32 serial bridge',
-                        haStatus: 'Home Assistant',
-                        deviceStatus: 'emonPi/Tx',
-                        deviceSelector: 'Device',
-                        connected: 'Connected',
-                        disconnected: 'Disconnected',
-                        unknown: 'Unknown',
-                        tabs: {
-                            config: 'Device Config',
-                            terminal: 'Serial Terminal',
-                            liveData: 'Live Data'
-                        },
-                        buttons: {
-                            loadConfig: 'Load Config',
-                            save: 'Save Changes',
-                            zeroEnergy: 'Zero Energy Values',
-                            resetDefaults: 'Reset to Defaults',
-                            reloadConfig: 'Reload Config',
-                            generateYaml: 'Generate YAML'
-                        },
-                        yamlModal: {
-                            title: 'ESPHome Sensor YAML',
-                            description: 'Copy this YAML into your ESPHome configuration to add sensors for active channels:',
-                            copy: 'Copy to Clipboard',
-                            close: 'Close',
-                            copied: 'Copied!'
-                        },
-                        config: {
-                            waiting: 'Waiting for configuration data...',
-                            clickLoad: 'Click "Load Config" to read the current device configuration.',
-                            firmwareUpdateRequired: 'Firmware update required:',
-                            firmwareUpdateMessage: 'Looks like you are running an older firmware version. Please upgrade the device firmware to use this tool.',
-                            deviceInfo: 'Device Information',
-                            hardware: 'Hardware',
-                            hardwareRev: 'Revision',
-                            version: 'Version',
-                            voltageLabel: 'Voltage',
-                            library: 'Library',
-                            voltageCalibration: 'Voltage Calibration',
-                            calibration: 'Calibration',
-                            ctChannels: 'CT Channels',
-                            channel: 'Channel',
-                            ctType: 'CT Type',
-                            phase: 'Phase',
-                            vChan1: 'V Chan 1',
-                            vChan2: 'V Chan 2',
-                            power: 'Power',
-                            energy: 'Energy',
-                            voltageChannels: 'Voltage Channels',
-                            active: 'Active',
-                            vCal: 'V Cal',
-                            radioSettings: 'Radio Settings',
-                            radioEnabled: 'Radio Enabled',
-                            nodeId: 'Node ID',
-                            group: 'Group',
-                            frequency: 'Frequency',
-                            format: 'Format',
-                            otherSettings: 'Other Settings',
-                            pulseInput: 'Pulse Input',
-                            pulsePeriod: 'Pulse Period',
-                            datalogInterval: 'Datalog Interval',
-                            serialFormat: 'Serial Format',
-                            keyValuePairs: 'Key:value pairs',
-                            fullJson: 'Full JSON'
-                        },
-                        terminal: {
-                            title: 'Serial Monitor',
-                            placeholder: 'Enter command...',
-                            send: 'Send',
-                            autoscroll: 'Autoscroll',
-                            copy: 'Copy',
-                            download: 'Download',
-                            clear: 'Clear',
-                            copied: 'Copied!'
-                        },
-                        liveData: {
-                            title: 'Live Sensor Data',
-                            waiting: 'Waiting for data from emonPi/Tx...'
-                        },
-                        zeroConfirm: {
-                            title: 'Confirm Zero Energy',
-                            message: 'Are you sure you want to zero all energy counters?',
-                            warning: 'This action cannot be undone.',
-                            confirm: 'Yes, Zero Counters',
-                            cancel: 'Cancel'
-                        },
-                        unsavedChanges: {
-                            title: 'Unsaved Changes!',
-                            message: 'There are unsaved changes on the device. Use "Save Changes" to save them.'
-                        }
-                    },
-                    fr: {
-                        title: 'Configuration emonPi/Tx',
-                        subtitle: 'Configurez votre appareil OpenEnergyMonitor emonPi/Tx via le pont série ESP32',
-                        haStatus: 'Home Assistant',
-                        deviceStatus: 'emonPi/Tx',
-                        deviceSelector: 'Appareil',
-                        connected: 'Connecté',
-                        disconnected: 'Déconnecté',
-                        unknown: 'Inconnu',
-                        tabs: {
-                            config: 'Configuration',
-                            terminal: 'Terminal Série',
-                            liveData: 'Données en Direct'
-                        },
-                        buttons: {
-                            loadConfig: 'Charger Config',
-                            save: 'Enregistrer les Modifications',
-                            zeroEnergy: 'Remettre à Zéro',
-                            resetDefaults: 'Réinitialiser',
-                            reloadConfig: 'Recharger Config',
-                            generateYaml: 'Générer YAML'
-                        },
-                        yamlModal: {
-                            title: 'YAML Capteurs ESPHome',
-                            description: 'Copiez ce YAML dans votre configuration ESPHome pour ajouter des capteurs pour les canaux actifs :',
-                            copy: 'Copier',
-                            close: 'Fermer',
-                            copied: 'Copié !'
-                        },
-                        config: {
-                            waiting: 'En attente des données de configuration...',
-                            clickLoad: 'Cliquez sur "Charger Config" pour lire la configuration actuelle.',
-                            firmwareUpdateRequired: 'Mise à jour du firmware requise :',
-                            firmwareUpdateMessage: 'Il semble que vous utilisez une ancienne version du firmware. Veuillez mettre à jour le firmware de l\'appareil pour utiliser cet outil.',
-                            deviceInfo: 'Informations sur l\'Appareil',
-                            hardware: 'Matériel',
-                            hardwareRev: 'Révision',
-                            version: 'Version',
-                            voltageLabel: 'Tension',
-                            library: 'Bibliothèque',
-                            voltageCalibration: 'Calibration de Tension',
-                            calibration: 'Calibration',
-                            ctChannels: 'Canaux CT',
-                            channel: 'Canal',
-                            ctType: 'Type CT',
-                            phase: 'Phase',
-                            vChan1: 'V Canal 1',
-                            vChan2: 'V Canal 2',
-                            power: 'Puissance',
-                            energy: 'Énergie',
-                            voltageChannels: 'Canaux de Tension',
-                            active: 'Actif',
-                            vCal: 'Cal V',
-                            radioSettings: 'Paramètres Radio',
-                            radioEnabled: 'Radio Activée',
-                            nodeId: 'ID Nœud',
-                            group: 'Groupe',
-                            frequency: 'Fréquence',
-                            format: 'Format',
-                            otherSettings: 'Autres Paramètres',
-                            pulseInput: 'Entrée Impulsion',
-                            pulsePeriod: 'Période Impulsion',
-                            datalogInterval: 'Intervalle Datalog',
-                            serialFormat: 'Format Série',
-                            keyValuePairs: 'Paires clé:valeur',
-                            fullJson: 'JSON Complet'
-                        },
-                        terminal: {
-                            title: 'Moniteur Série',
-                            placeholder: 'Entrez une commande...',
-                            send: 'Envoyer',
-                            autoscroll: 'Défilement auto',
-                            copy: 'Copier',
-                            download: 'Télécharger',
-                            clear: 'Effacer',
-                            copied: 'Copié !'
-                        },
-                        liveData: {
-                            title: 'Données en Temps Réel',
-                            waiting: 'En attente des données de l\'emonPi/Tx...'
-                        },
-                        zeroConfirm: {
-                            title: 'Confirmer la Remise à Zéro',
-                            message: 'Êtes-vous sûr de vouloir remettre à zéro tous les compteurs d\'énergie ?',
-                            warning: 'Cette action est irréversible.',
-                            confirm: 'Oui, Remettre à Zéro',
-                            cancel: 'Annuler'
-                        },
-                        unsavedChanges: {
-                            title: 'Modifications non enregistrées !',
-                            message: 'Il y a des modifications non enregistrées sur l\'appareil. Utilisez "Enregistrer" pour les sauvegarder.'
-                        }
-                    },
-                    de: {
-                        title: 'emonPi/Tx Konfiguration',
-                        subtitle: 'Konfigurieren Sie Ihr OpenEnergyMonitor emonPi/Tx Gerät über die ESP32 Serielle Brücke',
-                        haStatus: 'Home Assistant',
-                        deviceStatus: 'emonPi/Tx',
-                        deviceSelector: 'Gerät',
-                        connected: 'Verbunden',
-                        disconnected: 'Getrennt',
-                        unknown: 'Unbekannt',
-                        tabs: {
-                            config: 'Gerätekonfiguration',
-                            terminal: 'Serielles Terminal',
-                            liveData: 'Live-Daten'
-                        },
-                        buttons: {
-                            loadConfig: 'Konfig Laden',
-                            save: 'Änderungen Speichern',
-                            zeroEnergy: 'Energie Nullstellen',
-                            resetDefaults: 'Auf Standard Zurücksetzen',
-                            reloadConfig: 'Konfig Neu Laden',
-                            generateYaml: 'YAML Generieren'
-                        },
-                        yamlModal: {
-                            title: 'ESPHome Sensor YAML',
-                            description: 'Kopieren Sie dieses YAML in Ihre ESPHome-Konfiguration, um Sensoren für aktive Kanäle hinzuzufügen:',
-                            copy: 'In Zwischenablage',
-                            close: 'Schließen',
-                            copied: 'Kopiert!'
-                        },
-                        config: {
-                            waiting: 'Warte auf Konfigurationsdaten...',
-                            clickLoad: 'Klicken Sie auf "Konfig Laden" um die aktuelle Konfiguration zu lesen.',
-                            firmwareUpdateRequired: 'Firmware-Update erforderlich:',
-                            firmwareUpdateMessage: 'Es scheint, dass Sie eine ältere Firmware-Version verwenden. Bitte aktualisieren Sie die Geräte-Firmware, um dieses Tool zu nutzen.',
-                            deviceInfo: 'Geräteinformationen',
-                            hardware: 'Hardware',
-                            hardwareRev: 'Revision',
-                            version: 'Version',
-                            voltageLabel: 'Spannung',
-                            library: 'Bibliothek',
-                            voltageCalibration: 'Spannungskalibrierung',
-                            calibration: 'Kalibrierung',
-                            ctChannels: 'CT-Kanäle',
-                            channel: 'Kanal',
-                            ctType: 'CT-Typ',
-                            phase: 'Phase',
-                            vChan1: 'V Kanal 1',
-                            vChan2: 'V Kanal 2',
-                            power: 'Leistung',
-                            energy: 'Energie',
-                            voltageChannels: 'Spannungskanäle',
-                            active: 'Aktiv',
-                            vCal: 'V Kal',
-                            radioSettings: 'Funk-Einstellungen',
-                            radioEnabled: 'Funk Aktiviert',
-                            nodeId: 'Knoten-ID',
-                            group: 'Gruppe',
-                            frequency: 'Frequenz',
-                            format: 'Format',
-                            otherSettings: 'Weitere Einstellungen',
-                            pulseInput: 'Impulseingang',
-                            pulsePeriod: 'Impulsperiode',
-                            datalogInterval: 'Datalog-Intervall',
-                            serialFormat: 'Serielles Format',
-                            keyValuePairs: 'Schlüssel:Wert Paare',
-                            fullJson: 'Vollständiges JSON'
-                        },
-                        terminal: {
-                            title: 'Serieller Monitor',
-                            placeholder: 'Befehl eingeben...',
-                            send: 'Senden',
-                            autoscroll: 'Autoscroll',
-                            copy: 'Kopieren',
-                            download: 'Herunterladen',
-                            clear: 'Löschen',
-                            copied: 'Kopiert!'
-                        },
-                        liveData: {
-                            title: 'Live Sensordaten',
-                            waiting: 'Warte auf Daten vom emonPi/Tx...'
-                        },
-                        zeroConfirm: {
-                            title: 'Energie Nullstellen Bestätigen',
-                            message: 'Sind Sie sicher, dass Sie alle Energiezähler zurücksetzen möchten?',
-                            warning: 'Diese Aktion kann nicht rückgängig gemacht werden.',
-                            confirm: 'Ja, Nullstellen',
-                            cancel: 'Abbrechen'
-                        },
-                        unsavedChanges: {
-                            title: 'Ungespeicherte Änderungen!',
-                            message: 'Es gibt ungespeicherte Änderungen auf dem Gerät. Verwenden Sie "Speichern" um sie zu sichern.'
-                        }
-                    }
-                },
+                translations: {},
+                translationsLoaded: false,
                 device: {
                     firmware: '',
                     firmware_version: '',
@@ -919,7 +640,7 @@
             },
             computed: {
                 t() {
-                    return this.translations[this.lang] || this.translations.en;
+                    return this.translations[this.lang] || this.translations.en || {};
                 }
             },
             mounted() {
@@ -929,21 +650,56 @@
                 this.initHassConnection();
             },
             methods: {
-                detectLanguage() {
+                async detectLanguage() {
                     // Try to get language from Home Assistant
+                    let detectedLang = 'en';
                     try {
                         if (window.parent && window.parent.document) {
                             const hassObj = window.parent.document.querySelector('home-assistant');
                             if (hassObj && hassObj.hass && hassObj.hass.language) {
                                 const haLang = hassObj.hass.language.split('-')[0]; // Get 'fr' from 'fr-FR'
-                                if (this.translations[haLang]) {
-                                    this.lang = haLang;
+                                if (['en', 'fr', 'de'].includes(haLang)) {
+                                    detectedLang = haLang;
                                     console.log('Detected language:', haLang);
                                 }
                             }
                         }
                     } catch (e) {
                         console.log('Could not detect HA language, using default');
+                    }
+
+                    // Load translations for detected language and English (fallback)
+                    await this.loadTranslations(detectedLang);
+                },
+
+                async loadTranslations(lang) {
+                    // Get the base path from the current page URL
+                    const currentPath = window.location.pathname;
+                    const basePath = currentPath.substring(0, currentPath.lastIndexOf('/'));
+
+                    try {
+                        // Always load English as fallback
+                        const enResponse = await fetch(`${basePath}/i18n/en.json`);
+                        if (enResponse.ok) {
+                            this.$set(this.translations, 'en', await enResponse.json());
+                        }
+
+                        // Load requested language if different from English
+                        if (lang !== 'en') {
+                            const langResponse = await fetch(`${basePath}/i18n/${lang}.json`);
+                            if (langResponse.ok) {
+                                this.$set(this.translations, lang, await langResponse.json());
+                                this.lang = lang;
+                            }
+                        }
+
+                        this.translationsLoaded = true;
+                        console.log('Translations loaded for:', Object.keys(this.translations).join(', '));
+                    } catch (e) {
+                        console.error('Failed to load translations:', e);
+                        // Fallback: use inline minimal translations
+                        this.$set(this.translations, 'en', { title: 'emonPi/Tx Configuration', subtitle: 'Loading...' });
+                        this.translationsLoaded = true;
                     }
                 },
 
