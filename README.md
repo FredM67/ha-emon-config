@@ -4,6 +4,7 @@
 [![GitHub Release](https://img.shields.io/github/v/release/FredM67/ha-emon-config)](https://github.com/FredM67/ha-emon-config/releases)
 [![License](https://img.shields.io/github/license/FredM67/ha-emon-config)](https://github.com/FredM67/ha-emon-config/blob/main/LICENSE)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2023.1+-blue)](https://www.home-assistant.io/)
+[![OpenEnergyMonitor](https://img.shields.io/badge/OpenEnergyMonitor-emonPi%2FTx-green)](https://openenergymonitor.org/)
 [![Maintenance](https://img.shields.io/maintenance/yes/2025)](https://github.com/FredM67/ha-emon-config)
 
 [![Last Commit](https://img.shields.io/github/last-commit/FredM67/ha-emon-config)](https://github.com/FredM67/ha-emon-config/commits)
