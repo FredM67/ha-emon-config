@@ -1,0 +1,91 @@
+{
+    "title": "emonPi/Tx Konfiguration",
+    "subtitle": "Konfigurieren Sie Ihr OpenEnergyMonitor emonPi/Tx Gerät über die ESP32 Serielle Brücke",
+    "deviceSelector": "Gerät",
+    "connected": "Verbunden",
+    "disconnected": "Getrennt",
+    "unknown": "Unbekannt",
+    "tabs": {
+        "config": "Gerätekonfiguration",
+        "terminal": "Serielles Terminal",
+        "liveData": "Live-Daten"
+    },
+    "buttons": {
+        "loadConfig": "Konfig Laden",
+        "save": "Änderungen Speichern",
+        "zeroEnergy": "Energie Nullstellen",
+        "resetDefaults": "Auf Standard Zurücksetzen",
+        "reloadConfig": "Konfig Neu Laden",
+        "generateYaml": "YAML Generieren"
+    },
+    "yamlModal": {
+        "title": "ESPHome Sensor YAML",
+        "description": "Kopieren Sie dieses YAML in Ihre ESPHome-Konfiguration, um Sensoren für aktive Kanäle hinzuzufügen:",
+        "copy": "In Zwischenablage",
+        "close": "Schließen",
+        "copied": "Kopiert!"
+    },
+    "config": {
+        "waiting": "Warte auf Konfigurationsdaten...",
+        "clickLoad": "Klicken Sie auf \"Konfig Laden\" um die aktuelle Konfiguration zu lesen.",
+        "firmwareUpdateRequired": "Firmware-Update erforderlich:",
+        "firmwareUpdateMessage": "Es scheint, dass Sie eine ältere Firmware-Version verwenden. Bitte aktualisieren Sie die Geräte-Firmware, um dieses Tool zu nutzen.",
+        "deviceInfo": "Geräteinformationen",
+        "hardware": "Hardware",
+        "hardwareRev": "Revision",
+        "version": "Version",
+        "voltageLabel": "Spannung",
+        "library": "Bibliothek",
+        "voltageCalibration": "Spannungskalibrierung",
+        "calibration": "Kalibrierung",
+        "ctChannels": "CT-Kanäle",
+        "channel": "Kanal",
+        "ctType": "CT-Typ",
+        "phase": "Phase",
+        "vChan1": "V Kanal 1",
+        "vChan2": "V Kanal 2",
+        "power": "Leistung",
+        "energy": "Energie",
+        "voltageChannels": "Spannungskanäle",
+        "active": "Aktiv",
+        "vCal": "V Kal",
+        "radioSettings": "Funk-Einstellungen",
+        "radioEnabled": "Funk Aktiviert",
+        "nodeId": "Knoten-ID",
+        "group": "Gruppe",
+        "frequency": "Frequenz",
+        "format": "Format",
+        "otherSettings": "Weitere Einstellungen",
+        "pulseInput": "Impulseingang",
+        "pulsePeriod": "Impulsperiode",
+        "datalogInterval": "Datalog-Intervall",
+        "serialFormat": "Serielles Format",
+        "keyValuePairs": "Schlüssel:Wert Paare",
+        "fullJson": "Vollständiges JSON"
+    },
+    "terminal": {
+        "title": "Serieller Monitor",
+        "placeholder": "Befehl eingeben...",
+        "send": "Senden",
+        "autoscroll": "Autoscroll",
+        "copy": "Kopieren",
+        "download": "Herunterladen",
+        "clear": "Löschen",
+        "copied": "Kopiert!"
+    },
+    "liveData": {
+        "title": "Live Sensordaten",
+        "waiting": "Warte auf Daten vom emonPi/Tx..."
+    },
+    "zeroConfirm": {
+        "title": "Energie Nullstellen Bestätigen",
+        "message": "Sind Sie sicher, dass Sie alle Energiezähler zurücksetzen möchten?",
+        "warning": "Diese Aktion kann nicht rückgängig gemacht werden.",
+        "confirm": "Ja, Nullstellen",
+        "cancel": "Abbrechen"
+    },
+    "unsavedChanges": {
+        "title": "Ungespeicherte Änderungen!",
+        "message": "Es gibt ungespeicherte Änderungen auf dem Gerät. Verwenden Sie \"Speichern\" um sie zu sichern."
+    }
+}
