@@ -1417,13 +1417,21 @@
                 },
 
                 isChannelInactive(key) {
-                    // Check if this key corresponds to an inactive CT channel
+                    // Check if this key corresponds to an inactive channel
                     // Keys like P1, P2, E1, E2, etc. map to ichannels[0], ichannels[1], etc.
-                    const match = key.match(/^[PE](\d+)$/);
-                    if (match) {
-                        const channelNum = parseInt(match[1]) - 1; // Convert to 0-based index
+                    const ctMatch = key.match(/^[PE](\d+)$/);
+                    if (ctMatch) {
+                        const channelNum = parseInt(ctMatch[1]) - 1; // Convert to 0-based index
                         if (channelNum >= 0 && channelNum < this.device.ichannels.length) {
                             return this.device.ichannels[channelNum].active === false;
+                        }
+                    }
+                    // Keys like V1, V2, V3 map to vchannels[0], vchannels[1], etc.
+                    const vMatch = key.match(/^V(\d+)$/);
+                    if (vMatch) {
+                        const channelNum = parseInt(vMatch[1]) - 1; // Convert to 0-based index
+                        if (channelNum >= 0 && channelNum < this.device.vchannels.length) {
+                            return this.device.vchannels[channelNum].active === false;
                         }
                     }
                     return false;
