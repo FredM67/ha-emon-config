@@ -539,7 +539,7 @@
                     </div>
                     <div v-else>
                         <div v-for="(items, group) in groupedLiveData" :key="group" style="margin-bottom: 15px;">
-                            <h4 style="margin: 0 0 8px 0; color: #666; font-size: 14px; text-transform: uppercase;">{{ group }}</h4>
+                            <h4 style="margin: 0 0 8px 0; color: #666; font-size: 14px;">{{ t.liveData.groups && t.liveData.groups[group] ? t.liveData.groups[group] : group }}</h4>
                             <div class="config-grid">
                                 <div :class="['config-item', isChannelInactive(key) ? 'inactive' : '']" v-for="(value, key) in items" :key="key">
                                     <label>{{ key }}</label>

@@ -75,7 +75,15 @@
     },
     "liveData": {
         "title": "Live Sensordaten",
-        "waiting": "Warte auf Daten vom emonPi/Tx..."
+        "waiting": "Warte auf Daten vom emonPi/Tx...",
+        "groups": {
+            "MSG": "Nachricht",
+            "V": "Spannung",
+            "P": "Leistung",
+            "E": "Energie",
+            "T": "Temperatur",
+            "pulse": "Impuls"
+        }
     },
     "zeroConfirm": {
         "title": "Energie Nullstellen Bestätigen",

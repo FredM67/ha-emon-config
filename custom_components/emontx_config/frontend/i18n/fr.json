@@ -75,7 +75,15 @@
     },
     "liveData": {
         "title": "Données en Temps Réel",
-        "waiting": "En attente des données de l'emonPi/Tx..."
+        "waiting": "En attente des données de l'emonPi/Tx...",
+        "groups": {
+            "MSG": "Message",
+            "V": "Tension",
+            "P": "Puissance",
+            "E": "Énergie",
+            "T": "Température",
+            "pulse": "Impulsion"
+        }
     },
     "zeroConfirm": {
         "title": "Confirmer la Remise à Zéro",

@@ -75,7 +75,15 @@
     },
     "liveData": {
         "title": "Live Sensor Data",
-        "waiting": "Waiting for data from emonPi/Tx..."
+        "waiting": "Waiting for data from emonPi/Tx...",
+        "groups": {
+            "MSG": "Message",
+            "V": "Voltage",
+            "P": "Power",
+            "E": "Energy",
+            "T": "Temperature",
+            "pulse": "Pulse"
+        }
     },
     "zeroConfirm": {
         "title": "Confirm Zero Energy",
