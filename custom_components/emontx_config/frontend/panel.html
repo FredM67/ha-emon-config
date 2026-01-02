@@ -206,6 +206,15 @@
             width: 18px;
             height: 18px;
         }
+        /* Hide spinner arrows for number inputs */
+        input[type="number"].no-spinner::-webkit-inner-spin-button,
+        input[type="number"].no-spinner::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"].no-spinner {
+            -moz-appearance: textfield;
+        }
         .device-info-table {
             width: 100%;
             border-collapse: collapse;
@@ -464,7 +473,7 @@
                                             <option v-for="rating in ctsAvailable" :value="rating" :key="rating">{{ rating }}A</option>
                                         </select>
                                     </td>
-                                    <td><input type="number" step="0.01" v-model.number="channel.ilead" @change="setIcal(index)" style="width:70px" :disabled="!emontxConnected" /></td>
+                                    <td><input type="number" step="0.01" v-model.number="channel.ilead" @change="setIcal(index)" style="width:70px" :disabled="!emontxConnected" class="no-spinner" /></td>
                                     <td v-if="device.hardware === 'emonPi3'">
                                         <select v-model="channel.vchan1" @change="setIcal(index)" :disabled="!emontxConnected">
                                             <option v-for="v in [1,2,3]" :value="v" :key="v">{{ v }}</option>
