@@ -590,7 +590,7 @@
                     </div>
                     <div id="terminal" class="terminal"></div>
                     <div class="command-input">
-                        <input type="text" v-model="cmdInput" @keypress.enter="sendCmd" :placeholder="t.terminal.placeholder" />
+                        <input type="text" v-model="cmdInput" @keypress.enter="sendCmd" :placeholder="t.terminal.placeholder" autocomplete="off" />
                         <button class="btn btn-primary" @click="sendCmd" :disabled="!emontxConnected">{{ t.terminal.send }}</button>
                     </div>
                     <div style="margin-top: 15px; display: flex; gap: 8px; flex-wrap: wrap;">
