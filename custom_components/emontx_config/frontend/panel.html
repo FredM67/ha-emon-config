@@ -95,6 +95,7 @@
             font-size: 13px;
             line-height: 1.4;
             resize: vertical;
+            white-space: pre-wrap;
         }
         .terminal .error { color: #ff6b6b; }
         .terminal .info { color: #4ecdc4; }
@@ -371,6 +372,7 @@
         </div>
 
         <!-- Device Configuration Tab -->
+        <form autocomplete="off" @submit.prevent>
         <div v-show="activeTab === 'config'" class="tab-content active">
             <!-- Unsaved Changes Warning Banner -->
             <div v-if="hasUnsavedChanges" class="alert alert-danger" style="display: flex; align-items: center; justify-content: space-between;">
@@ -565,6 +567,7 @@
                 </div>
             </div>
         </div>
+        </form>
 
         <!-- Serial Terminal Tab -->
         <div v-show="activeTab === 'terminal'" class="tab-content">
