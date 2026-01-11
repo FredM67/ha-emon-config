@@ -667,7 +667,7 @@
         var app = new Vue({
             el: '#app',
             data: {
-                activeTab: 'config',
+                activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
                 emontxStatus: 'Unknown',
@@ -726,6 +726,11 @@
                 deviceName: '',
                 servicesRequestId: null
             },
+            watch: {
+                activeTab(newTab) {
+                    (window.parent.localStorage || localStorage).setItem('emontx_active_tab', newTab);
+                }
+            },
             computed: {
                 t() {
                     return this.translations[this.lang] || this.translations.en || {};
@@ -768,6 +773,7 @@
                 this.populateChannels(6);
                 this.discoverDevices();
                 this.initHassConnection();
+                this.restoreTerminalSize();
             },
             methods: {
                 async detectLanguage() {
@@ -1055,6 +1061,11 @@
                     // Check for unsaved changes message from device
                     if (line.includes('unsaved changes') || line.includes('Unsaved changes')) {
                         this.hasUnsavedChanges = true;
+                    }
+
+                    // Check for saved confirmation from device
+                    if (line.includes('settings saved') || line.includes('Settings saved')) {
+                        this.hasUnsavedChanges = false;
                     }
 
                     // Parse sensor data - works for both JSON and key:value formats
@@ -1542,7 +1553,7 @@
                 log(message, type = '') {
                     const terminal = document.getElementById('terminal');
                     if (terminal) {
-                        const time = new Date().toLocaleTimeString();
+                        const time = new Date().toLocaleTimeString(this.lang || 'en');
                         const line = document.createElement('div');
                         line.className = type;
                         line.textContent = `[${time}] ${message}`;
@@ -1552,6 +1563,32 @@
                             terminal.scrollTop = terminal.scrollHeight;
                         }
                     }
+                },
+
+                restoreTerminalSize() {
+                    // Restore terminal height from parent's localStorage (iframe localStorage may not persist)
+                    setTimeout(() => {
+                        const terminal = document.getElementById('terminal');
+                        const storage = window.parent.localStorage || localStorage;
+                        const savedHeight = storage.getItem('emontx_terminal_height');
+
+                        if (terminal) {
+                            // Restore saved height
+                            if (savedHeight) {
+                                terminal.style.height = savedHeight;
+                            }
+
+                            // Save height when resize ends (mouseup after resize)
+                            let lastHeight = terminal.offsetHeight;
+                            document.addEventListener('mouseup', () => {
+                                const currentHeight = terminal.offsetHeight;
+                                if (currentHeight !== lastHeight && currentHeight > 100) {
+                                    lastHeight = currentHeight;
+                                    storage.setItem('emontx_terminal_height', currentHeight + 'px');
+                                }
+                            });
+                        }
+                    }, 500);
                 }
             }
         });
