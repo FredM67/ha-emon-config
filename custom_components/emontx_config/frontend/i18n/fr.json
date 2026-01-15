@@ -8,7 +8,8 @@
     "tabs": {
         "config": "Configuration",
         "terminal": "Terminal Série",
-        "liveData": "Données en Direct"
+        "liveData": "Données en Direct",
+        "accumulators": "Accumulateurs"
     },
     "buttons": {
         "loadConfig": "Charger Config",
@@ -62,7 +63,21 @@
         "datalogInterval": "Intervalle Datalog",
         "serialFormat": "Format Série",
         "keyValuePairs": "Paires clé:valeur",
-        "fullJson": "JSON Complet"
+        "fullJson": "JSON Complet",
+        "opaChannels": "Canaux OPA (OneWire/Impulsion)",
+        "function": "Fonction",
+        "oneWire": "OneWire",
+        "pullUp": "Pull-up",
+        "period": "Période (ms)",
+        "tempSensors": "Capteurs de Température",
+        "tempSensorsDesc": "Capteurs de température DS18B20 OneWire connectés aux canaux OPA configurés en OneWire.",
+        "scanSensors": "Rechercher",
+        "listSensors": "Lister",
+        "saveMapping": "Enregistrer",
+        "sensor": "Capteur",
+        "address": "Adresse",
+        "temperature": "Température",
+        "noTempSensors": "Aucun capteur de température trouvé. Cliquez sur \"Rechercher\" pour détecter les capteurs DS18B20 connectés."
     },
     "terminal": {
         "title": "Moniteur Série",
@@ -96,5 +111,22 @@
     "unsavedChanges": {
         "title": "Modifications non enregistrées !",
         "message": "Il y a des modifications non enregistrées sur l'appareil. Utilisez \"Enregistrer\" pour les sauvegarder."
+    },
+    "accumulators": {
+        "energyTitle": "Accumulateurs d'Énergie",
+        "pulseTitle": "Accumulateurs d'Impulsions",
+        "channel": "Canal",
+        "value": "Valeur",
+        "status": "État",
+        "action": "Action",
+        "active": "Actif",
+        "inactive": "Inactif",
+        "zero": "Zéro",
+        "zeroAll": "Tout Remettre à Zéro",
+        "confirmTitle": "Confirmer la Remise à Zéro",
+        "confirmMessage": "Êtes-vous sûr de vouloir remettre à zéro",
+        "confirmWarning": "Cette action est irréversible.",
+        "confirmYes": "Oui, Remettre à Zéro",
+        "confirmNo": "Annuler"
     }
 }

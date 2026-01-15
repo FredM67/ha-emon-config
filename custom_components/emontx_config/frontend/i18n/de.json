@@ -8,7 +8,8 @@
     "tabs": {
         "config": "Gerätekonfiguration",
         "terminal": "Serielles Terminal",
-        "liveData": "Live-Daten"
+        "liveData": "Live-Daten",
+        "accumulators": "Akkumulatoren"
     },
     "buttons": {
         "loadConfig": "Konfig Laden",
@@ -62,7 +63,21 @@
         "datalogInterval": "Datalog-Intervall",
         "serialFormat": "Serielles Format",
         "keyValuePairs": "Schlüssel:Wert Paare",
-        "fullJson": "Vollständiges JSON"
+        "fullJson": "Vollständiges JSON",
+        "opaChannels": "OPA-Kanäle (OneWire/Impuls)",
+        "function": "Funktion",
+        "oneWire": "OneWire",
+        "pullUp": "Pull-up",
+        "period": "Periode (ms)",
+        "tempSensors": "Temperatursensoren",
+        "tempSensorsDesc": "DS18B20 OneWire Temperatursensoren, die an OPA-Kanäle angeschlossen sind, die als OneWire konfiguriert sind.",
+        "scanSensors": "Sensoren Suchen",
+        "listSensors": "Sensoren Auflisten",
+        "saveMapping": "Zuordnung Speichern",
+        "sensor": "Sensor",
+        "address": "Adresse",
+        "temperature": "Temperatur",
+        "noTempSensors": "Keine Temperatursensoren gefunden. Klicken Sie auf \"Sensoren Suchen\" um angeschlossene DS18B20 Sensoren zu finden."
     },
     "terminal": {
         "title": "Serieller Monitor",
@@ -96,5 +111,22 @@
     "unsavedChanges": {
         "title": "Ungespeicherte Änderungen!",
         "message": "Es gibt ungespeicherte Änderungen auf dem Gerät. Verwenden Sie \"Speichern\" um sie zu sichern."
+    },
+    "accumulators": {
+        "energyTitle": "Energie-Akkumulatoren",
+        "pulseTitle": "Impuls-Akkumulatoren",
+        "channel": "Kanal",
+        "value": "Wert",
+        "status": "Status",
+        "action": "Aktion",
+        "active": "Aktiv",
+        "inactive": "Inaktiv",
+        "zero": "Nullstellen",
+        "zeroAll": "Alle Nullstellen",
+        "confirmTitle": "Nullstellen Bestätigen",
+        "confirmMessage": "Sind Sie sicher, dass Sie nullstellen möchten",
+        "confirmWarning": "Diese Aktion kann nicht rückgängig gemacht werden.",
+        "confirmYes": "Ja, Nullstellen",
+        "confirmNo": "Abbrechen"
     }
 }

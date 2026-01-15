@@ -8,7 +8,8 @@
     "tabs": {
         "config": "Device Config",
         "terminal": "Serial Terminal",
-        "liveData": "Live Data"
+        "liveData": "Live Data",
+        "accumulators": "Accumulators"
     },
     "buttons": {
         "loadConfig": "Load Config",
@@ -62,7 +63,21 @@
         "datalogInterval": "Datalog Interval",
         "serialFormat": "Serial Format",
         "keyValuePairs": "Key:value pairs",
-        "fullJson": "Full JSON"
+        "fullJson": "Full JSON",
+        "opaChannels": "OPA Channels (OneWire/Pulse)",
+        "function": "Function",
+        "oneWire": "OneWire",
+        "pullUp": "Pull-up",
+        "period": "Period (ms)",
+        "tempSensors": "Temperature Sensors",
+        "tempSensorsDesc": "DS18B20 OneWire temperature sensors connected to OPA channels configured as OneWire.",
+        "scanSensors": "Scan Sensors",
+        "listSensors": "List Sensors",
+        "saveMapping": "Save Mapping",
+        "sensor": "Sensor",
+        "address": "Address",
+        "temperature": "Temperature",
+        "noTempSensors": "No temperature sensors found. Click \"Scan Sensors\" to search for connected DS18B20 sensors."
     },
     "terminal": {
         "title": "Serial Monitor",
@@ -96,5 +111,22 @@
     "unsavedChanges": {
         "title": "Unsaved Changes!",
         "message": "There are unsaved changes on the device. Use \"Save Changes\" to save them."
+    },
+    "accumulators": {
+        "energyTitle": "Energy Accumulators",
+        "pulseTitle": "Pulse Accumulators",
+        "channel": "Channel",
+        "value": "Value",
+        "status": "Status",
+        "action": "Action",
+        "active": "Active",
+        "inactive": "Inactive",
+        "zero": "Zero",
+        "zeroAll": "Zero All Accumulators",
+        "confirmTitle": "Confirm Zero",
+        "confirmMessage": "Are you sure you want to zero",
+        "confirmWarning": "This action cannot be undone.",
+        "confirmYes": "Yes, Zero It",
+        "confirmNo": "Cancel"
     }
 }

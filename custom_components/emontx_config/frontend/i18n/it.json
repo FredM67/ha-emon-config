@@ -8,7 +8,8 @@
     "tabs": {
         "config": "Configurazione",
         "terminal": "Terminale Seriale",
-        "liveData": "Dati in Tempo Reale"
+        "liveData": "Dati in Tempo Reale",
+        "accumulators": "Accumulatori"
     },
     "buttons": {
         "loadConfig": "Carica Config",
@@ -62,7 +63,21 @@
         "datalogInterval": "Intervallo Datalog",
         "serialFormat": "Formato Seriale",
         "keyValuePairs": "Coppie chiave:valore",
-        "fullJson": "JSON Completo"
+        "fullJson": "JSON Completo",
+        "opaChannels": "Canali OPA (OneWire/Impulso)",
+        "function": "Funzione",
+        "oneWire": "OneWire",
+        "pullUp": "Pull-up",
+        "period": "Periodo (ms)",
+        "tempSensors": "Sensori di Temperatura",
+        "tempSensorsDesc": "Sensori di temperatura DS18B20 OneWire collegati ai canali OPA configurati come OneWire.",
+        "scanSensors": "Cerca Sensori",
+        "listSensors": "Elenca Sensori",
+        "saveMapping": "Salva Mappatura",
+        "sensor": "Sensore",
+        "address": "Indirizzo",
+        "temperature": "Temperatura",
+        "noTempSensors": "Nessun sensore di temperatura trovato. Clicca \"Cerca Sensori\" per cercare i sensori DS18B20 collegati."
     },
     "terminal": {
         "title": "Monitor Seriale",
@@ -96,5 +111,22 @@
     "unsavedChanges": {
         "title": "Modifiche non salvate!",
         "message": "Ci sono modifiche non salvate sul dispositivo. Usa \"Salva Modifiche\" per salvarle."
+    },
+    "accumulators": {
+        "energyTitle": "Accumulatori di Energia",
+        "pulseTitle": "Accumulatori di Impulsi",
+        "channel": "Canale",
+        "value": "Valore",
+        "status": "Stato",
+        "action": "Azione",
+        "active": "Attivo",
+        "inactive": "Inattivo",
+        "zero": "Azzera",
+        "zeroAll": "Azzera Tutti",
+        "confirmTitle": "Conferma Azzeramento",
+        "confirmMessage": "Sei sicuro di voler azzerare",
+        "confirmWarning": "Questa azione non può essere annullata.",
+        "confirmYes": "Sì, Azzera",
+        "confirmNo": "Annulla"
     }
 }
