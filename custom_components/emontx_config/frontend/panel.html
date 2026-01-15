@@ -540,10 +540,14 @@
                         <div class="table-responsive">
                             <table class="device-info-table">
                                 <tr>
+                                    <th v-if="device.hardware !== 'emonPi3'">{{ t.config.pulseInput }}</th>
+                                    <th v-if="device.hardware !== 'emonPi3'">{{ t.config.pulsePeriod }}</th>
                                     <th>{{ t.config.datalogInterval }}</th>
                                     <th>{{ t.config.serialFormat }}</th>
                                 </tr>
                                 <tr>
+                                    <td v-if="device.hardware !== 'emonPi3'"><input type="checkbox" v-model="device.pulse" @change="setPulse" :disabled="!emontxConnected" /></td>
+                                    <td v-if="device.hardware !== 'emonPi3'"><input type="number" v-model="device.pulsePeriod" @change="setPulsePeriod" :disabled="!emontxConnected" style="width:80px" /></td>
                                     <td><input type="number" step="0.1" v-model="device.datalog" @change="setDatalog" :disabled="!emontxConnected" style="width:80px" /></td>
                                     <td>
                                         <select v-model="device.json" @change="setJson" :disabled="!emontxConnected">
@@ -719,17 +723,17 @@
                             <tr>
                                 <th>{{ (t.accumulators && t.accumulators.channel) || 'Channel' }}</th>
                                 <th>{{ (t.accumulators && t.accumulators.value) || 'Value' }}</th>
-                                <th>{{ (t.accumulators && t.accumulators.status) || 'Status' }}</th>
-                                <th>{{ (t.accumulators && t.accumulators.action) || 'Action' }}</th>
+                                <th v-if="device.hardware === 'emonPi3'">{{ (t.accumulators && t.accumulators.status) || 'Status' }}</th>
+                                <th v-if="device.hardware === 'emonPi3'">{{ (t.accumulators && t.accumulators.action) || 'Action' }}</th>
                             </tr>
-                            <tr v-for="n in 12" :key="'e'+n" :class="{ 'inactive-row': !isEnergyChannelActive(n) }">
+                            <tr v-for="n in energyChannelCount" :key="'e'+n" :class="{ 'inactive-row': !isEnergyChannelActive(n) }">
                                 <td>E{{ n }}</td>
                                 <td>{{ liveData['E' + n] || '0' }} Wh</td>
-                                <td>
+                                <td v-if="device.hardware === 'emonPi3'">
                                     <span v-if="isEnergyChannelActive(n)" style="color: #4CAF50;">{{ (t.accumulators && t.accumulators.active) || 'Active' }}</span>
                                     <span v-else style="color: #999;">{{ (t.accumulators && t.accumulators.inactive) || 'Inactive' }}</span>
                                 </td>
-                                <td>
+                                <td v-if="device.hardware === 'emonPi3'">
                                     <button class="btn btn-sm btn-danger" @click="showIndividualZeroConfirm('e', n)" :disabled="!emontxConnected">
                                         {{ (t.accumulators && t.accumulators.zero) || 'Zero' }}
                                     </button>
@@ -748,12 +752,12 @@
                             <tr>
                                 <th>{{ (t.accumulators && t.accumulators.channel) || 'Channel' }}</th>
                                 <th>{{ (t.accumulators && t.accumulators.value) || 'Value' }}</th>
-                                <th>{{ (t.accumulators && t.accumulators.action) || 'Action' }}</th>
+                                <th v-if="device.hardware === 'emonPi3'">{{ (t.accumulators && t.accumulators.action) || 'Action' }}</th>
                             </tr>
-                            <tr v-for="n in 2" :key="'p'+n">
+                            <tr v-for="n in pulseChannelCount" :key="'p'+n">
                                 <td>Pulse {{ n }}</td>
                                 <td>{{ liveData['pulse' + n] || '0' }}</td>
-                                <td>
+                                <td v-if="device.hardware === 'emonPi3'">
                                     <button class="btn btn-sm btn-danger" @click="showIndividualZeroConfirm('p', n)" :disabled="!emontxConnected">
                                         {{ (t.accumulators && t.accumulators.zero) || 'Zero' }}
                                     </button>
@@ -922,6 +926,29 @@
                     }
 
                     return sortedGroups;
+                },
+                energyChannelCount() {
+                    // emonPi3 always has 12 channels, others depend on firmware (6 or 12)
+                    if (this.device.hardware === 'emonPi3') {
+                        return 12;
+                    }
+                    // Use ichannels length if populated, otherwise default to 6
+                    return this.device.ichannels.length || 6;
+                },
+                pulseChannelCount() {
+                    // emonPi3 has 2 pulse channels (OPA1, OPA2), others have 1
+                    return this.device.hardware === 'emonPi3' ? 2 : 1;
+                },
+                voltageChannelCount() {
+                    // emonPi3 always has 3 voltage channels
+                    if (this.device.hardware === 'emonPi3') {
+                        return 3;
+                    }
+                    // For older devices, parse from "voltage = Xphase"
+                    const voltage = this.device.voltage || '';
+                    if (voltage.includes('3phase')) return 3;
+                    if (voltage.includes('2phase')) return 2;
+                    return 1; // Default to single phase
                 }
             },
             mounted() {
@@ -1646,8 +1673,10 @@
                     this.writeToStream('z');
                     setTimeout(() => {
                         this.writeToStream('y');
-                        // Refresh accumulator values after zeroing
-                        setTimeout(() => this.writeToStream('lh'), 1500);
+                        // Refresh accumulator values after zeroing (only emonPi3 has 'lh' command)
+                        if (this.device.hardware === 'emonPi3') {
+                            setTimeout(() => this.writeToStream('lh'), 1500);
+                        }
                     }, 1000);
                     this.showZeroConfirm = false;
                 },
@@ -1673,6 +1702,7 @@
                 },
                 confirmIndividualZero() {
                     // User confirmed - send command, wait 1s, then send 'y', then refresh values
+                    // Note: Individual zeroing is only available for emonPi3
                     const { type, channel } = this.individualZeroTarget;
                     if (type === 'e') {
                         this.writeToStream('ze' + channel);
@@ -1694,8 +1724,8 @@
                 generateYaml() {
                     let yaml = 'sensor:\n';
 
-                    // Add voltage sensors (always V1, V2, V3 for 3-phase, just V1 for single phase)
-                    const numVoltages = this.device.hardware === 'emonPi3' ? 3 : 1;
+                    // Add voltage sensors based on device configuration
+                    const numVoltages = this.voltageChannelCount;
                     for (let i = 0; i < numVoltages; i++) {
                         // For emonPi3, check if voltage channel is active
                         if (this.device.hardware === 'emonPi3' && this.device.vchannels[i] && !this.device.vchannels[i].active) {
@@ -1827,6 +1857,11 @@
                 },
 
                 isChannelInactive(key) {
+                    // Only emonPi3 has per-channel active state
+                    // Older devices don't support this feature
+                    if (this.device.hardware !== 'emonPi3') {
+                        return false;
+                    }
                     // Check if this key corresponds to an inactive channel
                     // Keys like P1, P2, E1, E2, etc. map to ichannels[0], ichannels[1], etc.
                     const ctMatch = key.match(/^[PE](\d+)$/);
