@@ -54,6 +54,7 @@
         "nodeId": "ID Nœud",
         "group": "Groupe",
         "frequency": "Fréquence",
+        "rfPower": "Puissance",
         "format": "Format",
         "otherSettings": "Autres Paramètres",
         "pulseInput": "Entrée Impulsion",

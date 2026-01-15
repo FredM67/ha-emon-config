@@ -54,6 +54,7 @@
         "nodeId": "Knoten-ID",
         "group": "Gruppe",
         "frequency": "Frequenz",
+        "rfPower": "Leistung",
         "format": "Format",
         "otherSettings": "Weitere Einstellungen",
         "pulseInput": "Impulseingang",

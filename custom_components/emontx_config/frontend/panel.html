@@ -435,6 +435,7 @@
                                     <th>{{ t.config.active }}</th>
                                     <th>{{ t.config.channel }}</th>
                                     <th>{{ t.config.calibration }}</th>
+                                    <th>{{ t.config.phase }}</th>
                                 </tr>
                                 <tr v-for="(vchannel, index) in device.vchannels" :key="'v'+index">
                                     <td><input type="checkbox" v-model="vchannel.active" @change="setVchannel(index)" :disabled="!emontxConnected" /></td>
@@ -442,6 +443,10 @@
                                     <td>
                                         <input type="number" step="0.001" v-model="vchannel.vcal" @change="setVchannel(index)" :disabled="!emontxConnected" />
                                         <span class="unit">%</span>
+                                    </td>
+                                    <td>
+                                        <input type="number" step="0.01" v-model="vchannel.vphase" @change="setVchannel(index)" :disabled="!emontxConnected" />
+                                        <span class="unit">°</span>
                                     </td>
                                 </tr>
                             </table>
@@ -509,6 +514,7 @@
                                         <th>{{ t.config.nodeId }}</th>
                                         <th>{{ t.config.group }}</th>
                                         <th>{{ t.config.frequency }}</th>
+                                        <th>{{ t.config.rfPower || 'Power' }}</th>
                                         <th>{{ t.config.format }}</th>
                                     </tr>
                                     <tr>
@@ -516,11 +522,12 @@
                                         <td><input type="number" v-model="device.rfGroup" @change="setRfGroup" :disabled="!emontxConnected" style="width:60px" /></td>
                                         <td>
                                             <select v-model="device.rfBand" @change="setRfBand" :disabled="!emontxConnected">
-                                                <option>433 MHz</option>
-                                                <option>868 MHz</option>
-                                                <option>915 MHz</option>
+                                                <option value="433 MHz">433 MHz</option>
+                                                <option value="868 MHz">868 MHz</option>
+                                                <option value="915 MHz">915 MHz</option>
                                             </select>
                                         </td>
+                                        <td><input type="number" min="0" max="31" v-model="device.rfPower" @change="setRfPower" :disabled="!emontxConnected" style="width:60px" /></td>
                                         <td>{{ device.rfFormat }}</td>
                                     </tr>
                                 </table>
@@ -705,7 +712,8 @@
                     RF: false,
                     rfNode: '',
                     rfGroup: '',
-                    rfBand: '',
+                    rfBand: '868 MHz',
+                    rfPower: 25,
                     rfFormat: '',
                     pulse: false,
                     pulsePeriod: '',
@@ -713,9 +721,9 @@
                     json: 0,
                     vcal: '',
                     vchannels: [
-                        { vcal: 100, active: true },
-                        { vcal: 100, active: false },
-                        { vcal: 100, active: false }
+                        { vcal: 100, vphase: 0, active: true },
+                        { vcal: 100, vphase: 0, active: false },
+                        { vcal: 100, vphase: 0, active: false }
                     ],
                     ichannels: []
                 },
@@ -1199,6 +1207,13 @@
                                     this.$set(this.device.vchannels[c], 'active', val === '1');
                                 }
                             }
+                            // Multi-voltage phase/lead (emonPi3)
+                            else if (key.startsWith('vLead')) {
+                                const c = parseInt(key.substring(5).trim()) - 1;
+                                if (c >= 0 && c < this.device.vchannels.length) {
+                                    this.$set(this.device.vchannels[c], 'vphase', parseFloat(val));
+                                }
+                            }
                             // Version
                             else if (key === 'version') {
                                 this.device.firmware_version = val;
@@ -1218,7 +1233,15 @@
                                 this.device.rfGroup = parseInt(val);
                             }
                             else if (key === 'rfBand') {
-                                this.device.rfBand = val;
+                                // Normalize: firmware outputs "433.00 MHz" or "433.92 MHz", map to "433 MHz"
+                                if (val.startsWith('433')) {
+                                    this.device.rfBand = '433 MHz';
+                                } else {
+                                    this.device.rfBand = val;
+                                }
+                            }
+                            else if (key === 'rfPower') {
+                                this.device.rfPower = parseInt(val);
                             }
                             else if (key === 'rfFormat') {
                                 this.device.rfFormat = val;
@@ -1290,7 +1313,8 @@
                 setVchannel(i) {
                     const active = this.device.vchannels[i].active ? 1 : 0;
                     const vcal = parseFloat(this.device.vchannels[i].vcal).toFixed(2);
-                    this.writeToStream('k' + (i + 1) + ' ' + active + ' ' + vcal);
+                    const vphase = parseFloat(this.device.vchannels[i].vphase || 0).toFixed(2);
+                    this.writeToStream('k' + (i + 1) + ' ' + active + ' ' + vcal + ' ' + vphase);
                     this.changes = true;
                     this.hasUnsavedChanges = true;
                 },
@@ -1325,6 +1349,12 @@
                 },
                 setRfBand() {
                     this.writeToStream('b' + this.device.rfBand[0]);
+                    this.changes = true;
+                    this.hasUnsavedChanges = true;
+                },
+                setRfPower() {
+                    const power = Math.max(0, Math.min(31, Math.round(this.device.rfPower)));
+                    this.writeToStream('p' + power);
                     this.changes = true;
                     this.hasUnsavedChanges = true;
                 },

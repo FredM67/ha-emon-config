@@ -54,6 +54,7 @@
         "nodeId": "Node ID",
         "group": "Group",
         "frequency": "Frequency",
+        "rfPower": "Power",
         "format": "Format",
         "otherSettings": "Other Settings",
         "pulseInput": "Pulse Input",
