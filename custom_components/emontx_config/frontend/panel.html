@@ -82,6 +82,23 @@
             font-weight: 600;
         }
         .card-body { padding: 20px; }
+        .card-header-collapsible {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        .card-header-collapsible:hover {
+            background: #f0f0f0;
+        }
+        .collapse-icon {
+            transition: transform 0.2s;
+            font-size: 12px;
+        }
+        .collapse-icon.collapsed {
+            transform: rotate(-90deg);
+        }
         .terminal {
             background: #1e1e1e;
             color: #00ff00;
@@ -172,6 +189,39 @@
             .tab {
                 padding: 10px 16px;
                 font-size: 14px;
+            }
+        }
+
+        /* Sub-tabs for config sections */
+        .sub-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            background: #f5f5f5;
+            padding: 5px;
+            border-radius: 8px;
+        }
+        .sub-tab {
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 13px;
+            color: #666;
+            transition: all 0.2s;
+            background: transparent;
+        }
+        .sub-tab:hover { color: #4CAF50; background: #e8e8e8; }
+        .sub-tab.active { color: white; background: #4CAF50; }
+        @media (max-width: 600px) {
+            .sub-tabs {
+                flex-wrap: wrap;
+            }
+            .sub-tab {
+                padding: 6px 12px;
+                font-size: 12px;
+                flex: 1 1 auto;
+                text-align: center;
             }
         }
 
@@ -387,10 +437,13 @@
             </div>
 
             <div v-if="configReceived && !upgradeRequired">
-                <!-- Device Info -->
+                <!-- Device Info (collapsible) -->
                 <div class="card">
-                    <div class="card-header">{{ t.config.deviceInfo }}</div>
-                    <div class="card-body">
+                    <div class="card-header card-header-collapsible" @click="deviceInfoCollapsed = !deviceInfoCollapsed">
+                        <span>{{ t.config.deviceInfo }}</span>
+                        <span :class="['collapse-icon', deviceInfoCollapsed ? 'collapsed' : '']">&#9660;</span>
+                    </div>
+                    <div class="card-body" v-show="!deviceInfoCollapsed">
                         <div class="table-responsive">
                             <table class="device-info-table">
                                 <tr>
@@ -409,6 +462,22 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Sub-tabs for config sections -->
+                <div class="sub-tabs">
+                    <div :class="['sub-tab', configSubTab === 'calibration' ? 'active' : '']" @click="configSubTab = 'calibration'">
+                        {{ (t.configTabs && t.configTabs.calibration) || 'Calibration' }}
+                    </div>
+                    <div :class="['sub-tab', configSubTab === 'sensors' ? 'active' : '']" @click="configSubTab = 'sensors'">
+                        {{ (t.configTabs && t.configTabs.sensors) || 'Sensors' }}
+                    </div>
+                    <div :class="['sub-tab', configSubTab === 'misc' ? 'active' : '']" @click="configSubTab = 'misc'">
+                        {{ (t.configTabs && t.configTabs.misc) || 'Misc' }}
+                    </div>
+                </div>
+
+                <!-- CALIBRATION SUB-TAB -->
+                <div v-show="configSubTab === 'calibration'">
 
                 <!-- Voltage Calibration -->
                 <div class="card" v-if="device.hardware !== 'emonPi3'">
@@ -495,71 +564,10 @@
                         </div>
                     </div>
                 </div>
+                </div><!-- END CALIBRATION SUB-TAB -->
 
-                <!-- Radio Settings -->
-                <div class="card" v-if="device.hardware !== 'emonPi2'">
-                    <div class="card-header">{{ t.config.radioSettings }}</div>
-                    <div class="card-body">
-                        <div class="form-group">
-                            <label>{{ t.config.radioEnabled }}</label>
-                            <input type="checkbox" v-model="device.RF" @change="setRadio" :disabled="!emontxConnected" />
-                        </div>
-                        <div v-if="device.RF">
-                            <div class="table-responsive">
-                                <table class="device-info-table">
-                                    <tr>
-                                        <th>{{ t.config.nodeId }}</th>
-                                        <th>{{ t.config.group }}</th>
-                                        <th>{{ t.config.frequency }}</th>
-                                        <th>{{ t.config.rfPower || 'Power' }}</th>
-                                        <th>{{ t.config.format }}</th>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="number" v-model="device.rfNode" @change="setRfNode" :disabled="!emontxConnected" style="width:60px" /></td>
-                                        <td><input type="number" v-model="device.rfGroup" @change="setRfGroup" :disabled="!emontxConnected" style="width:60px" /></td>
-                                        <td>
-                                            <select v-model="device.rfBand" @change="setRfBand" :disabled="!emontxConnected">
-                                                <option value="433 MHz">433 MHz</option>
-                                                <option value="868 MHz">868 MHz</option>
-                                                <option value="915 MHz">915 MHz</option>
-                                            </select>
-                                        </td>
-                                        <td><input type="number" min="0" max="31" v-model="device.rfPower" @change="setRfPower" :disabled="!emontxConnected" style="width:60px" /></td>
-                                        <td>{{ device.rfFormat }}</td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Other Settings -->
-                <div class="card">
-                    <div class="card-header">{{ t.config.otherSettings }}</div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="device-info-table">
-                                <tr>
-                                    <th v-if="device.hardware !== 'emonPi3'">{{ t.config.pulseInput }}</th>
-                                    <th v-if="device.hardware !== 'emonPi3'">{{ t.config.pulsePeriod }}</th>
-                                    <th>{{ t.config.datalogInterval }}</th>
-                                    <th>{{ t.config.serialFormat }}</th>
-                                </tr>
-                                <tr>
-                                    <td v-if="device.hardware !== 'emonPi3'"><input type="checkbox" v-model="device.pulse" @change="setPulse" :disabled="!emontxConnected" /></td>
-                                    <td v-if="device.hardware !== 'emonPi3'"><input type="number" v-model="device.pulsePeriod" @change="setPulsePeriod" :disabled="!emontxConnected" style="width:80px" /></td>
-                                    <td><input type="number" step="0.1" v-model="device.datalog" @change="setDatalog" :disabled="!emontxConnected" style="width:80px" /></td>
-                                    <td>
-                                        <select v-model="device.json" @change="setJson" :disabled="!emontxConnected">
-                                            <option :value="0">{{ t.config.keyValuePairs }}</option>
-                                            <option :value="1">{{ t.config.fullJson }}</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+                <!-- SENSORS SUB-TAB -->
+                <div v-show="configSubTab === 'sensors'">
 
                 <!-- OPA Channels (OneWire/Pulse) -->
                 <div class="card" v-if="device.hardware === 'emonPi3'">
@@ -628,6 +636,86 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Pulse Settings (for non-emonPi3) -->
+                <div class="card" v-if="device.hardware !== 'emonPi3'">
+                    <div class="card-header">{{ t.config.pulseSettings || 'Pulse Settings' }}</div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="device-info-table">
+                                <tr>
+                                    <th>{{ t.config.pulseInput }}</th>
+                                    <th>{{ t.config.pulsePeriod }}</th>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" v-model="device.pulse" @change="setPulse" :disabled="!emontxConnected" /></td>
+                                    <td><input type="number" v-model="device.pulsePeriod" @change="setPulsePeriod" :disabled="!emontxConnected" style="width:80px" /></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                </div><!-- END SENSORS SUB-TAB -->
+
+                <!-- MISC SUB-TAB -->
+                <div v-show="configSubTab === 'misc'">
+
+                <!-- Radio Settings -->
+                <div class="card" v-if="device.hardware !== 'emonPi2'">
+                    <div class="card-header">{{ t.config.radioSettings }}</div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>{{ t.config.radioEnabled }}</label>
+                            <input type="checkbox" v-model="device.RF" @change="setRadio" :disabled="!emontxConnected" />
+                        </div>
+                        <div v-if="device.RF">
+                            <div class="table-responsive">
+                                <table class="device-info-table">
+                                    <tr>
+                                        <th>{{ t.config.nodeId }}</th>
+                                        <th>{{ t.config.group }}</th>
+                                        <th>{{ t.config.frequency }}</th>
+                                        <th>{{ t.config.rfPower || 'Power' }}</th>
+                                        <th>{{ t.config.format }}</th>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="number" v-model="device.rfNode" @change="setRfNode" :disabled="!emontxConnected" style="width:60px" /></td>
+                                        <td><input type="number" v-model="device.rfGroup" @change="setRfGroup" :disabled="!emontxConnected" style="width:60px" /></td>
+                                        <td>
+                                            <select v-model="device.rfBand" @change="setRfBand" :disabled="!emontxConnected">
+                                                <option value="433 MHz">433 MHz</option>
+                                                <option value="868 MHz">868 MHz</option>
+                                                <option value="915 MHz">915 MHz</option>
+                                            </select>
+                                        </td>
+                                        <td><input type="number" min="0" max="31" v-model="device.rfPower" @change="setRfPower" :disabled="!emontxConnected" style="width:60px" /></td>
+                                        <td>{{ device.rfFormat }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Datalog & Output Settings -->
+                <div class="card">
+                    <div class="card-header">{{ t.config.otherSettings }}</div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="device-info-table">
+                                <tr>
+                                    <th>{{ t.config.datalogInterval }}</th>
+                                    <th>{{ t.config.jsonOutput || 'JSON Output' }}</th>
+                                </tr>
+                                <tr>
+                                    <td><input type="number" step="0.1" v-model="device.datalog" @change="setDatalog" :disabled="!emontxConnected" style="width:80px" /></td>
+                                    <td><input type="checkbox" v-model="device.json" :true-value="1" :false-value="0" @change="setJson" :disabled="!emontxConnected" /></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                </div><!-- END MISC SUB-TAB -->
 
                 <!-- Action Buttons -->
                 <div class="button-group">
@@ -821,6 +909,8 @@
             el: '#app',
             data: {
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
+                configSubTab: 'calibration',
+                deviceInfoCollapsed: true,
                 wsConnected: false,
                 emontxConnected: false,
                 emontxStatus: 'Unknown',

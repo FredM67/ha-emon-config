@@ -11,6 +11,11 @@
         "liveData": "Données en Direct",
         "accumulators": "Accumulateurs"
     },
+    "configTabs": {
+        "calibration": "Calibration",
+        "sensors": "Capteurs",
+        "misc": "Divers"
+    },
     "buttons": {
         "loadConfig": "Charger Config",
         "save": "Enregistrer les Modifications",
@@ -58,12 +63,11 @@
         "rfPower": "Puissance",
         "format": "Format",
         "otherSettings": "Autres Paramètres",
+        "pulseSettings": "Paramètres Impulsion",
         "pulseInput": "Entrée Impulsion",
         "pulsePeriod": "Période Impulsion",
         "datalogInterval": "Intervalle Datalog",
-        "serialFormat": "Format Série",
-        "keyValuePairs": "Paires clé:valeur",
-        "fullJson": "JSON Complet",
+        "jsonOutput": "Sortie JSON",
         "opaChannels": "Canaux OPA (OneWire/Impulsion)",
         "function": "Fonction",
         "oneWire": "OneWire",

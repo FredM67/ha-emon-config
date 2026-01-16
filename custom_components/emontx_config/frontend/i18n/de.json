@@ -11,6 +11,11 @@
         "liveData": "Live-Daten",
         "accumulators": "Akkumulatoren"
     },
+    "configTabs": {
+        "calibration": "Kalibrierung",
+        "sensors": "Sensoren",
+        "misc": "Sonstiges"
+    },
     "buttons": {
         "loadConfig": "Konfig Laden",
         "save": "Änderungen Speichern",
@@ -58,12 +63,11 @@
         "rfPower": "Leistung",
         "format": "Format",
         "otherSettings": "Weitere Einstellungen",
+        "pulseSettings": "Impulseinstellungen",
         "pulseInput": "Impulseingang",
         "pulsePeriod": "Impulsperiode",
         "datalogInterval": "Datalog-Intervall",
-        "serialFormat": "Serielles Format",
-        "keyValuePairs": "Schlüssel:Wert Paare",
-        "fullJson": "Vollständiges JSON",
+        "jsonOutput": "JSON-Ausgabe",
         "opaChannels": "OPA-Kanäle (OneWire/Impuls)",
         "function": "Funktion",
         "oneWire": "OneWire",
