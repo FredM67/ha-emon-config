@@ -67,7 +67,7 @@
         "pulseInput": "Entrée Impulsion",
         "pulsePeriod": "Période Impulsion",
         "datalogInterval": "Intervalle Datalog",
-        "jsonOutput": "Sortie JSON",
+        "jsonSerialFormat": "Format Série JSON",
         "opaChannels": "Canaux OPA (OneWire/Impulsion)",
         "function": "Fonction",
         "oneWire": "OneWire",
@@ -117,6 +117,7 @@
         "message": "Il y a des modifications non enregistrées sur l'appareil. Utilisez \"Enregistrer\" pour les sauvegarder."
     },
     "accumulators": {
+        "explanation": "Utilisez cette page pour remettre à zéro les valeurs stockées sur l'emonTx/emonPi. Cette action est irréversible.",
         "energyTitle": "Accumulateurs d'Énergie",
         "pulseTitle": "Accumulateurs d'Impulsions",
         "channel": "Canal",

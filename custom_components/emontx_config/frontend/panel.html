@@ -82,23 +82,6 @@
             font-weight: 600;
         }
         .card-body { padding: 20px; }
-        .card-header-collapsible {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            user-select: none;
-        }
-        .card-header-collapsible:hover {
-            background: #f0f0f0;
-        }
-        .collapse-icon {
-            transition: transform 0.2s;
-            font-size: 12px;
-        }
-        .collapse-icon.collapsed {
-            transform: rotate(-90deg);
-        }
         .terminal {
             background: #1e1e1e;
             color: #00ff00;
@@ -168,23 +151,26 @@
         .btn-info:hover { background: #1976D2; }
         .tabs {
             display: flex;
-            border-bottom: 2px solid #e0e0e0;
+            gap: 8px;
             margin-bottom: 20px;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
+            background: #e8f5e9;
+            padding: 8px;
+            border-radius: 10px;
         }
         .tab {
             padding: 12px 24px;
             cursor: pointer;
-            border-bottom: 2px solid transparent;
-            margin-bottom: -2px;
+            border-radius: 8px;
             font-weight: 500;
-            color: #666;
+            color: #555;
             transition: all 0.2s;
             white-space: nowrap;
+            background: transparent;
         }
-        .tab:hover { color: #4CAF50; }
-        .tab.active { color: #4CAF50; border-bottom-color: #4CAF50; }
+        .tab:hover { color: #4CAF50; background: rgba(76, 175, 80, 0.1); }
+        .tab.active { color: white; background: #4CAF50; }
         @media (max-width: 600px) {
             .tab {
                 padding: 10px 16px;
@@ -197,8 +183,8 @@
             display: flex;
             gap: 5px;
             margin-bottom: 20px;
-            background: #f5f5f5;
-            padding: 5px;
+            background: #e3f2fd;
+            padding: 6px;
             border-radius: 8px;
         }
         .sub-tab {
@@ -207,12 +193,12 @@
             border-radius: 6px;
             font-weight: 500;
             font-size: 13px;
-            color: #666;
+            color: #555;
             transition: all 0.2s;
             background: transparent;
         }
-        .sub-tab:hover { color: #4CAF50; background: #e8e8e8; }
-        .sub-tab.active { color: white; background: #4CAF50; }
+        .sub-tab:hover { color: #1976D2; background: rgba(33, 150, 243, 0.1); }
+        .sub-tab.active { color: white; background: #2196F3; }
         @media (max-width: 600px) {
             .sub-tabs {
                 flex-wrap: wrap;
@@ -403,6 +389,11 @@
                 <div :class="['status-dot', emontxConnected ? 'connected' : 'disconnected']"></div>
                 <span>emonPi/Tx: <strong>{{ emontxConnected ? t.connected : t.unknown }}</strong></span>
             </div>
+            <div class="status-item" v-if="configReceived" style="font-size: 13px;">
+                <span>{{ t.config.hardware }}: <strong>{{ device.hardware || '-' }}</strong></span>
+                <span style="margin-left: 12px;">{{ t.config.version }}: <strong>{{ device.firmware_version || '-' }}</strong></span>
+                <span style="margin-left: 12px;" v-if="device.voltage">{{ t.config.voltageLabel }}: <strong>{{ device.voltage }}</strong></span>
+            </div>
             <div class="status-item" style="margin-left: auto;">
                 <label style="margin-right: 8px;">{{ t.deviceSelector }}:</label>
                 <select v-model="selectedDevice" @change="switchDevice" style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 4px; background: white;">
@@ -437,32 +428,6 @@
             </div>
 
             <div v-if="configReceived && !upgradeRequired">
-                <!-- Device Info (collapsible) -->
-                <div class="card">
-                    <div class="card-header card-header-collapsible" @click="deviceInfoCollapsed = !deviceInfoCollapsed">
-                        <span>{{ t.config.deviceInfo }}</span>
-                        <span :class="['collapse-icon', deviceInfoCollapsed ? 'collapsed' : '']">&#9660;</span>
-                    </div>
-                    <div class="card-body" v-show="!deviceInfoCollapsed">
-                        <div class="table-responsive">
-                            <table class="device-info-table">
-                                <tr>
-                                    <th>{{ t.config.hardware }}</th>
-                                    <th>{{ t.config.hardwareRev }}</th>
-                                    <th>{{ t.config.version }}</th>
-                                    <th>{{ t.config.voltageLabel }}</th>
-                                </tr>
-                                <tr>
-                                    <td>{{ device.hardware || '-' }}</td>
-                                    <td>{{ device.hardware_rev || '-' }}</td>
-                                    <td>{{ device.firmware_version || '-' }}</td>
-                                    <td>{{ device.voltage || '-' }}</td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Sub-tabs for config sections -->
                 <div class="sub-tabs">
                     <div :class="['sub-tab', configSubTab === 'calibration' ? 'active' : '']" @click="configSubTab = 'calibration'">
@@ -701,17 +666,14 @@
                 <div class="card">
                     <div class="card-header">{{ t.config.otherSettings }}</div>
                     <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="device-info-table">
-                                <tr>
-                                    <th>{{ t.config.datalogInterval }}</th>
-                                    <th>{{ t.config.jsonOutput || 'JSON Output' }}</th>
-                                </tr>
-                                <tr>
-                                    <td><input type="number" step="0.1" v-model="device.datalog" @change="setDatalog" :disabled="!emontxConnected" style="width:80px" /></td>
-                                    <td><input type="checkbox" v-model="device.json" :true-value="1" :false-value="0" @change="setJson" :disabled="!emontxConnected" /></td>
-                                </tr>
-                            </table>
+                        <div class="form-group">
+                            <label>{{ t.config.datalogInterval }}</label>
+                            <input type="number" step="0.1" v-model="device.datalog" @change="setDatalog" :disabled="!emontxConnected" style="width:80px" />
+                            <span class="unit">s</span>
+                        </div>
+                        <div class="form-group">
+                            <label>{{ t.config.jsonSerialFormat || 'JSON Serial Format' }}</label>
+                            <input type="checkbox" v-model="device.json" :true-value="1" :false-value="0" @change="setJson" :disabled="!emontxConnected" />
                         </div>
                     </div>
                 </div>
@@ -801,6 +763,11 @@
             <div v-if="hasUnsavedChanges" class="alert alert-danger" style="display: flex; align-items: center; justify-content: space-between;">
                 <span><strong>{{ t.unsavedChanges.title }}</strong> {{ t.unsavedChanges.message }}</span>
                 <button class="btn btn-warning" @click="saveConfig" style="margin-left: 15px;">{{ t.buttons.save }}</button>
+            </div>
+
+            <!-- Explanation -->
+            <div class="alert alert-info">
+                {{ (t.accumulators && t.accumulators.explanation) || 'Use this page to reset the values stored on the emonTx/emonPi to zero. This action cannot be undone.' }}
             </div>
 
             <div class="card">
@@ -910,7 +877,6 @@
             data: {
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 configSubTab: 'calibration',
-                deviceInfoCollapsed: true,
                 wsConnected: false,
                 emontxConnected: false,
                 emontxStatus: 'Unknown',
@@ -1444,18 +1410,17 @@
                     }
 
                     // Parse temperature sensor list from 'ol' command
-                    // Format: "T1: 28 7b 57 04 e1 3c ea" or similar
-                    if (line.match(/^T\d+:\s/)) {
-                        const match = line.match(/^T(\d+):\s*(.+)/);
-                        if (match) {
-                            const idx = parseInt(match[1]) - 1;
-                            const addr = match[2].trim();
-                            // Ensure array is large enough
-                            while (this.device.tempSensors.length <= idx) {
-                                this.device.tempSensors.push({ addr: '' });
-                            }
-                            this.$set(this.device.tempSensors, idx, { addr: addr });
+                    // Format: "1 [->1] 28 27 7e 56 b5 1 3c 63"
+                    // Where: sensor_num [->mapping] address_bytes (hex %x without zero padding)
+                    const tempMatch = line.match(/^(\d+)\s+\[->\s*(\d+)\s*\]\s+(.+)$/);
+                    if (tempMatch) {
+                        const idx = parseInt(tempMatch[2]) - 1; // Use mapping index for display order
+                        const addr = tempMatch[3].trim();
+                        // Ensure array is large enough
+                        while (this.device.tempSensors.length <= idx) {
+                            this.device.tempSensors.push({ addr: '' });
                         }
+                        this.$set(this.device.tempSensors, idx, { addr: addr });
                     }
 
                     // Parse accumulator values from 'lh' command to update liveData

@@ -67,7 +67,7 @@
         "pulseInput": "Pulse Input",
         "pulsePeriod": "Pulse Period",
         "datalogInterval": "Datalog Interval",
-        "jsonOutput": "JSON Output",
+        "jsonSerialFormat": "JSON Serial Format",
         "opaChannels": "OPA Channels (OneWire/Pulse)",
         "function": "Function",
         "oneWire": "OneWire",
@@ -117,6 +117,7 @@
         "message": "There are unsaved changes on the device. Use \"Save Changes\" to save them."
     },
     "accumulators": {
+        "explanation": "Use this page to reset the values stored on the emonTx/emonPi to zero. This action cannot be undone.",
         "energyTitle": "Energy Accumulators",
         "pulseTitle": "Pulse Accumulators",
         "channel": "Channel",

@@ -67,7 +67,7 @@
         "pulseInput": "Impulseingang",
         "pulsePeriod": "Impulsperiode",
         "datalogInterval": "Datalog-Intervall",
-        "jsonOutput": "JSON-Ausgabe",
+        "jsonSerialFormat": "JSON Serielles Format",
         "opaChannels": "OPA-Kanäle (OneWire/Impuls)",
         "function": "Funktion",
         "oneWire": "OneWire",
@@ -117,6 +117,7 @@
         "message": "Es gibt ungespeicherte Änderungen auf dem Gerät. Verwenden Sie \"Speichern\" um sie zu sichern."
     },
     "accumulators": {
+        "explanation": "Verwenden Sie diese Seite, um die auf dem emonTx/emonPi gespeicherten Werte auf Null zu setzen. Diese Aktion kann nicht rückgängig gemacht werden.",
         "energyTitle": "Energie-Akkumulatoren",
         "pulseTitle": "Impuls-Akkumulatoren",
         "channel": "Kanal",
