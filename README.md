@@ -4,7 +4,7 @@
 [![GitHub Release](https://img.shields.io/github/v/release/FredM67/ha-emon-config)](https://github.com/FredM67/ha-emon-config/releases)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2023.1+-blue)](https://www.home-assistant.io/)
 [![OpenEnergyMonitor](https://img.shields.io/badge/OpenEnergyMonitor-emonPi%2FTx-green)](https://openenergymonitor.org/)
-[![Maintenance](https://img.shields.io/maintenance/yes/2025)](https://github.com/FredM67/ha-emon-config)
+[![Maintenance](https://img.shields.io/maintenance/yes/2026)](https://github.com/FredM67/ha-emon-config)
 [![Sponsor](https://img.shields.io/badge/Sponsor-PayPal-blue?logo=paypal)](https://www.paypal.com/donate/?business=CHGDDS5VQUJFN&no_recurring=0&item_name=Support+emonPi%2FTx+Configuration+for+Home+Assistant&currency_code=EUR)
 
 [![Stars](https://img.shields.io/github/stars/FredM67/ha-emon-config)](https://github.com/FredM67/ha-emon-config/stargazers)
