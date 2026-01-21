@@ -63,7 +63,8 @@ Vue.component('bulk-ct-modal', {
         show: Boolean,
         t: Object,
         ichannels: Array,
-        ctsAvailable: Array
+        ctsAvailable: Array,
+        progress: Object  // { current: number, total: number, currentCt: number, error: boolean } or null
     },
     data() {
         return {
@@ -91,6 +92,13 @@ Vue.component('bulk-ct-modal', {
         }
     },
     computed: {
+        isApplying() {
+            return this.progress !== null && this.progress !== undefined;
+        },
+        progressPercent() {
+            if (!this.progress || this.progress.total === 0) return 0;
+            return Math.round((this.progress.current / this.progress.total) * 100);
+        },
         bulkT() {
             return (this.t.bulk) || {};
         }
@@ -209,14 +217,30 @@ Vue.component('bulk-ct-modal', {
                     </div>
                 </div>
 
+                <!-- Progress bar (shown during apply) -->
+                <div v-if="isApplying" style="margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span style="font-weight: 500;">{{ bulkT.applying || 'Applying...' }} CT {{ progress.currentCt }}</span>
+                        <span>{{ progress.current }} / {{ progress.total }}</span>
+                    </div>
+                    <div style="background: #e0e0e0; border-radius: 4px; height: 20px; overflow: hidden;">
+                        <div :style="{
+                            width: progressPercent + '%',
+                            height: '100%',
+                            background: progress.error ? '#f44336' : '#4CAF50',
+                            transition: 'width 0.3s ease'
+                        }"></div>
+                    </div>
+                </div>
+
                 <!-- Action buttons -->
                 <div style="display: flex; gap: 10px; justify-content: center;">
-                    <button class="btn btn-primary" @click="apply"
+                    <button v-if="!isApplying" class="btn btn-primary" @click="apply"
                             :disabled="selectedCts.length === 0 || (!applyCtType && !applyPhase && !applyVchan1 && !applyVchan2)"
                             style="padding: 12px 25px;">
                         {{ bulkT.apply || 'Apply to' }} {{ selectedCts.length }} {{ bulkT.selected || 'selected' }}
                     </button>
-                    <button class="btn" @click="$emit('close')" style="padding: 12px 25px; background: #ccc;">{{ bulkT.cancel || 'Cancel' }}</button>
+                    <button class="btn" @click="$emit('close')" :disabled="isApplying" style="padding: 12px 25px; background: #ccc;">{{ bulkT.cancel || 'Cancel' }}</button>
                 </div>
             </div>
         </div>

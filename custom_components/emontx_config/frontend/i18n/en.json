@@ -142,6 +142,7 @@
         "setValues": "Set values:",
         "apply": "Apply to",
         "selected": "selected",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "applying": "Applying..."
     }
 }

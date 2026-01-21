@@ -142,6 +142,7 @@
         "setValues": "Définir les valeurs :",
         "apply": "Appliquer à",
         "selected": "sélectionnés",
-        "cancel": "Annuler"
+        "cancel": "Annuler",
+        "applying": "Application..."
     }
 }

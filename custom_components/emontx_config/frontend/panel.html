@@ -142,8 +142,9 @@
             :t="t"
             :ichannels="device.ichannels"
             :cts-available="ctsAvailable"
+            :progress="bulkProgress"
             @apply="applyBulkCtSettings"
-            @close="showBulkCtModal = false"
+            @close="closeBulkModal"
         ></bulk-ct-modal>
     </div>
 
@@ -180,6 +181,7 @@
                 generatedYaml: '',
                 // Bulk CT settings
                 showBulkCtModal: false,
+                bulkProgress: null,  // { current, total, currentCt, error }
                 // Pending response for sequential commands
                 pendingResponse: null,
                 // Unsaved changes warning
@@ -817,12 +819,15 @@
                 },
                 async applyBulkCtSettings(changes) {
                     // Apply values to selected channels one by one, waiting for acknowledgment
-                    this.showBulkCtModal = false;
                     const total = changes.channels.length;
+                    this.bulkProgress = { current: 0, total: total, currentCt: 0, error: false };
                     this.log(`Applying bulk settings to ${total} channels...`, 'info');
 
                     for (let i = 0; i < changes.channels.length; i++) {
                         const idx = changes.channels[i];
+                        const ctNum = idx + 1;
+                        this.bulkProgress = { current: i, total: total, currentCt: ctNum, error: false };
+
                         if (idx < this.device.ichannels.length) {
                             if (changes.values.ical !== undefined) {
                                 this.$set(this.device.ichannels[idx], 'ical', changes.values.ical);
@@ -838,21 +843,34 @@
                             }
 
                             // Send command and wait for iCal acknowledgment (only sent if config accepted)
-                            const ctNum = idx + 1;
                             try {
                                 const responsePromise = this.waitForResponse(`iCal${ctNum} =`);
                                 this.setIcal(idx);
                                 await responsePromise;
                                 this.log(`Configured CT ${ctNum} (${i + 1}/${total})`, 'info');
                             } catch (e) {
+                                this.bulkProgress = { ...this.bulkProgress, error: true };
                                 this.log(`CT ${ctNum} config rejected or timeout (${i + 1}/${total})`, 'error');
                             }
                         }
                     }
+                    // Show completion
+                    this.bulkProgress = { current: total, total: total, currentCt: 0, error: false };
                     this.log(`Bulk settings applied to ${total} channels`, 'info');
+                    // Close modal after brief delay to show 100%
+                    setTimeout(() => {
+                        this.showBulkCtModal = false;
+                        this.bulkProgress = null;
+                    }, 500);
                 },
                 openBulkCtModal() {
                     this.showBulkCtModal = true;
+                    this.bulkProgress = null;
+                },
+                closeBulkModal() {
+                    if (!this.bulkProgress) {
+                        this.showBulkCtModal = false;
+                    }
                 },
                 setRadio() {
                     this.writeToStream('w' + (this.device.RF ? 1 : 0));

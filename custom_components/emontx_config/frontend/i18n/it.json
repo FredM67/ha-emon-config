@@ -142,6 +142,7 @@
         "setValues": "Imposta valori:",
         "apply": "Applica a",
         "selected": "selezionati",
-        "cancel": "Annulla"
+        "cancel": "Annulla",
+        "applying": "Applicazione..."
     }
 }
