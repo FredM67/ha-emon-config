@@ -133,5 +133,15 @@
         "confirmWarning": "This action cannot be undone.",
         "confirmYes": "Yes, Zero It",
         "confirmNo": "Cancel"
+    },
+    "bulk": {
+        "button": "Bulk Settings",
+        "title": "Bulk CT Settings",
+        "selectAll": "Select All",
+        "selectNone": "Select None",
+        "setValues": "Set values:",
+        "apply": "Apply to",
+        "selected": "selected",
+        "cancel": "Cancel"
     }
 }

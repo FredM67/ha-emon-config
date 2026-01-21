@@ -76,6 +76,7 @@
             @zero-energy="zeroEnergy"
             @reset-defaults="resetDefaults"
             @generate-yaml="generateYaml"
+            @open-bulk-ct="openBulkCtModal"
         ></config-tab>
 
         <!-- Serial Terminal Tab -->
@@ -135,6 +136,15 @@
             :yaml="generatedYaml"
             @close="showYamlModal = false"
         ></yaml-modal>
+
+        <bulk-ct-modal
+            :show="showBulkCtModal"
+            :t="t"
+            :ichannels="device.ichannels"
+            :cts-available="ctsAvailable"
+            @apply="applyBulkCtSettings"
+            @close="showBulkCtModal = false"
+        ></bulk-ct-modal>
     </div>
 
     <!-- Load component scripts -->
@@ -168,6 +178,8 @@
                 // YAML generator
                 showYamlModal: false,
                 generatedYaml: '',
+                // Bulk CT settings
+                showBulkCtModal: false,
                 // Unsaved changes warning
                 hasUnsavedChanges: false,
                 // i18n
@@ -777,6 +789,32 @@
                     }
                     this.changes = true;
                     this.hasUnsavedChanges = true;
+                },
+                applyBulkCtSettings(changes) {
+                    // Apply values to selected channels
+                    for (const idx of changes.channels) {
+                        if (idx < this.device.ichannels.length) {
+                            if (changes.values.ical !== undefined) {
+                                this.$set(this.device.ichannels[idx], 'ical', changes.values.ical);
+                            }
+                            if (changes.values.ilead !== undefined) {
+                                this.$set(this.device.ichannels[idx], 'ilead', changes.values.ilead);
+                            }
+                            if (changes.values.vchan1 !== undefined) {
+                                this.$set(this.device.ichannels[idx], 'vchan1', changes.values.vchan1);
+                            }
+                            if (changes.values.vchan2 !== undefined) {
+                                this.$set(this.device.ichannels[idx], 'vchan2', changes.values.vchan2);
+                            }
+                            // Send command to device
+                            this.setIcal(idx);
+                        }
+                    }
+                    this.showBulkCtModal = false;
+                    this.log(`Applied bulk settings to ${changes.channels.length} channels`, 'info');
+                },
+                openBulkCtModal() {
+                    this.showBulkCtModal = true;
                 },
                 setRadio() {
                     this.writeToStream('w' + (this.device.RF ? 1 : 0));

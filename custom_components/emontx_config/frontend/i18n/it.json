@@ -133,5 +133,15 @@
         "confirmWarning": "Questa azione non può essere annullata.",
         "confirmYes": "Sì, Azzera",
         "confirmNo": "Annulla"
+    },
+    "bulk": {
+        "button": "Config. di Gruppo",
+        "title": "Configurazione CT di Gruppo",
+        "selectAll": "Seleziona Tutti",
+        "selectNone": "Deseleziona Tutti",
+        "setValues": "Imposta valori:",
+        "apply": "Applica a",
+        "selected": "selezionati",
+        "cancel": "Annulla"
     }
 }

@@ -133,5 +133,15 @@
         "confirmWarning": "Diese Aktion kann nicht rückgängig gemacht werden.",
         "confirmYes": "Ja, Nullstellen",
         "confirmNo": "Abbrechen"
+    },
+    "bulk": {
+        "button": "Sammeleinstellung",
+        "title": "CT-Sammeleinstellungen",
+        "selectAll": "Alle Auswählen",
+        "selectNone": "Keine Auswählen",
+        "setValues": "Werte setzen:",
+        "apply": "Anwenden auf",
+        "selected": "ausgewählt",
+        "cancel": "Abbrechen"
     }
 }

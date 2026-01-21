@@ -97,7 +97,12 @@ Vue.component('config-tab', {
 
                 <!-- Current Channels -->
                 <div class="card">
-                    <div class="card-header">{{ t.config.ctChannels }}</div>
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>{{ t.config.ctChannels }}</span>
+                        <button v-if="device.hardware === 'emonPi3'" class="btn btn-sm btn-info" @click="$emit('open-bulk-ct')" :disabled="!emontxConnected" style="padding: 4px 12px; font-size: 12px;">
+                            {{ (t.bulk && t.bulk.button) || 'Bulk Settings' }}
+                        </button>
+                    </div>
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="config-table">

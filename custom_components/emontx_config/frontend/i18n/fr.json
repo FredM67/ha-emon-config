@@ -133,5 +133,15 @@
         "confirmWarning": "Cette action est irréversible.",
         "confirmYes": "Oui, Remettre à Zéro",
         "confirmNo": "Annuler"
+    },
+    "bulk": {
+        "button": "Config. Groupée",
+        "title": "Configuration Groupée des CT",
+        "selectAll": "Tout Sélectionner",
+        "selectNone": "Aucune Sélection",
+        "setValues": "Définir les valeurs :",
+        "apply": "Appliquer à",
+        "selected": "sélectionnés",
+        "cancel": "Annuler"
     }
 }
