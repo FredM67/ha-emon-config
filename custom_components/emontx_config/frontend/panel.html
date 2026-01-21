@@ -544,6 +544,7 @@
 
                 processLine(line) {
                     // Check for pending response (used by bulk operations)
+                    // Wait for iCal acknowledgment line (only sent if config accepted)
                     if (this.pendingResponse && line.includes(this.pendingResponse.pattern)) {
                         this.pendingResponse.resolve();
                         this.pendingResponse = null;
@@ -836,16 +837,15 @@
                                 this.$set(this.device.ichannels[idx], 'vchan2', changes.values.vchan2);
                             }
 
-                            // Send command and wait for echo acknowledgment
-                            // emonPi3 uses k4-k15 for CT channels 1-12, others use k1-k12
-                            const kNum = this.device.hardware === 'emonPi3' ? idx + 4 : idx + 1;
+                            // Send command and wait for iCal acknowledgment (only sent if config accepted)
+                            const ctNum = idx + 1;
                             try {
-                                const responsePromise = this.waitForResponse(`k${kNum} `);
+                                const responsePromise = this.waitForResponse(`iCal${ctNum} =`);
                                 this.setIcal(idx);
                                 await responsePromise;
-                                this.log(`Configured CT ${idx + 1} (${i + 1}/${total})`, 'info');
+                                this.log(`Configured CT ${ctNum} (${i + 1}/${total})`, 'info');
                             } catch (e) {
-                                this.log(`Timeout waiting for CT ${idx + 1} response`, 'error');
+                                this.log(`CT ${ctNum} config rejected or timeout (${i + 1}/${total})`, 'error');
                             }
                         }
                     }
