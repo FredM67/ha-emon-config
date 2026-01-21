@@ -5,374 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>emonPi/Tx Configuration</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.min.js"></script>
-    <style>
-        * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            padding: 20px;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background-color: #f5f5f5;
-        }
-        .container { margin: 0 auto; }
-        .header {
-            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .header h1 { margin: 0 0 10px 0; font-size: 24px; }
-        .header p { margin: 0; opacity: 0.9; }
-        .status-bar {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        .status-item {
-            background: white;
-            padding: 12px 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex: 1 1 auto;
-            min-width: 200px;
-        }
-        @media (max-width: 600px) {
-            .status-item {
-                min-width: 100%;
-                padding: 10px 12px;
-                font-size: 14px;
-            }
-            .status-item select {
-                max-width: 150px;
-            }
-            .header h1 {
-                font-size: 20px;
-            }
-            .header p {
-                font-size: 14px;
-            }
-            body {
-                padding: 10px;
-            }
-        }
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #ccc;
-        }
-        .status-dot.connected { background: #4CAF50; }
-        .status-dot.disconnected { background: #f44336; }
-        .card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-        .card-header {
-            background: #f8f8f8;
-            padding: 15px 20px;
-            border-bottom: 1px solid #e0e0e0;
-            font-weight: 600;
-        }
-        .card-body { padding: 20px; }
-        .terminal {
-            background: #1e1e1e;
-            color: #00ff00;
-            font-family: 'Consolas', 'Monaco', monospace;
-            padding: 15px;
-            border-radius: 4px;
-            height: 400px;
-            min-height: 150px;
-            max-height: 80vh;
-            overflow-y: auto;
-            font-size: 13px;
-            line-height: 1.4;
-            resize: vertical;
-            white-space: pre-wrap;
-        }
-        .terminal .error { color: #ff6b6b; }
-        .terminal .info { color: #4ecdc4; }
-        .terminal .sent { color: #ffd93d; }
-        .terminal-toolbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .terminal-toolbar .btn-group {
-            display: flex;
-            gap: 8px;
-        }
-        .terminal-toolbar .btn-sm {
-            padding: 6px 12px;
-            font-size: 12px;
-        }
-        .command-input {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        .command-input input {
-            flex: 1;
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-            font-family: monospace;
-        }
-        .command-input input:focus {
-            outline: none;
-            border-color: #4CAF50;
-        }
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-        .btn-primary { background: #4CAF50; color: white; }
-        .btn-primary:hover { background: #45a049; }
-        .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
-        .btn-warning { background: #ff9800; color: white; }
-        .btn-warning:hover { background: #f57c00; }
-        .btn-danger { background: #f44336; color: white; }
-        .btn-danger:hover { background: #d32f2f; }
-        .btn-info { background: #2196F3; color: white; }
-        .btn-info:hover { background: #1976D2; }
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            background: #e8f5e9;
-            padding: 8px;
-            border-radius: 10px;
-        }
-        .tab {
-            padding: 12px 24px;
-            cursor: pointer;
-            border-radius: 8px;
-            font-weight: 500;
-            color: #555;
-            transition: all 0.2s;
-            white-space: nowrap;
-            background: transparent;
-        }
-        .tab:hover { color: #4CAF50; background: rgba(76, 175, 80, 0.1); }
-        .tab.active { color: white; background: #4CAF50; }
-        @media (max-width: 600px) {
-            .tab {
-                padding: 10px 16px;
-                font-size: 14px;
-            }
-        }
-
-        /* Sub-tabs for config sections */
-        .sub-tabs {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 20px;
-            background: #e3f2fd;
-            padding: 6px;
-            border-radius: 8px;
-        }
-        .sub-tab {
-            padding: 8px 16px;
-            cursor: pointer;
-            border-radius: 6px;
-            font-weight: 500;
-            font-size: 13px;
-            color: #555;
-            transition: all 0.2s;
-            background: transparent;
-        }
-        .sub-tab:hover { color: #1976D2; background: rgba(33, 150, 243, 0.1); }
-        .sub-tab.active { color: white; background: #2196F3; }
-        @media (max-width: 600px) {
-            .sub-tabs {
-                flex-wrap: wrap;
-            }
-            .sub-tab {
-                padding: 6px 12px;
-                font-size: 12px;
-                flex: 1 1 auto;
-                text-align: center;
-            }
-        }
-
-        /* Config table styles */
-        .config-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        .config-table th, .config-table td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        .config-table th {
-            background: #f8f8f8;
-            font-weight: 600;
-        }
-        .config-table input[type="text"],
-        .config-table input[type="number"],
-        .config-table select {
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            width: 80px;
-        }
-        .config-table input:focus,
-        .config-table select:focus {
-            outline: none;
-            border-color: #4CAF50;
-        }
-        .config-table input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-        }
-        /* Hide spinner arrows for number inputs */
-        input[type="number"].no-spinner::-webkit-inner-spin-button,
-        input[type="number"].no-spinner::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        input[type="number"].no-spinner {
-            -moz-appearance: textfield;
-        }
-        .device-info-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        .device-info-table th, .device-info-table td {
-            padding: 10px;
-            text-align: left;
-            border: 1px solid #e0e0e0;
-        }
-        .device-info-table th { background: #f8f8f8; }
-
-        /* Mobile-friendly table wrapper */
-        .table-responsive {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            margin-bottom: 15px;
-        }
-        .table-responsive table {
-            margin-bottom: 0;
-        }
-        @media (max-width: 600px) {
-            .config-table th, .config-table td,
-            .device-info-table th, .device-info-table td {
-                padding: 8px 6px;
-                font-size: 13px;
-            }
-            .config-table input[type="number"],
-            .config-table select {
-                width: 65px;
-                padding: 6px;
-            }
-        }
-
-        .form-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            min-width: 150px;
-            font-weight: 500;
-        }
-        .form-group input, .form-group select {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .form-group .unit {
-            color: #666;
-        }
-
-        .alert {
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 15px;
-        }
-        .alert-info { background: #e3f2fd; color: #1565c0; }
-        .alert-warning { background: #fff3e0; color: #e65100; }
-        .alert-danger { background: #ffebee; color: #c62828; }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        @media (max-width: 600px) {
-            .button-group .btn {
-                flex: 1 1 calc(50% - 5px);
-                min-width: 120px;
-                padding: 12px 10px;
-                font-size: 13px;
-            }
-        }
-
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        @media (max-width: 900px) {
-            .main-content { grid-template-columns: 1fr; }
-        }
-        .config-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 10px;
-        }
-        .config-item {
-            background: #f8f8f8;
-            padding: 10px;
-            border-radius: 4px;
-        }
-        .config-item label {
-            display: block;
-            font-size: 11px;
-            color: #666;
-            margin-bottom: 3px;
-        }
-        .config-item .value {
-            font-size: 16px;
-            font-weight: 600;
-            color: #333;
-        }
-        .config-item.inactive {
-            background: #ffebee;
-        }
-        .config-item.inactive label,
-        .config-item.inactive .value {
-            color: #999;
-        }
-        .inactive-row {
-            background-color: #ffebee;
-        }
-        .inactive-row td {
-            color: #666;
-        }
-        h4 { margin: 20px 0 10px 0; color: #333; }
-    </style>
+    <link rel="stylesheet" href="/emontx_config_static/panel.css">
 </head>
 <body>
     <div id="app" class="container">
@@ -398,7 +31,7 @@
             <div class="status-item" style="margin-left: auto;">
                 <label style="margin-right: 8px;">{{ t.deviceSelector }}:</label>
                 <select v-model="selectedDevice" @change="switchDevice" style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 4px; background: white;">
-                    <option v-for="device in availableDevices" :key="device" :value="device">{{ device }}</option>
+                    <option v-for="dev in availableDevices" :key="dev" :value="dev">{{ dev }}</option>
                 </select>
             </div>
         </div>
@@ -411,480 +44,117 @@
         </div>
 
         <!-- Device Configuration Tab -->
-        <form autocomplete="off" @submit.prevent>
-        <div v-show="activeTab === 'config'" class="tab-content active">
-            <!-- Unsaved Changes Warning Banner -->
-            <div v-if="hasUnsavedChanges" class="alert alert-danger" style="display: flex; align-items: center; justify-content: space-between;">
-                <span><strong>{{ t.unsavedChanges.title }}</strong> {{ t.unsavedChanges.message }}</span>
-                <button class="btn btn-warning" @click="saveConfig" style="margin-left: 15px;">{{ t.buttons.save }}</button>
-            </div>
-
-            <div v-if="!configReceived" class="alert alert-info">
-                {{ t.config.waiting }} {{ t.config.clickLoad }}
-                <button class="btn btn-primary" style="margin-left: 15px;" @click="loadConfig" :disabled="!emontxConnected">{{ t.buttons.loadConfig }}</button>
-            </div>
-
-            <div v-if="upgradeRequired" class="alert alert-danger">
-                <b>{{ t.config.firmwareUpdateRequired }}</b> {{ t.config.firmwareUpdateMessage }}
-            </div>
-
-            <div v-if="configReceived && !upgradeRequired">
-                <!-- Sub-tabs for config sections -->
-                <div class="sub-tabs">
-                    <div :class="['sub-tab', configSubTab === 'calibration' ? 'active' : '']" @click="configSubTab = 'calibration'">
-                        {{ (t.configTabs && t.configTabs.calibration) || 'Calibration' }}
-                    </div>
-                    <div :class="['sub-tab', configSubTab === 'sensors' ? 'active' : '']" @click="configSubTab = 'sensors'">
-                        {{ (t.configTabs && t.configTabs.sensors) || 'Sensors' }}
-                    </div>
-                    <div :class="['sub-tab', configSubTab === 'misc' ? 'active' : '']" @click="configSubTab = 'misc'">
-                        {{ (t.configTabs && t.configTabs.misc) || 'Misc' }}
-                    </div>
-                </div>
-
-                <!-- CALIBRATION SUB-TAB -->
-                <div v-show="configSubTab === 'calibration'">
-
-                <!-- Voltage Calibration -->
-                <div class="card" v-if="device.hardware !== 'emonPi3'">
-                    <div class="card-header">{{ t.config.voltageCalibration }}</div>
-                    <div class="card-body">
-                        <div class="form-group">
-                            <label>{{ t.config.vCal }}</label>
-                            <input type="number" step="0.001" v-model="device.vcal" @change="setVcal" :disabled="!emontxConnected" />
-                            <span class="unit">%</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Multi-voltage for emonPi3 -->
-                <div class="card" v-if="device.hardware === 'emonPi3'">
-                    <div class="card-header">{{ t.config.voltageChannels }}</div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="config-table">
-                                <tr>
-                                    <th>{{ t.config.active }}</th>
-                                    <th>{{ t.config.channel }}</th>
-                                    <th>{{ t.config.calibration }}</th>
-                                    <th>{{ t.config.phase }}</th>
-                                </tr>
-                                <tr v-for="(vchannel, index) in device.vchannels" :key="'v'+index">
-                                    <td><input type="checkbox" v-model="vchannel.active" @change="setVchannel(index)" :disabled="!emontxConnected" /></td>
-                                    <td>V{{ index + 1 }}</td>
-                                    <td>
-                                        <input type="number" step="0.001" v-model="vchannel.vcal" @change="setVchannel(index)" :disabled="!emontxConnected" />
-                                        <span class="unit">%</span>
-                                    </td>
-                                    <td>
-                                        <input type="number" step="0.01" v-model="vchannel.vphase" @change="setVchannel(index)" :disabled="!emontxConnected" />
-                                        <span class="unit">°</span>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Current Channels -->
-                <div class="card">
-                    <div class="card-header">{{ t.config.ctChannels }}</div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="config-table">
-                                <tr>
-                                    <th v-if="device.hardware === 'emonPi3'">{{ t.config.active }}</th>
-                                    <th>{{ t.config.channel }}</th>
-                                    <th>{{ t.config.ctType }}</th>
-                                    <th>{{ t.config.phase }}</th>
-                                    <th v-if="device.hardware === 'emonPi3'">{{ t.config.vChan1 }}</th>
-                                    <th v-if="device.hardware === 'emonPi3'">{{ t.config.vChan2 }}</th>
-                                    <th>{{ t.config.power }}</th>
-                                    <th>{{ t.config.energy }}</th>
-                                </tr>
-                                <tr v-for="(channel, index) in device.ichannels" :key="'i'+index">
-                                    <td v-if="device.hardware === 'emonPi3'">
-                                        <input type="checkbox" v-model="channel.active" @change="setIcal(index)" :disabled="!emontxConnected" />
-                                    </td>
-                                    <td>CT {{ index + 1 }}</td>
-                                    <td>
-                                        <select v-model="channel.ical" @change="setIcal(index)" :disabled="!emontxConnected">
-                                            <option v-for="rating in ctsAvailable" :value="rating" :key="rating">{{ rating }}A</option>
-                                        </select>
-                                    </td>
-                                    <td><input type="number" step="0.01" v-model.number="channel.ilead" @change="setIcal(index)" style="width:70px" :disabled="!emontxConnected" class="no-spinner" /></td>
-                                    <td v-if="device.hardware === 'emonPi3'">
-                                        <select v-model="channel.vchan1" @change="setIcal(index)" :disabled="!emontxConnected">
-                                            <option v-for="v in [1,2,3]" :value="v" :key="v">{{ v }}</option>
-                                        </select>
-                                    </td>
-                                    <td v-if="device.hardware === 'emonPi3'">
-                                        <select v-model="channel.vchan2" @change="setIcal(index)" :disabled="!emontxConnected">
-                                            <option v-for="v in [1,2,3]" :value="v" :key="v">{{ v }}</option>
-                                        </select>
-                                    </td>
-                                    <td>{{ channel.power }}</td>
-                                    <td>{{ channel.energy }}</td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                </div><!-- END CALIBRATION SUB-TAB -->
-
-                <!-- SENSORS SUB-TAB -->
-                <div v-show="configSubTab === 'sensors'">
-
-                <!-- OPA Channels (OneWire/Pulse) -->
-                <div class="card" v-if="device.hardware === 'emonPi3'">
-                    <div class="card-header">{{ (t.config && t.config.opaChannels) || 'OPA Channels (OneWire/Pulse)' }}</div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="device-info-table">
-                                <tr>
-                                    <th>{{ (t.config && t.config.channel) || 'Channel' }}</th>
-                                    <th>{{ (t.config && t.config.active) || 'Active' }}</th>
-                                    <th>{{ (t.config && t.config.function) || 'Function' }}</th>
-                                    <th>{{ (t.config && t.config.pullUp) || 'Pull-up' }}</th>
-                                    <th>{{ (t.config && t.config.period) || 'Period (ms)' }}</th>
-                                </tr>
-                                <tr v-for="(opa, idx) in device.opa" :key="'opa'+idx">
-                                    <td>OPA{{ idx + 1 }}</td>
-                                    <td><input type="checkbox" v-model="opa.active" @change="setOpa(idx)" :disabled="!emontxConnected" /></td>
-                                    <td>
-                                        <select v-model="opa.func" @change="setOpa(idx)" :disabled="!emontxConnected">
-                                            <option value="o">{{ (t.config && t.config.oneWire) || 'OneWire' }}</option>
-                                            <option value="p">{{ (t.config && t.config.pulse) || 'Pulse' }}</option>
-                                        </select>
-                                    </td>
-                                    <td><input type="checkbox" v-model="opa.pullUp" @change="setOpa(idx)" :disabled="!emontxConnected || opa.func === 'o'" /></td>
-                                    <td><input type="number" v-model="opa.period" @change="setOpa(idx)" :disabled="!emontxConnected || opa.func === 'o'" style="width:80px" /></td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Temperature Sensors -->
-                <div class="card" v-if="device.hardware === 'emonPi3'">
-                    <div class="card-header">{{ (t.config && t.config.tempSensors) || 'Temperature Sensors' }}</div>
-                    <div class="card-body">
-                        <p style="font-size: 13px; color: #666; margin-bottom: 15px;">
-                            {{ (t.config && t.config.tempSensorsDesc) || 'DS18B20 OneWire temperature sensors connected to OPA channels configured as OneWire.' }}
-                        </p>
-                        <div class="button-group" style="margin-bottom: 15px;">
-                            <button class="btn btn-primary" @click="scanTempSensors" :disabled="!emontxConnected">
-                                {{ (t.config && t.config.scanSensors) || 'Scan Sensors' }}
-                            </button>
-                            <button class="btn btn-info" @click="listTempSensors" :disabled="!emontxConnected">
-                                {{ (t.config && t.config.listSensors) || 'List Sensors' }}
-                            </button>
-                            <button class="btn btn-warning" @click="saveTempMapping" :disabled="!emontxConnected || device.tempSensors.length === 0">
-                                {{ (t.config && t.config.saveMapping) || 'Save Mapping' }}
-                            </button>
-                        </div>
-                        <div v-if="device.tempSensors.length > 0">
-                            <table class="device-info-table">
-                                <tr>
-                                    <th>{{ (t.config && t.config.sensor) || 'Sensor' }}</th>
-                                    <th>{{ (t.config && t.config.address) || 'Address' }}</th>
-                                    <th>{{ (t.config && t.config.temperature) || 'Temperature' }}</th>
-                                </tr>
-                                <tr v-for="(sensor, idx) in device.tempSensors" :key="'temp'+idx">
-                                    <td>T{{ idx + 1 }}</td>
-                                    <td style="font-family: monospace; font-size: 12px;">{{ sensor.addr }}</td>
-                                    <td>{{ liveData['T' + (idx + 1)] || '-' }}</td>
-                                </tr>
-                            </table>
-                        </div>
-                        <div v-else class="alert alert-info" style="margin: 0;">
-                            {{ (t.config && t.config.noTempSensors) || 'No temperature sensors found. Click "Scan Sensors" to search for connected DS18B20 sensors.' }}
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Pulse Settings (for non-emonPi3) -->
-                <div class="card" v-if="device.hardware !== 'emonPi3'">
-                    <div class="card-header">{{ t.config.pulseSettings || 'Pulse Settings' }}</div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="device-info-table">
-                                <tr>
-                                    <th>{{ t.config.pulseInput }}</th>
-                                    <th>{{ t.config.pulsePeriod }}</th>
-                                </tr>
-                                <tr>
-                                    <td><input type="checkbox" v-model="device.pulse" @change="setPulse" :disabled="!emontxConnected" /></td>
-                                    <td><input type="number" v-model="device.pulsePeriod" @change="setPulsePeriod" :disabled="!emontxConnected" style="width:80px" /></td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                </div><!-- END SENSORS SUB-TAB -->
-
-                <!-- MISC SUB-TAB -->
-                <div v-show="configSubTab === 'misc'">
-
-                <!-- Radio Settings -->
-                <div class="card" v-if="device.hardware !== 'emonPi2'">
-                    <div class="card-header">{{ t.config.radioSettings }}</div>
-                    <div class="card-body">
-                        <div class="form-group">
-                            <label>{{ t.config.radioEnabled }}</label>
-                            <input type="checkbox" v-model="device.RF" @change="setRadio" :disabled="!emontxConnected" />
-                        </div>
-                        <div v-if="device.RF">
-                            <div class="table-responsive">
-                                <table class="device-info-table">
-                                    <tr>
-                                        <th>{{ t.config.nodeId }}</th>
-                                        <th>{{ t.config.group }}</th>
-                                        <th>{{ t.config.frequency }}</th>
-                                        <th>{{ t.config.rfPower || 'Power' }}</th>
-                                        <th>{{ t.config.format }}</th>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="number" v-model="device.rfNode" @change="setRfNode" :disabled="!emontxConnected" style="width:60px" /></td>
-                                        <td><input type="number" v-model="device.rfGroup" @change="setRfGroup" :disabled="!emontxConnected" style="width:60px" /></td>
-                                        <td>
-                                            <select v-model="device.rfBand" @change="setRfBand" :disabled="!emontxConnected">
-                                                <option value="433 MHz">433 MHz</option>
-                                                <option value="868 MHz">868 MHz</option>
-                                                <option value="915 MHz">915 MHz</option>
-                                            </select>
-                                        </td>
-                                        <td><input type="number" min="0" max="31" v-model="device.rfPower" @change="setRfPower" :disabled="!emontxConnected" style="width:60px" /></td>
-                                        <td>{{ device.rfFormat }}</td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Datalog & Output Settings -->
-                <div class="card">
-                    <div class="card-header">{{ t.config.otherSettings }}</div>
-                    <div class="card-body">
-                        <div class="form-group">
-                            <label>{{ t.config.datalogInterval }}</label>
-                            <input type="number" step="0.1" v-model="device.datalog" @change="setDatalog" :disabled="!emontxConnected" style="width:80px" />
-                            <span class="unit">s</span>
-                        </div>
-                        <div class="form-group">
-                            <label>{{ t.config.jsonSerialFormat || 'JSON Serial Format' }}</label>
-                            <input type="checkbox" v-model="device.json" :true-value="1" :false-value="0" @change="setJson" :disabled="!emontxConnected" />
-                        </div>
-                    </div>
-                </div>
-                </div><!-- END MISC SUB-TAB -->
-
-                <!-- Action Buttons -->
-                <div class="button-group">
-                    <button class="btn btn-warning" @click="saveConfig" :disabled="!changes || !emontxConnected">{{ t.buttons.save }}</button>
-                    <button class="btn btn-info" @click="zeroEnergy" :disabled="!emontxConnected">{{ t.buttons.zeroEnergy }}</button>
-                    <button class="btn btn-danger" @click="resetDefaults" :disabled="!emontxConnected">{{ t.buttons.resetDefaults }}</button>
-                    <button class="btn btn-primary" @click="loadConfig" :disabled="!emontxConnected">{{ t.buttons.reloadConfig }}</button>
-                    <button class="btn btn-primary" @click="generateYaml" :disabled="!configReceived" style="background: #9c27b0;">{{ t.buttons.generateYaml }}</button>
-                </div>
-            </div>
-        </div>
-        </form>
+        <config-tab
+            v-show="activeTab === 'config'"
+            :device="device"
+            :t="t"
+            :emontx-connected="emontxConnected"
+            :config-received="configReceived"
+            :upgrade-required="upgradeRequired"
+            :has-unsaved-changes="hasUnsavedChanges"
+            :changes="changes"
+            :live-data="liveData"
+            :cts-available="ctsAvailable"
+            @load-config="loadConfig"
+            @save-config="saveConfig"
+            @set-vcal="setVcal"
+            @set-vchannel="setVchannel"
+            @set-ical="setIcal"
+            @set-opa="setOpa"
+            @scan-temp-sensors="scanTempSensors"
+            @list-temp-sensors="listTempSensors"
+            @save-temp-mapping="saveTempMapping"
+            @set-pulse="setPulse"
+            @set-pulse-period="setPulsePeriod"
+            @set-radio="setRadio"
+            @set-rf-node="setRfNode"
+            @set-rf-group="setRfGroup"
+            @set-rf-band="setRfBand"
+            @set-rf-power="setRfPower"
+            @set-datalog="setDatalog"
+            @set-json="setJson"
+            @zero-energy="zeroEnergy"
+            @reset-defaults="resetDefaults"
+            @generate-yaml="generateYaml"
+        ></config-tab>
 
         <!-- Serial Terminal Tab -->
-        <div v-show="activeTab === 'terminal'" class="tab-content">
-            <!-- Unsaved Changes Warning Banner -->
-            <div v-if="hasUnsavedChanges" class="alert alert-danger" style="display: flex; align-items: center; justify-content: space-between;">
-                <span><strong>{{ t.unsavedChanges.title }}</strong> {{ t.unsavedChanges.message }}</span>
-                <button class="btn btn-warning" @click="saveConfig" style="margin-left: 15px;">{{ t.buttons.save }}</button>
-            </div>
-
-            <div class="card">
-                <div class="card-header">{{ t.terminal.title }}</div>
-                <div class="card-body">
-                    <div class="terminal-toolbar">
-                        <div class="btn-group">
-                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px;">
-                                <input type="checkbox" v-model="terminalAutoscroll" style="width: 16px; height: 16px;" />
-                                {{ t.terminal.autoscroll }}
-                            </label>
-                            <button class="btn btn-sm btn-info" @click="copyTerminal($event)">{{ t.terminal.copy }}</button>
-                            <button class="btn btn-sm btn-info" @click="downloadTerminal">{{ t.terminal.download }}</button>
-                            <button class="btn btn-sm btn-danger" @click="clearTerminal">{{ t.terminal.clear }}</button>
-                        </div>
-                    </div>
-                    <div id="terminal" class="terminal"></div>
-                    <div class="command-input">
-                        <input type="text" v-model="cmdInput" @keypress.enter="sendCmd" :placeholder="t.terminal.placeholder" autocomplete="off" />
-                        <button class="btn btn-primary" @click="sendCmd" :disabled="!emontxConnected">{{ t.terminal.send }}</button>
-                    </div>
-                    <div style="margin-top: 15px; display: flex; gap: 8px; flex-wrap: wrap;">
-                        <button class="btn btn-primary" @click="sendQuickCmd('l')">l - List Config</button>
-                        <button class="btn btn-primary" @click="sendQuickCmd('v')">v - Version</button>
-                        <button class="btn btn-primary" @click="sendQuickCmd('s')">s - Save</button>
-                        <button class="btn btn-primary" @click="sendQuickCmd('?')">? - Help</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <terminal-tab
+            v-show="activeTab === 'terminal'"
+            ref="terminal"
+            :t="t"
+            :emontx-connected="emontxConnected"
+            :has-unsaved-changes="hasUnsavedChanges"
+            @send-command="writeToStream"
+            @save-config="saveConfig"
+        ></terminal-tab>
 
         <!-- Live Data Tab -->
-        <div v-show="activeTab === 'data'" class="tab-content">
-            <!-- Unsaved Changes Warning Banner -->
-            <div v-if="hasUnsavedChanges" class="alert alert-danger" style="display: flex; align-items: center; justify-content: space-between;">
-                <span><strong>{{ t.unsavedChanges.title }}</strong> {{ t.unsavedChanges.message }}</span>
-                <button class="btn btn-warning" @click="saveConfig" style="margin-left: 15px;">{{ t.buttons.save }}</button>
-            </div>
-
-            <div class="card">
-                <div class="card-header">{{ t.liveData.title }}</div>
-                <div class="card-body">
-                    <div v-if="Object.keys(liveData).length === 0" class="alert alert-info">
-                        {{ t.liveData.waiting }}
-                    </div>
-                    <div v-else>
-                        <div v-for="(items, group) in groupedLiveData" :key="group" style="margin-bottom: 15px;">
-                            <h4 style="margin: 0 0 8px 0; color: #666; font-size: 14px;">{{ getGroupLabel(group) }}</h4>
-                            <div class="config-grid">
-                                <div :class="['config-item', isChannelInactive(key) ? 'inactive' : '']" v-for="(value, key) in items" :key="key">
-                                    <label>{{ key }}</label>
-                                    <div class="value">{{ value }}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <live-data-tab
+            v-show="activeTab === 'data'"
+            :t="t"
+            :device="device"
+            :live-data="liveData"
+            :has-unsaved-changes="hasUnsavedChanges"
+            :config-received="configReceived"
+            @save-config="saveConfig"
+        ></live-data-tab>
 
         <!-- Accumulators Tab -->
-        <div v-show="activeTab === 'accumulators'" class="tab-content">
-            <!-- Unsaved Changes Warning Banner -->
-            <div v-if="hasUnsavedChanges" class="alert alert-danger" style="display: flex; align-items: center; justify-content: space-between;">
-                <span><strong>{{ t.unsavedChanges.title }}</strong> {{ t.unsavedChanges.message }}</span>
-                <button class="btn btn-warning" @click="saveConfig" style="margin-left: 15px;">{{ t.buttons.save }}</button>
-            </div>
+        <accumulators-tab
+            v-show="activeTab === 'accumulators'"
+            :t="t"
+            :device="device"
+            :live-data="liveData"
+            :emontx-connected="emontxConnected"
+            :has-unsaved-changes="hasUnsavedChanges"
+            @save-config="saveConfig"
+            @zero-energy="zeroEnergy"
+            @show-individual-zero="showIndividualZeroConfirm"
+        ></accumulators-tab>
 
-            <!-- Explanation -->
-            <div class="alert alert-info">
-                {{ (t.accumulators && t.accumulators.explanation) || 'Use this page to reset the values stored on the emonTx/emonPi to zero. This action cannot be undone.' }}
-            </div>
+        <!-- Modals -->
+        <individual-zero-modal
+            :show="showIndividualZeroModal"
+            :t="t"
+            :target="individualZeroTarget"
+            @confirm="confirmIndividualZero"
+            @cancel="cancelIndividualZero"
+        ></individual-zero-modal>
 
-            <div class="card">
-                <div class="card-header">{{ (t.accumulators && t.accumulators.energyTitle) || 'Energy Accumulators' }}</div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="device-info-table">
-                            <tr>
-                                <th>{{ (t.accumulators && t.accumulators.channel) || 'Channel' }}</th>
-                                <th>{{ (t.accumulators && t.accumulators.value) || 'Value' }}</th>
-                                <th v-if="device.hardware === 'emonPi3'">{{ (t.accumulators && t.accumulators.status) || 'Status' }}</th>
-                                <th v-if="device.hardware === 'emonPi3'">{{ (t.accumulators && t.accumulators.action) || 'Action' }}</th>
-                            </tr>
-                            <tr v-for="n in energyChannelCount" :key="'e'+n" :class="{ 'inactive-row': !isEnergyChannelActive(n) }">
-                                <td>E{{ n }}</td>
-                                <td>{{ liveData['E' + n] || '0' }} Wh</td>
-                                <td v-if="device.hardware === 'emonPi3'">
-                                    <span v-if="isEnergyChannelActive(n)" style="color: #4CAF50;">{{ (t.accumulators && t.accumulators.active) || 'Active' }}</span>
-                                    <span v-else style="color: #999;">{{ (t.accumulators && t.accumulators.inactive) || 'Inactive' }}</span>
-                                </td>
-                                <td v-if="device.hardware === 'emonPi3'">
-                                    <button class="btn btn-sm btn-danger" @click="showIndividualZeroConfirm('e', n)" :disabled="!emontxConnected">
-                                        {{ (t.accumulators && t.accumulators.zero) || 'Zero' }}
-                                    </button>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            </div>
+        <zero-confirm-modal
+            :show="showZeroConfirm"
+            :t="t"
+            @confirm="confirmZero"
+            @cancel="cancelZero"
+        ></zero-confirm-modal>
 
-            <div class="card">
-                <div class="card-header">{{ (t.accumulators && t.accumulators.pulseTitle) || 'Pulse Accumulators' }}</div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="device-info-table">
-                            <tr>
-                                <th>{{ (t.accumulators && t.accumulators.channel) || 'Channel' }}</th>
-                                <th>{{ (t.accumulators && t.accumulators.value) || 'Value' }}</th>
-                                <th v-if="device.hardware === 'emonPi3'">{{ (t.accumulators && t.accumulators.action) || 'Action' }}</th>
-                            </tr>
-                            <tr v-for="n in pulseChannelCount" :key="'p'+n">
-                                <td>Pulse {{ n }}</td>
-                                <td>{{ liveData['pulse' + n] || '0' }}</td>
-                                <td v-if="device.hardware === 'emonPi3'">
-                                    <button class="btn btn-sm btn-danger" @click="showIndividualZeroConfirm('p', n)" :disabled="!emontxConnected">
-                                        {{ (t.accumulators && t.accumulators.zero) || 'Zero' }}
-                                    </button>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div class="button-group">
-                <button class="btn btn-danger" @click="zeroEnergy" :disabled="!emontxConnected">{{ (t.accumulators && t.accumulators.zeroAll) || 'Zero All Accumulators' }}</button>
-            </div>
-        </div>
-
-        <!-- Individual Zero Confirmation Modal -->
-        <div v-if="showIndividualZeroModal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999;">
-            <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); max-width: 400px; text-align: center;">
-                <h3 style="margin-top: 0; color: #f44336;">⚠️ {{ (t.accumulators && t.accumulators.confirmTitle) || 'Confirm Zero' }}</h3>
-                <p style="font-size: 16px; margin: 20px 0;">
-                    {{ (t.accumulators && t.accumulators.confirmMessage) || 'Are you sure you want to zero' }}
-                    <strong>{{ individualZeroTarget.type === 'e' ? 'E' + individualZeroTarget.channel : 'Pulse ' + individualZeroTarget.channel }}</strong>?
-                </p>
-                <p style="font-size: 14px; color: #666; margin-bottom: 20px;">{{ (t.accumulators && t.accumulators.confirmWarning) || 'This action cannot be undone.' }}</p>
-                <div style="display: flex; gap: 10px; justify-content: center;">
-                    <button class="btn btn-danger" @click="confirmIndividualZero" style="padding: 12px 30px; font-size: 16px;">{{ (t.accumulators && t.accumulators.confirmYes) || 'Yes, Zero It' }}</button>
-                    <button class="btn" @click="cancelIndividualZero" style="padding: 12px 30px; font-size: 16px; background: #ccc;">{{ (t.accumulators && t.accumulators.confirmNo) || 'Cancel' }}</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Zero Energy Confirmation Modal -->
-        <div v-if="showZeroConfirm" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999;">
-            <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); max-width: 400px; text-align: center;">
-                <h3 style="margin-top: 0; color: #f44336;">⚠️ {{ t.zeroConfirm.title }}</h3>
-                <p style="font-size: 16px; margin: 20px 0;">{{ t.zeroConfirm.message }}</p>
-                <p style="font-size: 14px; color: #666; margin-bottom: 20px;">{{ t.zeroConfirm.warning }}</p>
-                <div style="display: flex; gap: 10px; justify-content: center;">
-                    <button class="btn btn-danger" @click="confirmZero" style="padding: 12px 30px; font-size: 16px;">{{ t.zeroConfirm.confirm }}</button>
-                    <button class="btn" @click="cancelZero" style="padding: 12px 30px; font-size: 16px; background: #ccc;">{{ t.zeroConfirm.cancel }}</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- YAML Generator Modal -->
-        <div v-if="showYamlModal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999;">
-            <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); max-width: 600px; width: 90%; max-height: 80vh; display: flex; flex-direction: column;">
-                <h3 style="margin-top: 0; color: #9c27b0;">{{ t.yamlModal.title }}</h3>
-                <p style="font-size: 14px; color: #666;">{{ t.yamlModal.description }}</p>
-                <textarea readonly style="flex: 1; min-height: 300px; font-family: monospace; font-size: 12px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; background: #f5f5f5; resize: none;">{{ generatedYaml }}</textarea>
-                <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
-                    <button class="btn btn-primary" @click="copyYaml" style="padding: 12px 30px; font-size: 16px; background: #9c27b0;">{{ t.yamlModal.copy }}</button>
-                    <button class="btn" @click="showYamlModal = false" style="padding: 12px 30px; font-size: 16px; background: #ccc;">{{ t.yamlModal.close }}</button>
-                </div>
-            </div>
-        </div>
+        <yaml-modal
+            :show="showYamlModal"
+            :t="t"
+            :yaml="generatedYaml"
+            @close="showYamlModal = false"
+        ></yaml-modal>
     </div>
+
+    <!-- Load component scripts -->
+    <script src="/emontx_config_static/components/modals.js"></script>
+    <script src="/emontx_config_static/components/config-tab.js"></script>
+    <script src="/emontx_config_static/components/terminal-tab.js"></script>
+    <script src="/emontx_config_static/components/live-data-tab.js"></script>
+    <script src="/emontx_config_static/components/accumulators-tab.js"></script>
 
     <script>
         var app = new Vue({
             el: '#app',
             data: {
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
-                configSubTab: 'calibration',
                 wsConnected: false,
                 emontxConnected: false,
                 emontxStatus: 'Unknown',
                 configReceived: false,
                 upgradeRequired: false,
                 changes: false,
-                cmdInput: '',
                 liveData: {},
                 ctsAvailable: [200, 100, 50, 25, 20],
                 // Device selection
@@ -900,9 +170,7 @@
                 generatedYaml: '',
                 // Unsaved changes warning
                 hasUnsavedChanges: false,
-                // Terminal
-                terminalAutoscroll: true,
-                // i18n - translations loaded from external JSON files
+                // i18n
                 lang: 'en',
                 translations: {},
                 translationsLoaded: false,
@@ -952,100 +220,14 @@
                 t() {
                     return this.translations[this.lang] || this.translations.en || {};
                 },
-                groupedLiveData() {
-                    // Group live data by prefix (V, P, E, etc.)
-                    // Include all channels from device config, even if disabled (show "-")
-                    const groups = {};
-                    const order = ['MSG', 'V', 'P', 'E', 'T', 'pulse']; // Define display order
-
-                    // First, add all data from liveData
-                    for (const key in this.liveData) {
-                        const match = key.match(/^([A-Za-z]+)/);
-                        const prefix = match ? match[1] : 'Other';
-
-                        if (!groups[prefix]) {
-                            groups[prefix] = {};
-                        }
-                        groups[prefix][key] = this.liveData[key];
-                    }
-
-                    // For emonPi3, add all channels including inactive ones
-                    if (this.device.hardware === 'emonPi3' && this.configReceived) {
-                        // Add voltage channels
-                        if (!groups['V']) groups['V'] = {};
-                        for (let i = 0; i < this.device.vchannels.length; i++) {
-                            const key = 'V' + (i + 1);
-                            if (!(key in groups['V'])) {
-                                groups['V'][key] = '-';
-                            }
-                        }
-
-                        // Add power channels
-                        if (!groups['P']) groups['P'] = {};
-                        for (let i = 0; i < this.device.ichannels.length; i++) {
-                            const key = 'P' + (i + 1);
-                            if (!(key in groups['P'])) {
-                                groups['P'][key] = '-';
-                            }
-                        }
-
-                        // Add energy channels
-                        if (!groups['E']) groups['E'] = {};
-                        for (let i = 0; i < this.device.ichannels.length; i++) {
-                            const key = 'E' + (i + 1);
-                            if (!(key in groups['E'])) {
-                                groups['E'][key] = '-';
-                            }
-                        }
-                    }
-
-                    // Sort groups by defined order
-                    const sortedGroups = {};
-                    for (const prefix of order) {
-                        if (groups[prefix]) {
-                            // Sort keys within each group numerically
-                            const sortedKeys = Object.keys(groups[prefix]).sort((a, b) => {
-                                const numA = parseInt(a.replace(/\D/g, '')) || 0;
-                                const numB = parseInt(b.replace(/\D/g, '')) || 0;
-                                return numA - numB;
-                            });
-                            sortedGroups[prefix] = {};
-                            for (const key of sortedKeys) {
-                                sortedGroups[prefix][key] = groups[prefix][key];
-                            }
-                        }
-                    }
-                    // Add any remaining groups not in order
-                    for (const prefix in groups) {
-                        if (!sortedGroups[prefix]) {
-                            sortedGroups[prefix] = groups[prefix];
-                        }
-                    }
-
-                    return sortedGroups;
-                },
-                energyChannelCount() {
-                    // emonPi3 always has 12 channels, others depend on firmware (6 or 12)
-                    if (this.device.hardware === 'emonPi3') {
-                        return 12;
-                    }
-                    // Use ichannels length if populated, otherwise default to 6
-                    return this.device.ichannels.length || 6;
-                },
-                pulseChannelCount() {
-                    // emonPi3 has 2 pulse channels (OPA1, OPA2), others have 1
-                    return this.device.hardware === 'emonPi3' ? 2 : 1;
-                },
                 voltageChannelCount() {
-                    // emonPi3 always has 3 voltage channels
                     if (this.device.hardware === 'emonPi3') {
                         return 3;
                     }
-                    // For older devices, parse from "voltage = Xphase"
                     const voltage = this.device.voltage || '';
                     if (voltage.includes('3phase')) return 3;
                     if (voltage.includes('2phase')) return 2;
-                    return 1; // Default to single phase
+                    return 1;
                 }
             },
             mounted() {
@@ -1053,44 +235,37 @@
                 this.populateChannels(6);
                 this.discoverDevices();
                 this.initHassConnection();
-                this.restoreTerminalSize();
             },
             methods: {
+                // Language detection and translation loading
                 async detectLanguage() {
-                    // Try to get language from Home Assistant
                     let detectedLang = 'en';
                     try {
                         if (window.parent && window.parent.document) {
                             const hassObj = window.parent.document.querySelector('home-assistant');
                             if (hassObj && hassObj.hass && hassObj.hass.language) {
-                                const haLang = hassObj.hass.language.split('-')[0]; // Get 'fr' from 'fr-FR'
+                                const haLang = hassObj.hass.language.split('-')[0];
                                 if (['en', 'fr', 'de', 'it'].includes(haLang)) {
                                     detectedLang = haLang;
-                                    console.log('Detected language:', haLang);
                                 }
                             }
                         }
                     } catch (e) {
                         console.log('Could not detect HA language, using default');
                     }
-
-                    // Load translations for detected language and English (fallback)
                     await this.loadTranslations(detectedLang);
                 },
 
                 async loadTranslations(lang) {
-                    // Get the base path from the current page URL
                     const currentPath = window.location.pathname;
                     const basePath = currentPath.substring(0, currentPath.lastIndexOf('/'));
 
                     try {
-                        // Always load English as fallback
                         const enResponse = await fetch(`${basePath}/i18n/en.json`);
                         if (enResponse.ok) {
                             this.$set(this.translations, 'en', await enResponse.json());
                         }
 
-                        // Load requested language if different from English
                         if (lang !== 'en') {
                             const langResponse = await fetch(`${basePath}/i18n/${lang}.json`);
                             if (langResponse.ok) {
@@ -1098,22 +273,18 @@
                                 this.lang = lang;
                             }
                         }
-
                         this.translationsLoaded = true;
-                        console.log('Translations loaded for:', Object.keys(this.translations).join(', '));
                     } catch (e) {
                         console.error('Failed to load translations:', e);
-                        // Fallback: use inline minimal translations
                         this.$set(this.translations, 'en', { title: 'emonPi/Tx Configuration', subtitle: 'Loading...' });
                         this.translationsLoaded = true;
                     }
                 },
 
+                // Device discovery and selection
                 async discoverDevices() {
-                    // Discover available ESPHome devices with send_command service
                     try {
                         if (!this.hass) {
-                            // Wait for hass connection
                             setTimeout(() => this.discoverDevices(), 500);
                             return;
                         }
@@ -1131,8 +302,6 @@
 
                         if (devices.length > 0) {
                             this.availableDevices = devices;
-
-                            // If selected device is not in the list, select the first one
                             if (!devices.includes(this.selectedDevice)) {
                                 this.selectedDevice = devices[0];
                                 localStorage.setItem('emontx_selected_device', this.selectedDevice);
@@ -1147,23 +316,20 @@
                 },
 
                 switchDevice() {
-                    // Save selection and reset state
                     localStorage.setItem('emontx_selected_device', this.selectedDevice);
-                    this.deviceName = this.selectedDevice; // Update immediately for commands
+                    this.deviceName = this.selectedDevice;
                     this.configReceived = false;
                     this.emontxConnected = false;
                     this.liveData = {};
                     this.hasUnsavedChanges = false;
                     this.log(`Switched to device: ${this.selectedDevice}`, 'info');
-
-                    // Reload device info
                     this.getDeviceInfo();
                 },
 
+                // Home Assistant connection
                 initHassConnection() {
                     this.log('Connecting to Home Assistant...', 'info');
 
-                    // Try to get hass object from parent (preferred method for HA panels)
                     try {
                         if (window.parent && window.parent.document) {
                             const hassObj = window.parent.document.querySelector('home-assistant');
@@ -1180,7 +346,6 @@
                         console.log('Could not get hass from parent:', e);
                     }
 
-                    // Fallback to WebSocket connection
                     this.log('Falling back to WebSocket connection...', 'info');
                     this.connectWebSocket();
                 },
@@ -1258,24 +423,16 @@
                 },
 
                 subscribeToEvents() {
-                    // Subscribe to raw data events (includes all serial data: JSON sensor data and config responses)
                     if (this.hass && this.hass.connection) {
-                        // Use hass connection (preferred)
-                        console.log('Subscribing to esphome.emontx_raw via hass.connection');
                         this.hass.connection.subscribeEvents(
                             (event) => {
-                                console.log('Received event:', event);
                                 this.handleEmontxData(event.data);
                             },
                             'esphome.emontx_raw'
-                        ).then(() => {
-                            console.log('Successfully subscribed to events');
-                        }).catch((err) => {
+                        ).catch((err) => {
                             console.error('Failed to subscribe:', err);
                         });
                     } else if (this.ws) {
-                        // Fallback to WebSocket
-                        console.log('Subscribing to esphome.emontx_raw via WebSocket');
                         this.ws.send(JSON.stringify({
                             id: this.wsMessageId++,
                             type: 'subscribe_events',
@@ -1286,11 +443,9 @@
 
                 getDeviceInfo() {
                     if (this.hass && this.hass.connection) {
-                        // Use hass connection (preferred)
                         this.hass.connection.sendMessagePromise({ type: 'get_services' })
                             .then(result => this.findEmontxDevice(result));
                     } else if (this.ws) {
-                        // Fallback to WebSocket
                         this.servicesRequestId = this.wsMessageId++;
                         this.ws.send(JSON.stringify({
                             id: this.servicesRequestId,
@@ -1307,7 +462,6 @@
                             this.log(`Found device: ${this.deviceName}`, 'info');
                             this.emontxConnected = true;
                             this.emontxStatus = 'Connected';
-                            // Auto-load config
                             setTimeout(() => this.loadConfig(), 1000);
                             return;
                         }
@@ -1315,13 +469,9 @@
                     this.log(`Device ${this.selectedDevice} not found`, 'error');
                 },
 
+                // Data handling
                 handleEmontxData(data) {
-                    // Handle data events from on_raw_data trigger
-                    // Expected format: { device_id: "...", line: "..." }
-
-                    // Filter by selected device
                     if (data.device_id && data.device_id !== this.selectedDevice) {
-                        // Event is from a different device, ignore it
                         return;
                     }
 
@@ -1331,26 +481,19 @@
                     } else if (typeof data === 'string') {
                         line = data;
                     } else {
-                        console.log('Unknown line event format:', data);
                         return;
                     }
 
-                    // Log the received line
                     this.log('RX: ' + line);
 
-                    // Check for unsaved changes message from device
                     if (line.includes('unsaved changes') || line.includes('Unsaved changes')) {
                         this.hasUnsavedChanges = true;
                     }
 
-                    // Check for saved confirmation from device
                     if (line.includes('settings saved') || line.includes('Settings saved')) {
                         this.hasUnsavedChanges = false;
                     }
 
-                    // Parse sensor data - works for both JSON and key:value formats
-                    // Sensor data always starts with MSG key
-                    // Matches: "key":value, "key":"value", key:value
                     const sensorRegex = /"?(\w+)"?\s*:\s*"?([^",}\s]+)"?/g;
                     let match;
                     const sensorData = {};
@@ -1364,13 +507,11 @@
                         sensorData[key] = isNaN(numValue) ? value : numValue;
                     }
 
-                    // Check if it's sensor data (must start with MSG)
                     if (firstKey === 'MSG') {
                         this.liveData = sensorData;
                         this.emontxConnected = true;
                         this.emontxStatus = 'Connected';
 
-                        // Update power/energy in config table
                         for (let c = 0; c < this.device.ichannels.length; c++) {
                             const pKey = 'P' + (c + 1);
                             const eKey = 'E' + (c + 1);
@@ -1382,13 +523,11 @@
                             }
                         }
                     } else if (line.includes(' = ')) {
-                        // Plain text config line (e.g., "hardware = emonPi3")
                         this.processLine(line);
                     }
                 },
 
                 processLine(line) {
-                    // Process configuration responses
                     if (line.startsWith('firmware = ')) {
                         this.device.firmware = line.split('=')[1].trim();
                         this.configReceived = true;
@@ -1416,33 +555,26 @@
                         this.upgradeRequired = true;
                     }
 
-                    // Parse OPA configuration lines
-                    // Format: "opa1 = active = 1, onewire" or "opa2 = active 1, pulse, pullUp = on, pulsePeriod = 100"
+                    // Parse OPA configuration
                     if (line.startsWith('opa1 = ') || line.startsWith('opa2 = ')) {
                         const opaIdx = line.startsWith('opa1') ? 0 : 1;
-                        const content = line.substring(7).trim(); // Remove "opaX = "
+                        const content = line.substring(7).trim();
 
-                        // Parse active state (handles both "active = 1" and "active 1")
                         const activeMatch = content.match(/active\s*=?\s*(\d)/);
                         if (activeMatch) {
                             this.$set(this.device.opa[opaIdx], 'active', activeMatch[1] === '1');
                         }
 
-                        // Determine function type
                         if (content.includes('onewire')) {
                             this.$set(this.device.opa[opaIdx], 'func', 'o');
                         } else if (content.includes('pulse')) {
-                            // Parse pulse-specific settings
-                            const funcMatch = content.match(/pulse.*?(\w+)\s*$/); // edge type might be at end
                             this.$set(this.device.opa[opaIdx], 'func', 'p');
 
-                            // Parse pullUp
                             const pullUpMatch = content.match(/pullUp\s*=\s*(\w+)/);
                             if (pullUpMatch) {
                                 this.$set(this.device.opa[opaIdx], 'pullUp', pullUpMatch[1] === 'on');
                             }
 
-                            // Parse pulsePeriod
                             const periodMatch = content.match(/pulsePeriod\s*=\s*(\d+)/);
                             if (periodMatch) {
                                 this.$set(this.device.opa[opaIdx], 'period', parseInt(periodMatch[1]));
@@ -1450,22 +582,18 @@
                         }
                     }
 
-                    // Parse temperature sensor list from 'ol' command
-                    // Format: "1 [->1] 28 27 7e 56 b5 1 3c 63"
-                    // Where: sensor_num [->mapping] address_bytes (hex %x without zero padding)
+                    // Parse temperature sensor list
                     const tempMatch = line.match(/^(\d+)\s+\[->\s*(\d+)\s*\]\s+(.+)$/);
                     if (tempMatch) {
-                        const idx = parseInt(tempMatch[2]) - 1; // Use mapping index for display order
+                        const idx = parseInt(tempMatch[2]) - 1;
                         const addr = tempMatch[3].trim();
-                        // Ensure array is large enough
                         while (this.device.tempSensors.length <= idx) {
                             this.device.tempSensors.push({ addr: '' });
                         }
                         this.$set(this.device.tempSensors, idx, { addr: addr });
                     }
 
-                    // Parse accumulator values from 'lh' command to update liveData
-                    // Format: "  E1 = 123 Wh" or "  pulse1 = 456"
+                    // Parse accumulator values
                     const energyMatch = line.match(/^\s*E(\d+)\s*=\s*(-?\d+)\s*Wh/);
                     if (energyMatch) {
                         const key = 'E' + energyMatch[1];
@@ -1479,7 +607,7 @@
                         this.$set(this.liveData, key, val);
                     }
 
-                    // Parse comma-separated key=value pairs
+                    // Parse key=value pairs
                     const sublines = line.split(',');
                     for (const subline of sublines) {
                         const keyval = subline.split('=');
@@ -1487,7 +615,6 @@
                             const key = keyval[0].trim();
                             const val = keyval[1].trim();
 
-                            // CT calibration
                             if (key.startsWith('iCal')) {
                                 this.configReceived = true;
                                 const c = parseInt(key.substring(4).trim()) - 1;
@@ -1495,69 +622,57 @@
                                     this.device.ichannels[c].ical = Math.round(parseFloat(val));
                                 }
                             }
-                            // CT phase lead
                             else if (key.startsWith('iLead')) {
                                 const c = parseInt(key.substring(5).trim()) - 1;
                                 if (c >= 0 && c < this.device.ichannels.length) {
-                                    console.log('Parsing iLead: key=', key, 'channel=', c, 'value=', val, 'parsed=', parseFloat(val));
                                     this.device.ichannels[c].ilead = parseFloat(val);
                                 }
                             }
-                            // CT active state (emonPi3)
                             else if (key.startsWith('iActive')) {
                                 const c = parseInt(key.substring(7).trim()) - 1;
                                 if (c >= 0 && c < this.device.ichannels.length) {
                                     this.$set(this.device.ichannels[c], 'active', val === '1');
                                 }
                             }
-                            // Voltage channel 1 assignment (emonPi3)
                             else if (key.startsWith('v1Chan')) {
                                 const c = parseInt(key.substring(6).trim()) - 1;
                                 if (c >= 0 && c < this.device.ichannels.length) {
                                     this.$set(this.device.ichannels[c], 'vchan1', parseInt(val));
                                 }
                             }
-                            // Voltage channel 2 assignment (emonPi3)
                             else if (key.startsWith('v2Chan')) {
                                 const c = parseInt(key.substring(6).trim()) - 1;
                                 if (c >= 0 && c < this.device.ichannels.length) {
                                     this.$set(this.device.ichannels[c], 'vchan2', parseInt(val));
                                 }
                             }
-                            // Voltage calibration
                             else if (key === 'vCal') {
                                 this.device.vcal = parseFloat(val);
                             }
-                            // Multi-voltage calibration (emonPi3)
                             else if (key.startsWith('vCal') && key.length > 4) {
                                 const c = parseInt(key.substring(4).trim()) - 1;
                                 if (c >= 0 && c < this.device.vchannels.length) {
                                     this.$set(this.device.vchannels[c], 'vcal', parseFloat(val));
                                 }
                             }
-                            // Multi-voltage active state (emonPi3)
                             else if (key.startsWith('vActive')) {
                                 const c = parseInt(key.substring(7).trim()) - 1;
                                 if (c >= 0 && c < this.device.vchannels.length) {
                                     this.$set(this.device.vchannels[c], 'active', val === '1');
                                 }
                             }
-                            // Multi-voltage phase/lead (emonPi3)
                             else if (key.startsWith('vLead')) {
                                 const c = parseInt(key.substring(5).trim()) - 1;
                                 if (c >= 0 && c < this.device.vchannels.length) {
                                     this.$set(this.device.vchannels[c], 'vphase', parseFloat(val));
                                 }
                             }
-                            // Version
                             else if (key === 'version') {
                                 this.device.firmware_version = val;
                             }
-                            // Voltage
                             else if (key === 'voltage') {
                                 this.device.voltage = val;
                             }
-                            // Radio
                             else if (key === 'RF') {
                                 this.device.RF = val === 'on';
                             }
@@ -1568,7 +683,6 @@
                                 this.device.rfGroup = parseInt(val);
                             }
                             else if (key === 'rfBand') {
-                                // Normalize: firmware outputs "433.00 MHz" or "433.92 MHz", map to "433 MHz"
                                 if (val.startsWith('433')) {
                                     this.device.rfBand = '433 MHz';
                                 } else {
@@ -1581,14 +695,12 @@
                             else if (key === 'rfFormat') {
                                 this.device.rfFormat = val;
                             }
-                            // Pulse
                             else if (key === 'pulse') {
                                 this.device.pulse = val !== 'off';
                             }
                             else if (key === 'pulsePeriod') {
                                 this.device.pulsePeriod = parseInt(val);
                             }
-                            // Datalog
                             else if (key === 'datalog') {
                                 this.device.datalog = parseFloat(val);
                             }
@@ -1605,7 +717,7 @@
                         this.device.ichannels.push({
                             active: true,
                             ical: 20,
-                            ilead: 0.0,  // Initialize as number, not empty string
+                            ilead: 0.0,
                             vchan1: 1,
                             vchan2: 1,
                             power: '',
@@ -1614,6 +726,7 @@
                     }
                 },
 
+                // Command sending
                 writeToStream(cmd) {
                     if (!this.deviceName || (!this.hass && !this.ws)) {
                         this.log('Not connected', 'error');
@@ -1622,10 +735,8 @@
                     this.log('TX: ' + cmd, 'sent');
 
                     if (this.hass && this.hass.callService) {
-                        // Use hass.callService (preferred)
                         this.hass.callService('esphome', this.deviceName + '_send_command', { command: cmd });
                     } else if (this.ws) {
-                        // Fallback to WebSocket
                         this.ws.send(JSON.stringify({
                             id: this.wsMessageId++,
                             type: 'call_service',
@@ -1654,10 +765,8 @@
                     this.hasUnsavedChanges = true;
                 },
                 setIcal(i) {
-                    console.log('setIcal called for channel', i, 'ical=', this.device.ichannels[i].ical, 'ilead=', this.device.ichannels[i].ilead);
                     const ical = parseFloat(this.device.ichannels[i].ical).toFixed(2);
                     const ilead = parseFloat(this.device.ichannels[i].ilead || 0).toFixed(2);
-                    console.log('Sending: ical=', ical, 'ilead=', ilead);
                     if (this.device.hardware === 'emonPi3') {
                         const active = this.device.ichannels[i].active ? 1 : 0;
                         this.writeToStream('k' + (i + 4) + ' ' + active + ' ' + ical + ' ' + ilead + ' ' + this.device.ichannels[i].vchan1 + ' ' + this.device.ichannels[i].vchan2);
@@ -1713,35 +822,29 @@
                     this.changes = true;
                     this.hasUnsavedChanges = true;
                 },
-                // OPA channel configuration (emonPi3)
-                // Command: m<channel> <active> <func> <pullup> <period>
                 setOpa(idx) {
                     const opa = this.device.opa[idx];
                     const channel = idx + 1;
                     const active = opa.active ? 1 : 0;
-                    const func = opa.func; // 'o' for OneWire, 'p' for pulse (use 'b' for both edges)
+                    const funcChar = opa.func === 'o' ? 'o' : 'b';
                     const pullUp = opa.pullUp ? 1 : 0;
                     const period = Math.round(opa.period) || 0;
 
-                    // For pulse, use 'b' (both edges) as default; for OneWire use 'o'
-                    const funcChar = func === 'o' ? 'o' : 'b';
                     this.writeToStream('m' + channel + ' ' + active + ' ' + funcChar + ' ' + pullUp + ' ' + period);
                     this.changes = true;
                     this.hasUnsavedChanges = true;
                 },
-                // Temperature sensor methods
                 scanTempSensors() {
-                    this.device.tempSensors = []; // Clear existing
-                    this.writeToStream('of'); // Find/scan for sensors
+                    this.device.tempSensors = [];
+                    this.writeToStream('of');
                     this.log('Scanning for temperature sensors...', 'info');
-                    // After scan, list them
                     setTimeout(() => this.listTempSensors(), 2000);
                 },
                 listTempSensors() {
-                    this.writeToStream('ol'); // List sensors
+                    this.writeToStream('ol');
                 },
                 saveTempMapping() {
-                    this.writeToStream('os'); // Save sensor mapping
+                    this.writeToStream('os');
                     this.changes = true;
                     this.hasUnsavedChanges = true;
                     this.log('Temperature sensor mapping saved', 'info');
@@ -1761,15 +864,12 @@
                     }
                 },
                 zeroEnergy() {
-                    // Show confirmation dialog first (no command sent yet)
                     this.showZeroConfirm = true;
                 },
                 confirmZero() {
-                    // User confirmed - send command, wait 1s, then send 'y', then refresh values
                     this.writeToStream('z');
                     setTimeout(() => {
                         this.writeToStream('y');
-                        // Refresh accumulator values after zeroing (only emonPi3 has 'lh' command)
                         if (this.device.hardware === 'emonPi3') {
                             setTimeout(() => this.writeToStream('lh'), 1500);
                         }
@@ -1777,28 +877,13 @@
                     this.showZeroConfirm = false;
                 },
                 cancelZero() {
-                    // User cancelled - just close modal (no command was sent)
                     this.showZeroConfirm = false;
-                },
-
-                // Individual zero methods
-                isEnergyChannelActive(n) {
-                    // Check if CT channel is active based on device.ichannels
-                    const channel = this.device.ichannels[n - 1];
-                    if (!channel) return true; // Assume active if no data
-                    // For emonPi3, check the active flag; for others, all are active
-                    if (this.device.hardware === 'emonPi3') {
-                        return channel.active !== false;
-                    }
-                    return true;
                 },
                 showIndividualZeroConfirm(type, channel) {
                     this.individualZeroTarget = { type, channel };
                     this.showIndividualZeroModal = true;
                 },
                 confirmIndividualZero() {
-                    // User confirmed - send command, wait 1s, then send 'y', then refresh values
-                    // Note: Individual zeroing is only available for emonPi3
                     const { type, channel } = this.individualZeroTarget;
                     if (type === 'e') {
                         this.writeToStream('ze' + channel);
@@ -1807,7 +892,6 @@
                     }
                     setTimeout(() => {
                         this.writeToStream('y');
-                        // Refresh accumulator values after zeroing
                         setTimeout(() => this.writeToStream('lh'), 1500);
                     }, 1000);
                     this.showIndividualZeroModal = false;
@@ -1816,14 +900,12 @@
                     this.showIndividualZeroModal = false;
                 },
 
-                // YAML Generator methods
+                // YAML Generator
                 generateYaml() {
                     let yaml = 'sensor:\n';
 
-                    // Add voltage sensors based on device configuration
                     const numVoltages = this.voltageChannelCount;
                     for (let i = 0; i < numVoltages; i++) {
-                        // For emonPi3, check if voltage channel is active
                         if (this.device.hardware === 'emonPi3' && this.device.vchannels[i] && !this.device.vchannels[i].active) {
                             continue;
                         }
@@ -1832,20 +914,16 @@
                         yaml += `    name: "Voltage${numVoltages > 1 ? ' L' + (i + 1) : ''}"\n`;
                     }
 
-                    // Add power and energy sensors for active CT channels
                     for (let i = 0; i < this.device.ichannels.length; i++) {
                         const channel = this.device.ichannels[i];
-                        // Skip inactive channels (for emonPi3, check active flag; for others, assume all active)
                         if (this.device.hardware === 'emonPi3' && channel.active === false) {
                             continue;
                         }
 
-                        // Power sensor
                         yaml += `  - platform: emontx\n`;
                         yaml += `    tag_name: "P${i + 1}"\n`;
                         yaml += `    name: "Power ${i + 1}"\n`;
 
-                        // Energy sensor
                         yaml += `  - platform: emontx\n`;
                         yaml += `    tag_name: "E${i + 1}"\n`;
                         yaml += `    name: "Energy ${i + 1}"\n`;
@@ -1854,169 +932,23 @@
                     this.generatedYaml = yaml;
                     this.showYamlModal = true;
                 },
-                copyYaml() {
-                    navigator.clipboard.writeText(this.generatedYaml).then(() => {
-                        // Show brief feedback
-                        const btn = event.target;
-                        const originalText = btn.textContent;
-                        btn.textContent = this.t.yamlModal.copied;
-                        setTimeout(() => { btn.textContent = originalText; }, 1500);
-                    });
-                },
 
-                // Terminal methods
-                sendCmd() {
-                    if (this.cmdInput.trim()) {
-                        this.sendQuickCmd(this.cmdInput.trim());
-                        this.cmdInput = '';
-                    }
-                },
-                sendQuickCmd(cmd) {
-                    this.writeToStream(cmd);
-                },
-                copyTerminal(event) {
-                    const terminal = document.getElementById('terminal');
-                    if (terminal) {
-                        const text = terminal.innerText;
-                        const btn = event.target;
-                        const originalText = btn.textContent;
-
-                        // Try modern clipboard API first, fallback to execCommand
-                        if (navigator.clipboard && navigator.clipboard.writeText) {
-                            navigator.clipboard.writeText(text).then(() => {
-                                btn.textContent = this.t.terminal.copied;
-                                setTimeout(() => { btn.textContent = originalText; }, 1500);
-                            }).catch(() => {
-                                this.fallbackCopy(text, btn, originalText);
-                            });
-                        } else {
-                            this.fallbackCopy(text, btn, originalText);
-                        }
-                    }
-                },
-                fallbackCopy(text, btn, originalText) {
-                    // Fallback for non-HTTPS or older browsers
-                    const textarea = document.createElement('textarea');
-                    textarea.value = text;
-                    textarea.style.position = 'fixed';
-                    textarea.style.opacity = '0';
-                    document.body.appendChild(textarea);
-                    textarea.select();
-                    try {
-                        document.execCommand('copy');
-                        btn.textContent = this.t.terminal.copied;
-                        setTimeout(() => { btn.textContent = originalText; }, 1500);
-                    } catch (e) {
-                        console.error('Copy failed:', e);
-                    }
-                    document.body.removeChild(textarea);
-                },
-                downloadTerminal() {
-                    const terminal = document.getElementById('terminal');
-                    if (terminal) {
-                        const text = terminal.innerText;
-                        const blob = new Blob([text], { type: 'text/plain' });
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = `emontx-serial-${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.log`;
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                        URL.revokeObjectURL(url);
-                    }
-                },
-                clearTerminal() {
-                    const terminal = document.getElementById('terminal');
-                    if (terminal) {
-                        terminal.innerHTML = '';
-                    }
-                },
-
-                getGroupLabel(group) {
-                    // Case-insensitive lookup for group labels
-                    if (this.t.liveData && this.t.liveData.groups) {
-                        // Try exact match first
-                        if (this.t.liveData.groups[group]) {
-                            return this.t.liveData.groups[group];
-                        }
-                        // Try uppercase
-                        if (this.t.liveData.groups[group.toUpperCase()]) {
-                            return this.t.liveData.groups[group.toUpperCase()];
-                        }
-                        // Try lowercase
-                        if (this.t.liveData.groups[group.toLowerCase()]) {
-                            return this.t.liveData.groups[group.toLowerCase()];
-                        }
-                    }
-                    return group;
-                },
-
-                isChannelInactive(key) {
-                    // Only emonPi3 has per-channel active state
-                    // Older devices don't support this feature
-                    if (this.device.hardware !== 'emonPi3') {
-                        return false;
-                    }
-                    // Check if this key corresponds to an inactive channel
-                    // Keys like P1, P2, E1, E2, etc. map to ichannels[0], ichannels[1], etc.
-                    const ctMatch = key.match(/^[PE](\d+)$/);
-                    if (ctMatch) {
-                        const channelNum = parseInt(ctMatch[1]) - 1; // Convert to 0-based index
-                        if (channelNum >= 0 && channelNum < this.device.ichannels.length) {
-                            return this.device.ichannels[channelNum].active === false;
-                        }
-                    }
-                    // Keys like V1, V2, V3 map to vchannels[0], vchannels[1], etc.
-                    const vMatch = key.match(/^V(\d+)$/);
-                    if (vMatch) {
-                        const channelNum = parseInt(vMatch[1]) - 1; // Convert to 0-based index
-                        if (channelNum >= 0 && channelNum < this.device.vchannels.length) {
-                            return this.device.vchannels[channelNum].active === false;
-                        }
-                    }
-                    return false;
-                },
-
+                // Logging
                 log(message, type = '') {
-                    const terminal = document.getElementById('terminal');
-                    if (terminal) {
-                        const time = new Date().toLocaleTimeString(this.lang || 'en');
-                        const line = document.createElement('div');
-                        line.className = type;
-                        line.textContent = `[${time}] ${message}`;
-                        terminal.appendChild(line);
-                        // Only auto-scroll if enabled
-                        if (this.terminalAutoscroll) {
+                    if (this.$refs.terminal) {
+                        this.$refs.terminal.log(message, type);
+                    } else {
+                        // Fallback to direct DOM manipulation if terminal ref not ready
+                        const terminal = document.getElementById('terminal');
+                        if (terminal) {
+                            const time = new Date().toLocaleTimeString(this.lang || 'en');
+                            const line = document.createElement('div');
+                            line.className = type;
+                            line.textContent = `[${time}] ${message}`;
+                            terminal.appendChild(line);
                             terminal.scrollTop = terminal.scrollHeight;
                         }
                     }
-                },
-
-                restoreTerminalSize() {
-                    // Restore terminal height from parent's localStorage (iframe localStorage may not persist)
-                    setTimeout(() => {
-                        const terminal = document.getElementById('terminal');
-                        const storage = window.parent.localStorage || localStorage;
-                        const savedHeight = storage.getItem('emontx_terminal_height');
-
-                        if (terminal) {
-                            // Restore saved height
-                            if (savedHeight) {
-                                terminal.style.height = savedHeight;
-                            }
-
-                            // Save height when resize ends (mouseup after resize)
-                            let lastHeight = terminal.offsetHeight;
-                            document.addEventListener('mouseup', () => {
-                                const currentHeight = terminal.offsetHeight;
-                                if (currentHeight !== lastHeight && currentHeight > 100) {
-                                    lastHeight = currentHeight;
-                                    storage.setItem('emontx_terminal_height', currentHeight + 'px');
-                                }
-                            });
-                        }
-                    }, 500);
                 }
             }
         });
