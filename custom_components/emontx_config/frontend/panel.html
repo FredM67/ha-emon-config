@@ -359,10 +359,11 @@
             color: #333;
         }
         .config-item.inactive {
-            background-color: #ffebee;
+            background: #ffebee;
         }
+        .config-item.inactive label,
         .config-item.inactive .value {
-            color: #666;
+            color: #999;
         }
         .inactive-row {
             background-color: #ffebee;
@@ -953,11 +954,12 @@
                 },
                 groupedLiveData() {
                     // Group live data by prefix (V, P, E, etc.)
+                    // Include all channels from device config, even if disabled (show "-")
                     const groups = {};
                     const order = ['MSG', 'V', 'P', 'E', 'T', 'pulse']; // Define display order
 
+                    // First, add all data from liveData
                     for (const key in this.liveData) {
-                        // Extract prefix (letters at start of key)
                         const match = key.match(/^([A-Za-z]+)/);
                         const prefix = match ? match[1] : 'Other';
 
@@ -967,11 +969,50 @@
                         groups[prefix][key] = this.liveData[key];
                     }
 
+                    // For emonPi3, add all channels including inactive ones
+                    if (this.device.hardware === 'emonPi3' && this.configReceived) {
+                        // Add voltage channels
+                        if (!groups['V']) groups['V'] = {};
+                        for (let i = 0; i < this.device.vchannels.length; i++) {
+                            const key = 'V' + (i + 1);
+                            if (!(key in groups['V'])) {
+                                groups['V'][key] = '-';
+                            }
+                        }
+
+                        // Add power channels
+                        if (!groups['P']) groups['P'] = {};
+                        for (let i = 0; i < this.device.ichannels.length; i++) {
+                            const key = 'P' + (i + 1);
+                            if (!(key in groups['P'])) {
+                                groups['P'][key] = '-';
+                            }
+                        }
+
+                        // Add energy channels
+                        if (!groups['E']) groups['E'] = {};
+                        for (let i = 0; i < this.device.ichannels.length; i++) {
+                            const key = 'E' + (i + 1);
+                            if (!(key in groups['E'])) {
+                                groups['E'][key] = '-';
+                            }
+                        }
+                    }
+
                     // Sort groups by defined order
                     const sortedGroups = {};
                     for (const prefix of order) {
                         if (groups[prefix]) {
-                            sortedGroups[prefix] = groups[prefix];
+                            // Sort keys within each group numerically
+                            const sortedKeys = Object.keys(groups[prefix]).sort((a, b) => {
+                                const numA = parseInt(a.replace(/\D/g, '')) || 0;
+                                const numB = parseInt(b.replace(/\D/g, '')) || 0;
+                                return numA - numB;
+                            });
+                            sortedGroups[prefix] = {};
+                            for (const key of sortedKeys) {
+                                sortedGroups[prefix][key] = groups[prefix][key];
+                            }
                         }
                     }
                     // Add any remaining groups not in order

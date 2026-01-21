@@ -12,9 +12,9 @@
         "accumulators": "Akkumulatoren"
     },
     "configTabs": {
-        "calibration": "Kalibrierung",
-        "sensors": "Sensoren",
-        "misc": "Sonstiges"
+        "calibration": "Energiesensoren",
+        "sensors": "Andere Sensoren",
+        "misc": "Andere Einstellungen"
     },
     "buttons": {
         "loadConfig": "Konfig Laden",
