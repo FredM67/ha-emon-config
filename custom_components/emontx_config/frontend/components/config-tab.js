@@ -16,8 +16,34 @@ Vue.component('config-tab', {
     },
     data() {
         return {
-            configSubTab: 'calibration'
+            configSubTab: 'calibration',
+            customCtChannels: {}  // Track which channels are using custom CT values
         };
+    },
+    methods: {
+        isCustomCt(ical) {
+            return !this.ctsAvailable.includes(ical);
+        },
+        getCtSelectValue(index) {
+            const ical = this.device.ichannels[index].ical;
+            if (this.customCtChannels[index] || this.isCustomCt(ical)) {
+                return 'custom';
+            }
+            return ical;
+        },
+        handleCtTypeChange(index, event) {
+            const value = event.target.value;
+            if (value === 'custom') {
+                this.$set(this.customCtChannels, index, true);
+            } else {
+                this.$set(this.customCtChannels, index, false);
+                this.device.ichannels[index].ical = parseInt(value);
+                this.$emit('set-ical', index);
+            }
+        },
+        handleCustomCtChange(index) {
+            this.$emit('set-ical', index);
+        }
     },
     template: `
         <form autocomplete="off" @submit.prevent>
@@ -121,10 +147,18 @@ Vue.component('config-tab', {
                                         <input type="checkbox" v-model="channel.active" @change="$emit('set-ical', index)" :disabled="!emontxConnected" />
                                     </td>
                                     <td>CT {{ index + 1 }}</td>
-                                    <td>
-                                        <select v-model="channel.ical" @change="$emit('set-ical', index)" :disabled="!emontxConnected">
+                                    <td style="display: flex; align-items: center; gap: 5px;">
+                                        <select :value="getCtSelectValue(index)" @change="handleCtTypeChange(index, $event)" :disabled="!emontxConnected">
                                             <option v-for="rating in ctsAvailable" :value="rating" :key="rating">{{ rating }}A</option>
+                                            <option value="custom">{{ (t.config && t.config.custom) || 'Custom' }}</option>
                                         </select>
+                                        <input v-if="getCtSelectValue(index) === 'custom'"
+                                               type="number" min="10" max="200"
+                                               v-model.number="channel.ical"
+                                               @change="handleCustomCtChange(index)"
+                                               :disabled="!emontxConnected"
+                                               style="width: 60px;" />
+                                        <span v-if="getCtSelectValue(index) === 'custom'">A</span>
                                     </td>
                                     <td><input type="number" step="0.01" v-model.number="channel.ilead" @change="$emit('set-ical', index)" style="width:70px" :disabled="!emontxConnected" class="no-spinner" /></td>
                                     <td v-if="device.hardware === 'emonPi3'">

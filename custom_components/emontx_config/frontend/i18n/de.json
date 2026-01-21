@@ -47,6 +47,7 @@
         "ctChannels": "CT-Kanäle",
         "channel": "Kanal",
         "ctType": "CT-Typ",
+        "custom": "Benutzerdefiniert",
         "phase": "Phase",
         "vChan1": "V Kanal 1",
         "vChan2": "V Kanal 2",

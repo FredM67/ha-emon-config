@@ -74,6 +74,8 @@ Vue.component('bulk-ct-modal', {
             applyVchan1: false,
             applyVchan2: false,
             ctTypeValue: 20,
+            ctTypeCustom: false,
+            ctTypeCustomValue: 100,
             phaseValue: 0,
             vchan1Value: 1,
             vchan2Value: 1
@@ -88,6 +90,7 @@ Vue.component('bulk-ct-modal', {
                 this.applyPhase = false;
                 this.applyVchan1 = false;
                 this.applyVchan2 = false;
+                this.ctTypeCustom = false;
             }
         }
     },
@@ -126,6 +129,15 @@ Vue.component('bulk-ct-modal', {
                 }
             }
         },
+        handleCtTypeSelectChange(event) {
+            const value = event.target.value;
+            if (value === 'custom') {
+                this.ctTypeCustom = true;
+            } else {
+                this.ctTypeCustom = false;
+                this.ctTypeValue = parseInt(value);
+            }
+        },
         apply() {
             if (this.selectedCts.length === 0) return;
 
@@ -135,7 +147,7 @@ Vue.component('bulk-ct-modal', {
             };
 
             if (this.applyCtType) {
-                changes.values.ical = this.ctTypeValue;
+                changes.values.ical = this.ctTypeCustom ? this.ctTypeCustomValue : this.ctTypeValue;
             }
             if (this.applyPhase) {
                 changes.values.ilead = parseFloat(this.phaseValue) || 0;
@@ -189,9 +201,12 @@ Vue.component('bulk-ct-modal', {
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
                         <input type="checkbox" v-model="applyCtType" style="width: 16px; height: 16px;" />
                         <label style="min-width: 80px;">{{ t.config.ctType || 'CT Type' }}:</label>
-                        <select v-model="ctTypeValue" :disabled="!applyCtType" style="padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+                        <select :value="ctTypeCustom ? 'custom' : ctTypeValue" @change="handleCtTypeSelectChange" :disabled="!applyCtType" style="padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
                             <option v-for="ct in ctsAvailable" :key="ct" :value="ct">{{ ct }}A</option>
+                            <option value="custom">{{ (t.config && t.config.custom) || 'Custom' }}</option>
                         </select>
+                        <input v-if="ctTypeCustom" type="number" min="10" max="200" v-model.number="ctTypeCustomValue" :disabled="!applyCtType" style="padding: 6px; border: 1px solid #ddd; border-radius: 4px; width: 70px;" />
+                        <span v-if="ctTypeCustom">A</span>
                     </div>
 
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
