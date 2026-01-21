@@ -161,12 +161,12 @@ Vue.component('config-tab', {
                                     <td>OPA{{ idx + 1 }}</td>
                                     <td><input type="checkbox" v-model="opa.active" @change="$emit('set-opa', idx)" :disabled="!emontxConnected" /></td>
                                     <td>
-                                        <select v-model="opa.func" @change="$emit('set-opa', idx)" :disabled="!emontxConnected">
-                                            <option value="o">{{ (t.config && t.config.oneWire) || 'OneWire' }}</option>
+                                        <select v-model="opa.func" @change="$emit('set-opa', idx)" :disabled="!emontxConnected || idx === 2">
+                                            <option value="o" v-if="idx !== 2">{{ (t.config && t.config.oneWire) || 'OneWire' }}</option>
                                             <option value="p">{{ (t.config && t.config.pulse) || 'Pulse' }}</option>
                                         </select>
                                     </td>
-                                    <td><input type="checkbox" v-model="opa.pullUp" @change="$emit('set-opa', idx)" :disabled="!emontxConnected || opa.func === 'o'" /></td>
+                                    <td><input type="checkbox" v-model="opa.pullUp" @change="$emit('set-opa', idx)" :disabled="!emontxConnected || opa.func === 'o' || idx === 2" /></td>
                                     <td><input type="number" v-model="opa.period" @change="$emit('set-opa', idx)" :disabled="!emontxConnected || opa.func === 'o'" style="width:80px" /></td>
                                 </tr>
                             </table>

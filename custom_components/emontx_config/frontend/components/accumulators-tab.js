@@ -18,7 +18,7 @@ Vue.component('accumulators-tab', {
             return this.device.ichannels.length || 6;
         },
         pulseChannelCount() {
-            return this.device.hardware === 'emonPi3' ? 2 : 1;
+            return this.device.hardware === 'emonPi3' ? 3 : 1;
         }
     },
     methods: {
