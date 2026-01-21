@@ -180,6 +180,8 @@
                 generatedYaml: '',
                 // Bulk CT settings
                 showBulkCtModal: false,
+                // Pending response for sequential commands
+                pendingResponse: null,
                 // Unsaved changes warning
                 hasUnsavedChanges: false,
                 // i18n
@@ -541,6 +543,12 @@
                 },
 
                 processLine(line) {
+                    // Check for pending response (used by bulk operations)
+                    if (this.pendingResponse && line.includes(this.pendingResponse.pattern)) {
+                        this.pendingResponse.resolve();
+                        this.pendingResponse = null;
+                    }
+
                     if (line.startsWith('firmware = ')) {
                         this.device.firmware = line.split('=')[1].trim();
                         this.configReceived = true;
@@ -790,8 +798,24 @@
                     this.changes = true;
                     this.hasUnsavedChanges = true;
                 },
+                waitForResponse(pattern, timeout = 5000) {
+                    return new Promise((resolve, reject) => {
+                        const timeoutId = setTimeout(() => {
+                            this.pendingResponse = null;
+                            reject(new Error('Response timeout'));
+                        }, timeout);
+
+                        this.pendingResponse = {
+                            pattern: pattern,
+                            resolve: () => {
+                                clearTimeout(timeoutId);
+                                resolve();
+                            }
+                        };
+                    });
+                },
                 async applyBulkCtSettings(changes) {
-                    // Apply values to selected channels one by one, waiting between commands
+                    // Apply values to selected channels one by one, waiting for acknowledgment
                     this.showBulkCtModal = false;
                     const total = changes.channels.length;
                     this.log(`Applying bulk settings to ${total} channels...`, 'info');
@@ -811,13 +835,17 @@
                             if (changes.values.vchan2 !== undefined) {
                                 this.$set(this.device.ichannels[idx], 'vchan2', changes.values.vchan2);
                             }
-                            // Send command to device
-                            this.setIcal(idx);
-                            this.log(`Configured CT ${idx + 1} (${i + 1}/${total})`, 'info');
 
-                            // Wait for device to process before sending next command
-                            if (i < changes.channels.length - 1) {
-                                await new Promise(resolve => setTimeout(resolve, 300));
+                            // Send command and wait for echo acknowledgment
+                            // emonPi3 uses k4-k15 for CT channels 1-12, others use k1-k12
+                            const kNum = this.device.hardware === 'emonPi3' ? idx + 4 : idx + 1;
+                            try {
+                                const responsePromise = this.waitForResponse(`k${kNum} `);
+                                this.setIcal(idx);
+                                await responsePromise;
+                                this.log(`Configured CT ${idx + 1} (${i + 1}/${total})`, 'info');
+                            } catch (e) {
+                                this.log(`Timeout waiting for CT ${idx + 1} response`, 'error');
                             }
                         }
                     }
