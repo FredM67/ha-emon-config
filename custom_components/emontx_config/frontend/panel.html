@@ -790,9 +790,14 @@
                     this.changes = true;
                     this.hasUnsavedChanges = true;
                 },
-                applyBulkCtSettings(changes) {
-                    // Apply values to selected channels
-                    for (const idx of changes.channels) {
+                async applyBulkCtSettings(changes) {
+                    // Apply values to selected channels one by one, waiting between commands
+                    this.showBulkCtModal = false;
+                    const total = changes.channels.length;
+                    this.log(`Applying bulk settings to ${total} channels...`, 'info');
+
+                    for (let i = 0; i < changes.channels.length; i++) {
+                        const idx = changes.channels[i];
                         if (idx < this.device.ichannels.length) {
                             if (changes.values.ical !== undefined) {
                                 this.$set(this.device.ichannels[idx], 'ical', changes.values.ical);
@@ -808,10 +813,15 @@
                             }
                             // Send command to device
                             this.setIcal(idx);
+                            this.log(`Configured CT ${idx + 1} (${i + 1}/${total})`, 'info');
+
+                            // Wait for device to process before sending next command
+                            if (i < changes.channels.length - 1) {
+                                await new Promise(resolve => setTimeout(resolve, 300));
+                            }
                         }
                     }
-                    this.showBulkCtModal = false;
-                    this.log(`Applied bulk settings to ${changes.channels.length} channels`, 'info');
+                    this.log(`Bulk settings applied to ${total} channels`, 'info');
                 },
                 openBulkCtModal() {
                     this.showBulkCtModal = true;
