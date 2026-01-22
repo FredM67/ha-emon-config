@@ -282,31 +282,29 @@ Vue.component('config-tab', {
                             <label>{{ t.config.radioEnabled }}</label>
                             <input type="checkbox" v-model="device.RF" @change="$emit('set-radio')" :disabled="!emontxConnected" />
                         </div>
-                        <div v-if="device.RF">
-                            <div class="table-responsive">
-                                <table class="device-info-table">
-                                    <tr>
-                                        <th>{{ t.config.nodeId }}</th>
-                                        <th>{{ t.config.group }}</th>
-                                        <th>{{ t.config.frequency }}</th>
-                                        <th>{{ t.config.rfPower || 'Power' }}</th>
-                                        <th>{{ t.config.format }}</th>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="number" v-model="device.rfNode" @change="$emit('set-rf-node')" :disabled="!emontxConnected" style="width:60px" /></td>
-                                        <td><input type="number" v-model="device.rfGroup" @change="$emit('set-rf-group')" :disabled="!emontxConnected" style="width:60px" /></td>
-                                        <td>
-                                            <select v-model="device.rfBand" @change="$emit('set-rf-band')" :disabled="!emontxConnected">
-                                                <option value="433 MHz">433 MHz</option>
-                                                <option value="868 MHz">868 MHz</option>
-                                                <option value="915 MHz">915 MHz</option>
-                                            </select>
-                                        </td>
-                                        <td><input type="number" min="0" max="31" v-model="device.rfPower" @change="$emit('set-rf-power')" :disabled="!emontxConnected" style="width:60px" /></td>
-                                        <td>{{ device.rfFormat }}</td>
-                                    </tr>
-                                </table>
-                            </div>
+                        <div class="table-responsive">
+                            <table class="device-info-table">
+                                <tr>
+                                    <th>{{ t.config.nodeId }}</th>
+                                    <th>{{ t.config.group }}</th>
+                                    <th>{{ t.config.frequency }}</th>
+                                    <th>{{ t.config.rfPower || 'Power' }}</th>
+                                    <th>{{ t.config.format }}</th>
+                                </tr>
+                                <tr>
+                                    <td><input type="number" v-model="device.rfNode" @change="$emit('set-rf-node')" :disabled="!emontxConnected" style="width:60px" /></td>
+                                    <td><input type="number" v-model="device.rfGroup" @change="$emit('set-rf-group')" :disabled="!emontxConnected" style="width:60px" /></td>
+                                    <td>
+                                        <select v-model="device.rfBand" @change="$emit('set-rf-band')" :disabled="!emontxConnected">
+                                            <option value="433 MHz">433 MHz</option>
+                                            <option value="868 MHz">868 MHz</option>
+                                            <option value="915 MHz">915 MHz</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="number" min="0" max="31" v-model="device.rfPower" @change="$emit('set-rf-power')" :disabled="!emontxConnected" style="width:60px" /></td>
+                                    <td>{{ device.rfFormat }}</td>
+                                </tr>
+                            </table>
                         </div>
                     </div>
                 </div>
