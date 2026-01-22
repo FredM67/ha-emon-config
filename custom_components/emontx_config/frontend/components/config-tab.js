@@ -220,7 +220,7 @@ Vue.component('config-tab', {
                                     <td>OPA{{ idx + 1 }}</td>
                                     <td><input type="checkbox" v-model="opa.active" @change="$emit('set-opa', idx)" :disabled="!emontxConnected" /></td>
                                     <td>
-                                        <select v-model="opa.func" @change="handleOpaFuncChange(idx, $event)" :disabled="!emontxConnected || idx === 2">
+                                        <select v-model="opa.func" @change="handleOpaFuncChange(idx, $event)" :disabled="!emontxConnected">
                                             <option value="o" v-if="idx !== 2">{{ (t.config && t.config.oneWire) || 'OneWire' }}</option>
                                             <option value="r">{{ (t.config && t.config.pulseRising) || 'Pulse - Rising' }}</option>
                                             <option value="f">{{ (t.config && t.config.pulseFalling) || 'Pulse - Falling' }}</option>
