@@ -86,14 +86,14 @@ Vue.component('config-tab', {
             <div v-if="configReceived && !upgradeRequired">
                 <!-- Sub-tabs for config sections -->
                 <div class="sub-tabs">
-                    <div :class="['sub-tab', configSubTab === 'calibration' ? 'active' : '']" @click="configSubTab = 'calibration'">
-                        {{ (t.configTabs && t.configTabs.calibration) || 'Calibration' }}
+                    <div :class="['sub-tab', configSubTab === 'calibration' ? 'active' : '']" @click="configSubTab = 'calibration'" :title="t.tooltips.subCalibration">
+                        {{ t.configTabs.calibration }}
                     </div>
-                    <div :class="['sub-tab', configSubTab === 'sensors' ? 'active' : '']" @click="configSubTab = 'sensors'">
-                        {{ (t.configTabs && t.configTabs.sensors) || 'Sensors' }}
+                    <div :class="['sub-tab', configSubTab === 'sensors' ? 'active' : '']" @click="configSubTab = 'sensors'" :title="t.tooltips.subSensors">
+                        {{ t.configTabs.sensors }}
                     </div>
-                    <div :class="['sub-tab', configSubTab === 'misc' ? 'active' : '']" @click="configSubTab = 'misc'">
-                        {{ (t.configTabs && t.configTabs.misc) || 'Misc' }}
+                    <div :class="['sub-tab', configSubTab === 'misc' ? 'active' : '']" @click="configSubTab = 'misc'" :title="t.tooltips.subMisc">
+                        {{ t.configTabs.misc }}
                     </div>
                 </div>
 
@@ -145,8 +145,9 @@ Vue.component('config-tab', {
                 <div class="card">
                     <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
                         <span>{{ t.config.ctChannels }}</span>
-                        <button v-if="device.hardware === 'emonPi3'" class="btn btn-sm btn-info" @click="$emit('open-bulk-ct')" :disabled="!emontxConnected" style="padding: 4px 12px; font-size: 12px;">
-                            {{ (t.bulk && t.bulk.button) || 'Bulk Settings' }}
+                        <button v-if="device.hardware === 'emonPi3'" class="btn btn-sm btn-info" @click="$emit('open-bulk-ct')" :disabled="!emontxConnected" style="padding: 4px 12px; font-size: 12px;"
+                            :title="t.bulk.tooltip">
+                            {{ t.bulk.button }}
                         </button>
                     </div>
                     <div class="card-body">
@@ -170,7 +171,7 @@ Vue.component('config-tab', {
                                     <td style="display: flex; align-items: center; gap: 5px;">
                                         <select :value="getCtSelectValue(index)" @change="handleCtTypeChange(index, $event)" :disabled="!emontxConnected">
                                             <option v-for="rating in ctsAvailable" :value="rating" :key="rating">{{ rating }}A</option>
-                                            <option value="custom">{{ (t.config && t.config.custom) || 'Custom' }}</option>
+                                            <option value="custom">{{ t.config.custom }}</option>
                                         </select>
                                         <input v-if="getCtSelectValue(index) === 'custom'"
                                                type="number" min="10" max="200"
@@ -205,26 +206,26 @@ Vue.component('config-tab', {
 
                 <!-- OPA Channels (OneWire/Pulse) -->
                 <div class="card" v-if="device.hardware === 'emonPi3'">
-                    <div class="card-header">{{ (t.config && t.config.opaChannels) || 'OPA Channels (OneWire/Pulse)' }}</div>
+                    <div class="card-header">{{ t.config.opaChannels }}</div>
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="device-info-table">
                                 <tr>
-                                    <th>{{ (t.config && t.config.channel) || 'Channel' }}</th>
-                                    <th>{{ (t.config && t.config.active) || 'Active' }}</th>
-                                    <th>{{ (t.config && t.config.function) || 'Function' }}</th>
-                                    <th>{{ (t.config && t.config.pullUp) || 'Pull-up' }}</th>
-                                    <th>{{ (t.config && t.config.period) || 'Period (ms)' }}</th>
+                                    <th>{{ t.config.channel }}</th>
+                                    <th>{{ t.config.active }}</th>
+                                    <th>{{ t.config.function }}</th>
+                                    <th>{{ t.config.pullUp }}</th>
+                                    <th>{{ t.config.period }}</th>
                                 </tr>
                                 <tr v-for="(opa, idx) in device.opa" :key="'opa'+idx">
                                     <td>OPA{{ idx + 1 }}</td>
                                     <td><input type="checkbox" v-model="opa.active" @change="$emit('set-opa', idx)" :disabled="!emontxConnected" /></td>
                                     <td>
                                         <select v-model="opa.func" @change="handleOpaFuncChange(idx, $event)" :disabled="!emontxConnected">
-                                            <option value="o" v-if="idx !== 2">{{ (t.config && t.config.oneWire) || 'OneWire' }}</option>
-                                            <option value="r">{{ (t.config && t.config.pulseRising) || 'Pulse - Rising' }}</option>
-                                            <option value="f">{{ (t.config && t.config.pulseFalling) || 'Pulse - Falling' }}</option>
-                                            <option value="b">{{ (t.config && t.config.pulseBoth) || 'Pulse - Both' }}</option>
+                                            <option value="o" v-if="idx !== 2">{{ t.config.oneWire }}</option>
+                                            <option value="r">{{ t.config.pulseRising }}</option>
+                                            <option value="f">{{ t.config.pulseFalling }}</option>
+                                            <option value="b">{{ t.config.pulseBoth }}</option>
                                         </select>
                                     </td>
                                     <td><input type="checkbox" v-model="opa.pullUp" @change="$emit('set-opa', idx)" :disabled="!emontxConnected || opa.func === 'o' || idx === 2" /></td>
@@ -237,28 +238,28 @@ Vue.component('config-tab', {
 
                 <!-- Temperature Sensors -->
                 <div class="card" v-if="device.hardware === 'emonPi3'">
-                    <div class="card-header">{{ (t.config && t.config.tempSensors) || 'Temperature Sensors' }}</div>
+                    <div class="card-header">{{ t.config.tempSensors }}</div>
                     <div class="card-body">
                         <p style="font-size: 13px; color: #666; margin-bottom: 15px;">
-                            {{ (t.config && t.config.tempSensorsDesc) || 'DS18B20 OneWire temperature sensors connected to OPA channels configured as OneWire.' }}
+                            {{ t.config.tempSensorsDesc }}
                         </p>
                         <div class="button-group" style="margin-bottom: 15px;">
-                            <button class="btn btn-primary" @click="$emit('scan-temp-sensors')" :disabled="!emontxConnected">
-                                {{ (t.config && t.config.scanSensors) || 'Scan Sensors' }}
+                            <button class="btn btn-primary" @click="$emit('scan-temp-sensors')" :disabled="!emontxConnected" :title="t.tooltips.btnScanSensors">
+                                {{ t.config.scanSensors }}
                             </button>
-                            <button class="btn btn-info" @click="$emit('list-temp-sensors')" :disabled="!emontxConnected">
-                                {{ (t.config && t.config.listSensors) || 'List Sensors' }}
+                            <button class="btn btn-info" @click="$emit('list-temp-sensors')" :disabled="!emontxConnected" :title="t.tooltips.btnListSensors">
+                                {{ t.config.listSensors }}
                             </button>
-                            <button class="btn btn-warning" @click="$emit('save-temp-mapping')" :disabled="!emontxConnected || device.tempSensors.length === 0">
-                                {{ (t.config && t.config.saveMapping) || 'Save Mapping' }}
+                            <button class="btn btn-warning" @click="$emit('save-temp-mapping')" :disabled="!emontxConnected || device.tempSensors.length === 0" :title="t.tooltips.btnSaveMapping">
+                                {{ t.config.saveMapping }}
                             </button>
                         </div>
                         <div v-if="device.tempSensors.length > 0">
                             <table class="device-info-table">
                                 <tr>
-                                    <th>{{ (t.config && t.config.sensor) || 'Sensor' }}</th>
-                                    <th>{{ (t.config && t.config.address) || 'Address' }}</th>
-                                    <th>{{ (t.config && t.config.temperature) || 'Temperature' }}</th>
+                                    <th>{{ t.config.sensor }}</th>
+                                    <th>{{ t.config.address }}</th>
+                                    <th>{{ t.config.temperature }}</th>
                                 </tr>
                                 <tr v-for="(sensor, idx) in device.tempSensors" :key="'temp'+idx">
                                     <td>T{{ idx + 1 }}</td>
@@ -268,14 +269,14 @@ Vue.component('config-tab', {
                             </table>
                         </div>
                         <div v-else class="alert alert-info" style="margin: 0;">
-                            {{ (t.config && t.config.noTempSensors) || 'No temperature sensors found. Click "Scan Sensors" to search for connected DS18B20 sensors.' }}
+                            {{ t.config.noTempSensors }}
                         </div>
                     </div>
                 </div>
 
                 <!-- Pulse Settings (for non-emonPi3) -->
                 <div class="card" v-if="device.hardware !== 'emonPi3'">
-                    <div class="card-header">{{ t.config.pulseSettings || 'Pulse Settings' }}</div>
+                    <div class="card-header">{{ t.config.pulseSettings }}</div>
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="device-info-table">
@@ -310,7 +311,7 @@ Vue.component('config-tab', {
                                     <th>{{ t.config.nodeId }}</th>
                                     <th>{{ t.config.group }}</th>
                                     <th>{{ t.config.frequency }}</th>
-                                    <th>{{ t.config.rfPower || 'Power' }}</th>
+                                    <th>{{ t.config.rfPower }}</th>
                                     <th>{{ t.config.format }}</th>
                                 </tr>
                                 <tr>
@@ -341,7 +342,7 @@ Vue.component('config-tab', {
                             <span class="unit">s</span>
                         </div>
                         <div class="form-group">
-                            <label>{{ t.config.jsonSerialFormat || 'JSON Serial Format' }}</label>
+                            <label>{{ t.config.jsonSerialFormat }}</label>
                             <input type="checkbox" v-model="device.json" :true-value="1" :false-value="0" @change="$emit('set-json')" :disabled="!emontxConnected" />
                         </div>
                     </div>
@@ -350,11 +351,11 @@ Vue.component('config-tab', {
 
                 <!-- Action Buttons -->
                 <div class="button-group">
-                    <button class="btn btn-warning" @click="$emit('save-config')" :disabled="!changes || !emontxConnected">{{ t.buttons.save }}</button>
-                    <button class="btn btn-info" @click="$emit('zero-energy')" :disabled="!emontxConnected">{{ t.buttons.zeroEnergy }}</button>
-                    <button class="btn btn-danger" @click="$emit('reset-defaults')" :disabled="!emontxConnected">{{ t.buttons.resetDefaults }}</button>
-                    <button class="btn btn-primary" @click="$emit('load-config')" :disabled="!emontxConnected">{{ t.buttons.reloadConfig }}</button>
-                    <button class="btn btn-primary" @click="$emit('generate-yaml')" :disabled="!configReceived" style="background: #9c27b0;">{{ t.buttons.generateYaml }}</button>
+                    <button class="btn btn-warning" @click="$emit('save-config')" :disabled="!changes || !emontxConnected" :title="t.tooltips.btnSave">{{ t.buttons.save }}</button>
+                    <button class="btn btn-info" @click="$emit('zero-energy')" :disabled="!emontxConnected" :title="t.tooltips.btnZeroEnergy">{{ t.buttons.zeroEnergy }}</button>
+                    <button class="btn btn-danger" @click="$emit('reset-defaults')" :disabled="!emontxConnected" :title="t.tooltips.btnResetDefaults">{{ t.buttons.resetDefaults }}</button>
+                    <button class="btn btn-primary" @click="$emit('load-config')" :disabled="!emontxConnected" :title="t.tooltips.btnReloadConfig">{{ t.buttons.reloadConfig }}</button>
+                    <button class="btn btn-primary" @click="$emit('generate-yaml')" :disabled="!configReceived" style="background: #9c27b0;" :title="t.tooltips.btnGenerateYaml">{{ t.buttons.generateYaml }}</button>
                 </div>
             </div>
         </div>

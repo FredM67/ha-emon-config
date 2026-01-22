@@ -41,30 +41,30 @@ Vue.component('accumulators-tab', {
 
             <!-- Explanation -->
             <div class="alert alert-info">
-                {{ (t.accumulators && t.accumulators.explanation) || 'Use this page to reset the values stored on the emonTx/emonPi to zero. This action cannot be undone.' }}
+                {{ t.accumulators.explanation }}
             </div>
 
             <div class="card">
-                <div class="card-header">{{ (t.accumulators && t.accumulators.energyTitle) || 'Energy Accumulators' }}</div>
+                <div class="card-header">{{ t.accumulators.energyTitle }}</div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="device-info-table">
                             <tr>
-                                <th>{{ (t.accumulators && t.accumulators.channel) || 'Channel' }}</th>
-                                <th>{{ (t.accumulators && t.accumulators.value) || 'Value' }}</th>
-                                <th v-if="device.hardware === 'emonPi3'">{{ (t.accumulators && t.accumulators.status) || 'Status' }}</th>
-                                <th v-if="device.hardware === 'emonPi3'">{{ (t.accumulators && t.accumulators.action) || 'Action' }}</th>
+                                <th>{{ t.accumulators.channel }}</th>
+                                <th>{{ t.accumulators.value }}</th>
+                                <th v-if="device.hardware === 'emonPi3'">{{ t.accumulators.status }}</th>
+                                <th v-if="device.hardware === 'emonPi3'">{{ t.accumulators.action }}</th>
                             </tr>
                             <tr v-for="n in energyChannelCount" :key="'e'+n" :class="{ 'inactive-row': !isEnergyChannelActive(n) }">
                                 <td>E{{ n }}</td>
                                 <td>{{ liveData['E' + n] || '0' }} Wh</td>
                                 <td v-if="device.hardware === 'emonPi3'">
-                                    <span v-if="isEnergyChannelActive(n)" style="color: #4CAF50;">{{ (t.accumulators && t.accumulators.active) || 'Active' }}</span>
-                                    <span v-else style="color: #999;">{{ (t.accumulators && t.accumulators.inactive) || 'Inactive' }}</span>
+                                    <span v-if="isEnergyChannelActive(n)" style="color: #4CAF50;">{{ t.accumulators.active }}</span>
+                                    <span v-else style="color: #999;">{{ t.accumulators.inactive }}</span>
                                 </td>
                                 <td v-if="device.hardware === 'emonPi3'">
-                                    <button class="btn btn-sm btn-danger" @click="$emit('show-individual-zero', 'e', n)" :disabled="!emontxConnected">
-                                        {{ (t.accumulators && t.accumulators.zero) || 'Zero' }}
+                                    <button class="btn btn-sm btn-danger" @click="$emit('show-individual-zero', 'e', n)" :disabled="!emontxConnected" :title="t.tooltips.btnZeroIndividual">
+                                        {{ t.accumulators.zero }}
                                     </button>
                                 </td>
                             </tr>
@@ -74,21 +74,21 @@ Vue.component('accumulators-tab', {
             </div>
 
             <div class="card">
-                <div class="card-header">{{ (t.accumulators && t.accumulators.pulseTitle) || 'Pulse Accumulators' }}</div>
+                <div class="card-header">{{ t.accumulators.pulseTitle }}</div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="device-info-table">
                             <tr>
-                                <th>{{ (t.accumulators && t.accumulators.channel) || 'Channel' }}</th>
-                                <th>{{ (t.accumulators && t.accumulators.value) || 'Value' }}</th>
-                                <th v-if="device.hardware === 'emonPi3'">{{ (t.accumulators && t.accumulators.action) || 'Action' }}</th>
+                                <th>{{ t.accumulators.channel }}</th>
+                                <th>{{ t.accumulators.value }}</th>
+                                <th v-if="device.hardware === 'emonPi3'">{{ t.accumulators.action }}</th>
                             </tr>
                             <tr v-for="n in pulseChannelCount" :key="'p'+n">
                                 <td>Pulse {{ n }}</td>
                                 <td>{{ liveData['pulse' + n] || '0' }}</td>
                                 <td v-if="device.hardware === 'emonPi3'">
-                                    <button class="btn btn-sm btn-danger" @click="$emit('show-individual-zero', 'p', n)" :disabled="!emontxConnected">
-                                        {{ (t.accumulators && t.accumulators.zero) || 'Zero' }}
+                                    <button class="btn btn-sm btn-danger" @click="$emit('show-individual-zero', 'p', n)" :disabled="!emontxConnected" :title="t.tooltips.btnZeroPulse">
+                                        {{ t.accumulators.zero }}
                                     </button>
                                 </td>
                             </tr>
@@ -98,7 +98,7 @@ Vue.component('accumulators-tab', {
             </div>
 
             <div class="button-group">
-                <button class="btn btn-danger" @click="$emit('zero-energy')" :disabled="!emontxConnected">{{ (t.accumulators && t.accumulators.zeroAll) || 'Zero All Accumulators' }}</button>
+                <button class="btn btn-danger" @click="$emit('zero-energy')" :disabled="!emontxConnected" :title="t.tooltips.btnZeroAll">{{ t.accumulators.zeroAll }}</button>
             </div>
         </div>
     `

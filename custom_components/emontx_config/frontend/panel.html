@@ -9,6 +9,13 @@
 </head>
 <body>
     <div id="app" class="container">
+        <!-- Translation Error -->
+        <div v-if="translationError" class="alert alert-danger" style="margin: 20px; text-align: center;">
+            <h2>Failed to load translations</h2>
+            <p>Could not load the language files. Please check your installation and try refreshing the page.</p>
+        </div>
+
+        <template v-else>
         <div class="header" style="position: relative;">
             <h1>{{ t.title }}</h1>
             <p>{{ t.subtitle }}</p>
@@ -38,10 +45,10 @@
         </div>
 
         <div class="tabs">
-            <div :class="['tab', activeTab === 'config' ? 'active' : '']" @click="activeTab = 'config'">{{ t.tabs.config }}</div>
-            <div :class="['tab', activeTab === 'accumulators' ? 'active' : '']" @click="activeTab = 'accumulators'">{{ (t.tabs && t.tabs.accumulators) || 'Accumulators' }}</div>
-            <div :class="['tab', activeTab === 'data' ? 'active' : '']" @click="activeTab = 'data'">{{ t.tabs.liveData }}</div>
-            <div :class="['tab', activeTab === 'terminal' ? 'active' : '']" @click="activeTab = 'terminal'">{{ t.tabs.terminal }}</div>
+            <div :class="['tab', activeTab === 'config' ? 'active' : '']" @click="activeTab = 'config'" :title="t.tooltips.tabConfig">{{ t.tabs.config }}</div>
+            <div :class="['tab', activeTab === 'accumulators' ? 'active' : '']" @click="activeTab = 'accumulators'" :title="t.tooltips.tabAccumulators">{{ t.tabs.accumulators }}</div>
+            <div :class="['tab', activeTab === 'data' ? 'active' : '']" @click="activeTab = 'data'" :title="t.tooltips.tabLiveData">{{ t.tabs.liveData }}</div>
+            <div :class="['tab', activeTab === 'terminal' ? 'active' : '']" @click="activeTab = 'terminal'" :title="t.tooltips.tabTerminal">{{ t.tabs.terminal }}</div>
         </div>
 
         <!-- Device Configuration Tab -->
@@ -147,6 +154,7 @@
             @apply="applyBulkCtSettings"
             @close="closeBulkModal"
         ></bulk-ct-modal>
+        </template>
     </div>
 
     <!-- Load component scripts -->
@@ -160,7 +168,7 @@
         var app = new Vue({
             el: '#app',
             data: {
-                integrationVersion: '1.0.15-beta.2',
+                integrationVersion: '1.0.15',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -192,6 +200,7 @@
                 lang: 'en',
                 translations: {},
                 translationsLoaded: false,
+                translationError: false,
                 device: {
                     firmware: '',
                     firmware_version: '',
@@ -281,9 +290,10 @@
 
                     try {
                         const enResponse = await fetch(`${basePath}/i18n/en.json`);
-                        if (enResponse.ok) {
-                            this.$set(this.translations, 'en', await enResponse.json());
+                        if (!enResponse.ok) {
+                            throw new Error('Failed to load English translations');
                         }
+                        this.$set(this.translations, 'en', await enResponse.json());
 
                         if (lang !== 'en') {
                             const langResponse = await fetch(`${basePath}/i18n/${lang}.json`);
@@ -295,7 +305,7 @@
                         this.translationsLoaded = true;
                     } catch (e) {
                         console.error('Failed to load translations:', e);
-                        this.$set(this.translations, 'en', { title: 'emonPi/Tx Configuration', subtitle: 'Loading...' });
+                        this.translationError = true;
                         this.translationsLoaded = true;
                     }
                 },

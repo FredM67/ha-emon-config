@@ -21,15 +21,15 @@ Vue.component('individual-zero-modal', {
     template: `
         <div v-if="show" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999;">
             <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); max-width: 400px; text-align: center;">
-                <h3 style="margin-top: 0; color: #f44336;">⚠️ {{ (t.accumulators && t.accumulators.confirmTitle) || 'Confirm Zero' }}</h3>
+                <h3 style="margin-top: 0; color: #f44336;">⚠️ {{ t.accumulators.confirmTitle }}</h3>
                 <p style="font-size: 16px; margin: 20px 0;">
-                    {{ (t.accumulators && t.accumulators.confirmMessage) || 'Are you sure you want to zero' }}
+                    {{ t.accumulators.confirmMessage }}
                     <strong>{{ targetLabel }}</strong>?
                 </p>
-                <p style="font-size: 14px; color: #666; margin-bottom: 20px;">{{ (t.accumulators && t.accumulators.confirmWarning) || 'This action cannot be undone.' }}</p>
+                <p style="font-size: 14px; color: #666; margin-bottom: 20px;">{{ t.accumulators.confirmWarning }}</p>
                 <div style="display: flex; gap: 10px; justify-content: center;">
-                    <button class="btn btn-danger" @click="$emit('confirm')" style="padding: 12px 30px; font-size: 16px;">{{ (t.accumulators && t.accumulators.confirmYes) || 'Yes, Zero It' }}</button>
-                    <button class="btn" @click="$emit('cancel')" style="padding: 12px 30px; font-size: 16px; background: #ccc;">{{ (t.accumulators && t.accumulators.confirmNo) || 'Cancel' }}</button>
+                    <button class="btn btn-danger" @click="$emit('confirm')" style="padding: 12px 30px; font-size: 16px;">{{ t.accumulators.confirmYes }}</button>
+                    <button class="btn" @click="$emit('cancel')" style="padding: 12px 30px; font-size: 16px; background: #ccc;">{{ t.accumulators.confirmNo }}</button>
                 </div>
             </div>
         </div>
@@ -101,9 +101,6 @@ Vue.component('bulk-ct-modal', {
         progressPercent() {
             if (!this.progress || this.progress.total === 0) return 0;
             return Math.round((this.progress.current / this.progress.total) * 100);
-        },
-        bulkT() {
-            return (this.t.bulk) || {};
         }
     },
     methods: {
@@ -165,12 +162,12 @@ Vue.component('bulk-ct-modal', {
     template: `
         <div v-if="show" class="modal-overlay">
             <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); max-width: 500px; width: 90%; max-height: 85vh; overflow-y: auto;">
-                <h3 style="margin-top: 0; color: #2196F3;">{{ bulkT.title || 'Bulk CT Settings' }}</h3>
+                <h3 style="margin-top: 0; color: #2196F3;">{{ t.bulk.title }}</h3>
 
                 <!-- Quick select buttons -->
                 <div style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;">
-                    <button class="btn btn-sm btn-info" @click="selectAll" style="padding: 6px 12px; font-size: 12px;">{{ bulkT.selectAll || 'Select All' }}</button>
-                    <button class="btn btn-sm" @click="selectNone" style="padding: 6px 12px; font-size: 12px; background: #ccc;">{{ bulkT.selectNone || 'Select None' }}</button>
+                    <button class="btn btn-sm btn-info" @click="selectAll" style="padding: 6px 12px; font-size: 12px;">{{ t.bulk.selectAll }}</button>
+                    <button class="btn btn-sm" @click="selectNone" style="padding: 6px 12px; font-size: 12px; background: #ccc;">{{ t.bulk.selectNone }}</button>
                     <button class="btn btn-sm btn-info" @click="selectRange(0, 5)" style="padding: 6px 12px; font-size: 12px;">CT 1-6</button>
                     <button class="btn btn-sm btn-info" @click="selectRange(6, 11)" style="padding: 6px 12px; font-size: 12px;">CT 7-12</button>
                 </div>
@@ -196,14 +193,14 @@ Vue.component('bulk-ct-modal', {
 
                 <!-- Settings to apply -->
                 <div style="background: #f5f5f5; padding: 15px; border-radius: 4px; margin-bottom: 15px;">
-                    <div style="font-weight: 500; margin-bottom: 10px;">{{ bulkT.setValues || 'Set values:' }}</div>
+                    <div style="font-weight: 500; margin-bottom: 10px;">{{ t.bulk.setValues }}</div>
 
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
                         <input type="checkbox" v-model="applyCtType" style="width: 16px; height: 16px;" />
-                        <label style="min-width: 80px;">{{ t.config.ctType || 'CT Type' }}:</label>
+                        <label style="min-width: 80px;">{{ t.config.ctType }}:</label>
                         <select :value="ctTypeCustom ? 'custom' : ctTypeValue" @change="handleCtTypeSelectChange" :disabled="!applyCtType" style="padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
                             <option v-for="ct in ctsAvailable" :key="ct" :value="ct">{{ ct }}A</option>
-                            <option value="custom">{{ (t.config && t.config.custom) || 'Custom' }}</option>
+                            <option value="custom">{{ t.config.custom }}</option>
                         </select>
                         <input v-if="ctTypeCustom" type="number" min="10" max="200" v-model.number="ctTypeCustomValue" :disabled="!applyCtType" style="padding: 6px; border: 1px solid #ddd; border-radius: 4px; width: 70px;" />
                         <span v-if="ctTypeCustom">A</span>
@@ -211,13 +208,13 @@ Vue.component('bulk-ct-modal', {
 
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
                         <input type="checkbox" v-model="applyPhase" style="width: 16px; height: 16px;" />
-                        <label style="min-width: 80px;">{{ t.config.phase || 'Phase' }}:</label>
+                        <label style="min-width: 80px;">{{ t.config.phase }}:</label>
                         <input type="number" step="0.01" v-model="phaseValue" :disabled="!applyPhase" style="padding: 6px; border: 1px solid #ddd; border-radius: 4px; width: 80px;" />
                     </div>
 
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
                         <input type="checkbox" v-model="applyVchan1" style="width: 16px; height: 16px;" />
-                        <label style="min-width: 80px;">{{ t.config.vChan1 || 'V Chan 1' }}:</label>
+                        <label style="min-width: 80px;">{{ t.config.vChan1 }}:</label>
                         <select v-model="vchan1Value" :disabled="!applyVchan1" style="padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
                             <option v-for="v in [1,2,3]" :key="v" :value="v">{{ v }}</option>
                         </select>
@@ -225,7 +222,7 @@ Vue.component('bulk-ct-modal', {
 
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <input type="checkbox" v-model="applyVchan2" style="width: 16px; height: 16px;" />
-                        <label style="min-width: 80px;">{{ t.config.vChan2 || 'V Chan 2' }}:</label>
+                        <label style="min-width: 80px;">{{ t.config.vChan2 }}:</label>
                         <select v-model="vchan2Value" :disabled="!applyVchan2" style="padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
                             <option v-for="v in [1,2,3]" :key="v" :value="v">{{ v }}</option>
                         </select>
@@ -235,7 +232,7 @@ Vue.component('bulk-ct-modal', {
                 <!-- Progress bar (shown during apply) -->
                 <div v-if="isApplying" style="margin-bottom: 15px;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                        <span style="font-weight: 500;">{{ bulkT.applying || 'Applying...' }} CT {{ progress.currentCt }}</span>
+                        <span style="font-weight: 500;">{{ t.bulk.applying }} CT {{ progress.currentCt }}</span>
                         <span>{{ progress.current }} / {{ progress.total }}</span>
                     </div>
                     <div style="background: #e0e0e0; border-radius: 4px; height: 20px; overflow: hidden;">
@@ -253,9 +250,9 @@ Vue.component('bulk-ct-modal', {
                     <button v-if="!isApplying" class="btn btn-primary" @click="apply"
                             :disabled="selectedCts.length === 0 || (!applyCtType && !applyPhase && !applyVchan1 && !applyVchan2)"
                             style="padding: 12px 25px;">
-                        {{ bulkT.apply || 'Apply to' }} {{ selectedCts.length }} {{ bulkT.selected || 'selected' }}
+                        {{ t.bulk.apply }} {{ selectedCts.length }} {{ t.bulk.selected }}
                     </button>
-                    <button class="btn" @click="$emit('close')" :disabled="isApplying" style="padding: 12px 25px; background: #ccc;">{{ bulkT.cancel || 'Cancel' }}</button>
+                    <button class="btn" @click="$emit('close')" :disabled="isApplying" style="padding: 12px 25px; background: #ccc;">{{ t.bulk.cancel }}</button>
                 </div>
             </div>
         </div>

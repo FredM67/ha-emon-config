@@ -140,6 +140,7 @@
     },
     "bulk": {
         "button": "Config. Groupée",
+        "tooltip": "Appliquer les paramètres Type CT, Phase et Canal V à plusieurs CT en une fois",
         "title": "Configuration Groupée des CT",
         "selectAll": "Tout Sélectionner",
         "selectNone": "Aucune Sélection",
@@ -148,5 +149,25 @@
         "selected": "sélectionnés",
         "cancel": "Annuler",
         "applying": "Application..."
+    },
+    "tooltips": {
+        "tabConfig": "Configurer les capteurs CT, l'étalonnage et les paramètres",
+        "tabAccumulators": "Afficher et réinitialiser les accumulateurs d'énergie et d'impulsions",
+        "tabLiveData": "Afficher les mesures en temps réel",
+        "tabTerminal": "Envoyer des commandes directement à l'appareil",
+        "subCalibration": "Étalonnage des capteurs de tension et de courant",
+        "subSensors": "Canaux OPA, capteurs de température et entrées d'impulsions",
+        "subMisc": "Radio, intervalle de journalisation et autres paramètres",
+        "btnSave": "Enregistrer la configuration dans l'EEPROM de l'appareil",
+        "btnZeroEnergy": "Réinitialiser tous les accumulateurs d'énergie à zéro",
+        "btnResetDefaults": "Restaurer les paramètres d'usine par défaut",
+        "btnReloadConfig": "Recharger la configuration depuis l'appareil",
+        "btnGenerateYaml": "Générer la configuration YAML pour Home Assistant",
+        "btnScanSensors": "Rechercher de nouveaux capteurs DS18B20 sur le bus OneWire",
+        "btnListSensors": "Afficher les capteurs de température configurés",
+        "btnSaveMapping": "Enregistrer les adresses des capteurs de température",
+        "btnZeroIndividual": "Réinitialiser cet accumulateur d'énergie à zéro",
+        "btnZeroPulse": "Réinitialiser ce compteur d'impulsions à zéro",
+        "btnZeroAll": "Réinitialiser tous les accumulateurs à zéro"
     }
 }

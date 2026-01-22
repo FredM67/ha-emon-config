@@ -140,6 +140,7 @@
     },
     "bulk": {
         "button": "Bulk Settings",
+        "tooltip": "Apply CT Type, Phase, and V-Channel settings to multiple CTs at once",
         "title": "Bulk CT Settings",
         "selectAll": "Select All",
         "selectNone": "Select None",
@@ -148,5 +149,25 @@
         "selected": "selected",
         "cancel": "Cancel",
         "applying": "Applying..."
+    },
+    "tooltips": {
+        "tabConfig": "Configure CT sensors, voltage calibration, and device settings",
+        "tabAccumulators": "View and reset energy and pulse accumulators",
+        "tabLiveData": "View real-time sensor readings",
+        "tabTerminal": "Send commands directly to the device",
+        "subCalibration": "Voltage and current sensor calibration",
+        "subSensors": "OPA channels, temperature sensors, and pulse inputs",
+        "subMisc": "Radio, datalog interval, and other settings",
+        "btnSave": "Save configuration changes to device EEPROM",
+        "btnZeroEnergy": "Reset all energy accumulators to zero",
+        "btnResetDefaults": "Restore factory default settings",
+        "btnReloadConfig": "Reload configuration from device",
+        "btnGenerateYaml": "Generate Home Assistant YAML configuration",
+        "btnScanSensors": "Search for new DS18B20 temperature sensors on OneWire bus",
+        "btnListSensors": "Show currently configured temperature sensors",
+        "btnSaveMapping": "Save temperature sensor addresses to device",
+        "btnZeroIndividual": "Reset this energy accumulator to zero",
+        "btnZeroPulse": "Reset this pulse counter to zero",
+        "btnZeroAll": "Reset all energy and pulse accumulators to zero"
     }
 }

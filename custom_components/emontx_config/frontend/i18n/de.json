@@ -140,6 +140,7 @@
     },
     "bulk": {
         "button": "Sammeleinstellung",
+        "tooltip": "CT-Typ, Phase und V-Kanal-Einstellungen auf mehrere CTs gleichzeitig anwenden",
         "title": "CT-Sammeleinstellungen",
         "selectAll": "Alle Auswählen",
         "selectNone": "Keine Auswählen",
@@ -148,5 +149,25 @@
         "selected": "ausgewählt",
         "cancel": "Abbrechen",
         "applying": "Anwenden..."
+    },
+    "tooltips": {
+        "tabConfig": "CT-Sensoren, Spannungskalibrierung und Geräteeinstellungen konfigurieren",
+        "tabAccumulators": "Energie- und Impulsakkumulatoren anzeigen und zurücksetzen",
+        "tabLiveData": "Echtzeit-Sensormesswerte anzeigen",
+        "tabTerminal": "Befehle direkt an das Gerät senden",
+        "subCalibration": "Spannungs- und Stromsensor-Kalibrierung",
+        "subSensors": "OPA-Kanäle, Temperatursensoren und Impulseingänge",
+        "subMisc": "Funk, Datenlog-Intervall und andere Einstellungen",
+        "btnSave": "Konfigurationsänderungen im EEPROM speichern",
+        "btnZeroEnergy": "Alle Energieakkumulatoren auf Null setzen",
+        "btnResetDefaults": "Werkseinstellungen wiederherstellen",
+        "btnReloadConfig": "Konfiguration vom Gerät neu laden",
+        "btnGenerateYaml": "Home Assistant YAML-Konfiguration generieren",
+        "btnScanSensors": "Nach neuen DS18B20-Temperatursensoren auf dem OneWire-Bus suchen",
+        "btnListSensors": "Konfigurierte Temperatursensoren anzeigen",
+        "btnSaveMapping": "Temperatursensor-Adressen am Gerät speichern",
+        "btnZeroIndividual": "Diesen Energieakkumulator auf Null setzen",
+        "btnZeroPulse": "Diesen Impulszähler auf Null setzen",
+        "btnZeroAll": "Alle Energie- und Impulsakkumulatoren auf Null setzen"
     }
 }

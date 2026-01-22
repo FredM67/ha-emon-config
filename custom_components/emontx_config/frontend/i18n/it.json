@@ -140,6 +140,7 @@
     },
     "bulk": {
         "button": "Config. di Gruppo",
+        "tooltip": "Applica le impostazioni Tipo CT, Fase e Canale V a più CT contemporaneamente",
         "title": "Configurazione CT di Gruppo",
         "selectAll": "Seleziona Tutti",
         "selectNone": "Deseleziona Tutti",
@@ -148,5 +149,25 @@
         "selected": "selezionati",
         "cancel": "Annulla",
         "applying": "Applicazione..."
+    },
+    "tooltips": {
+        "tabConfig": "Configura sensori CT, calibrazione tensione e impostazioni dispositivo",
+        "tabAccumulators": "Visualizza e reimposta accumulatori energia e impulsi",
+        "tabLiveData": "Visualizza letture sensori in tempo reale",
+        "tabTerminal": "Invia comandi direttamente al dispositivo",
+        "subCalibration": "Calibrazione sensori di tensione e corrente",
+        "subSensors": "Canali OPA, sensori temperatura e ingressi impulsi",
+        "subMisc": "Radio, intervallo datalog e altre impostazioni",
+        "btnSave": "Salva modifiche configurazione nella EEPROM del dispositivo",
+        "btnZeroEnergy": "Reimposta tutti gli accumulatori energia a zero",
+        "btnResetDefaults": "Ripristina impostazioni di fabbrica",
+        "btnReloadConfig": "Ricarica configurazione dal dispositivo",
+        "btnGenerateYaml": "Genera configurazione YAML per Home Assistant",
+        "btnScanSensors": "Cerca nuovi sensori DS18B20 sul bus OneWire",
+        "btnListSensors": "Mostra sensori temperatura configurati",
+        "btnSaveMapping": "Salva indirizzi sensori temperatura sul dispositivo",
+        "btnZeroIndividual": "Reimposta questo accumulatore energia a zero",
+        "btnZeroPulse": "Reimposta questo contatore impulsi a zero",
+        "btnZeroAll": "Reimposta tutti gli accumulatori energia e impulsi a zero"
     }
 }
