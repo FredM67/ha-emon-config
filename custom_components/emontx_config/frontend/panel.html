@@ -9,9 +9,10 @@
 </head>
 <body>
     <div id="app" class="container">
-        <div class="header">
+        <div class="header" style="position: relative;">
             <h1>{{ t.title }}</h1>
             <p>{{ t.subtitle }}</p>
+            <span style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 12px; opacity: 0.8;">v{{ integrationVersion }}</span>
         </div>
 
         <div class="status-bar">
@@ -159,6 +160,7 @@
         var app = new Vue({
             el: '#app',
             data: {
+                integrationVersion: '1.0.14-beta.2',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
