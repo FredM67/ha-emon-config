@@ -43,6 +43,26 @@ Vue.component('config-tab', {
         },
         handleCustomCtChange(index) {
             this.$emit('set-ical', index);
+        },
+        handleOpaFuncChange(idx, event) {
+            const newFunc = event.target.value;
+            const opa = this.device.opa[idx];
+            const oldFunc = opa.func;
+
+            // Update the function
+            opa.func = newFunc;
+
+            // Auto-configure based on the new function
+            if (newFunc === 'o') {
+                // Switching to OneWire: enable pull-up (required for DS18B20)
+                opa.pullUp = true;
+            } else if (oldFunc === 'o') {
+                // Switching from OneWire to Pulse: set recommended defaults
+                opa.pullUp = false;
+                opa.period = 100;  // 100ms default debounce
+            }
+
+            this.$emit('set-opa', idx);
         }
     },
     template: `
@@ -200,9 +220,11 @@ Vue.component('config-tab', {
                                     <td>OPA{{ idx + 1 }}</td>
                                     <td><input type="checkbox" v-model="opa.active" @change="$emit('set-opa', idx)" :disabled="!emontxConnected" /></td>
                                     <td>
-                                        <select v-model="opa.func" @change="$emit('set-opa', idx)" :disabled="!emontxConnected || idx === 2">
+                                        <select v-model="opa.func" @change="handleOpaFuncChange(idx, $event)" :disabled="!emontxConnected || idx === 2">
                                             <option value="o" v-if="idx !== 2">{{ (t.config && t.config.oneWire) || 'OneWire' }}</option>
-                                            <option value="p">{{ (t.config && t.config.pulse) || 'Pulse' }}</option>
+                                            <option value="r">{{ (t.config && t.config.pulseRising) || 'Pulse - Rising' }}</option>
+                                            <option value="f">{{ (t.config && t.config.pulseFalling) || 'Pulse - Falling' }}</option>
+                                            <option value="b">{{ (t.config && t.config.pulseBoth) || 'Pulse - Both' }}</option>
                                         </select>
                                     </td>
                                     <td><input type="checkbox" v-model="opa.pullUp" @change="$emit('set-opa', idx)" :disabled="!emontxConnected || opa.func === 'o' || idx === 2" /></td>

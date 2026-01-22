@@ -160,7 +160,7 @@
         var app = new Vue({
             el: '#app',
             data: {
-                integrationVersion: '1.0.14',
+                integrationVersion: '1.0.15-beta.1',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -219,7 +219,7 @@
                     opa: [
                         { active: true, func: 'o', pullUp: true, period: 100 },
                         { active: true, func: 'o', pullUp: true, period: 100 },
-                        { active: false, func: 'p', pullUp: false, period: 100 }  // OPA3: pulse only, no pull-up
+                        { active: false, func: 'b', pullUp: false, period: 100 }  // OPA3: pulse only (both edges default)
                     ],
                     tempSensors: []
                 },
@@ -595,7 +595,16 @@
                         if (content.includes('onewire')) {
                             this.$set(this.device.opa[opaIdx], 'func', 'o');
                         } else if (content.includes('pulse')) {
-                            this.$set(this.device.opa[opaIdx], 'func', 'p');
+                            // Detect edge type: rising, falling, or both
+                            let pulseMode = 'b';  // default to both
+                            if (content.includes('rising')) {
+                                pulseMode = 'r';
+                            } else if (content.includes('falling')) {
+                                pulseMode = 'f';
+                            } else if (content.includes('both')) {
+                                pulseMode = 'b';
+                            }
+                            this.$set(this.device.opa[opaIdx], 'func', pulseMode);
 
                             const pullUpMatch = content.match(/pullUp\s*=\s*(\w+)/);
                             if (pullUpMatch) {
@@ -924,7 +933,7 @@
                     const opa = this.device.opa[idx];
                     const channel = idx + 1;
                     const active = opa.active ? 1 : 0;
-                    const funcChar = opa.func === 'o' ? 'o' : 'b';
+                    const funcChar = opa.func;  // 'o' for OneWire, 'r'/'f'/'b' for pulse modes
                     const pullUp = opa.pullUp ? 1 : 0;
                     const period = Math.round(opa.period) || 0;
 
