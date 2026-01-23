@@ -18,8 +18,8 @@ Vue.component('config-tab', {
         changes: Boolean,
         liveData: Object,
         ctsAvailable: Array,
-        failedCtIndices: Array,
-        failedCtFields: Array
+        failedCtIndices: { type: Array, default: () => [] },
+        failedCtFields: { type: Array, default: () => [] }
     },
     data() {
         return {
@@ -180,7 +180,7 @@ Vue.component('config-tab', {
                     <div class="card-body">
                         <div class="form-group">
                             <label>{{ t.config.vCal }}</label>
-                            <input type="number" step="0.001" v-model="device.vcal" :disabled="!emontxConnected" />
+                            <input type="number" step="0.01" v-model="device.vcal" :disabled="!emontxConnected" />
                             <span class="unit">%</span>
                         </div>
                     </div>
@@ -203,7 +203,7 @@ Vue.component('config-tab', {
                                     <td><input type="checkbox" v-model="vchannel.active" :disabled="!emontxConnected" /></td>
                                     <td>V{{ index + 1 }}</td>
                                     <td>
-                                        <input type="number" step="0.001" v-model="vchannel.vcal" :disabled="!emontxConnected" />
+                                        <input type="number" step="0.01" v-model="vchannel.vcal" :disabled="!emontxConnected" />
                                         <span class="unit">%</span>
                                     </td>
                                     <td>

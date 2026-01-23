@@ -1181,14 +1181,16 @@
                 openBulkCtModal() {
                     this.showBulkCtModal = true;
                     this.bulkProgress = null;
+                    // Clear previous error highlighting when starting fresh
+                    this.failedCtIndices = [];
+                    this.failedCtFields = [];
                 },
                 closeBulkModal() {
                     // Allow closing if not in progress, or if complete (with or without errors)
                     if (!this.bulkProgress || (this.bulkProgress.current === this.bulkProgress.total)) {
                         this.showBulkCtModal = false;
                         this.bulkProgress = null;
-                        this.failedCtIndices = [];  // Clear error highlighting
-                        this.failedCtFields = [];
+                        // Don't clear failedCtIndices/failedCtFields - keep showing errors on main page
                     }
                 },
                 setRadio() {

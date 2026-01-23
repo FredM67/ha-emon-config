@@ -520,13 +520,10 @@ h4 { margin: 20px 0 10px 0; color: #333; }
 /* Input field error highlighting */
 .input-error,
 select.input-error,
-input.input-error {
-    border: 2px solid #f44336 !important;
-    background-color: #ffebee !important;
-    animation: pulse-input-error 1s ease-in-out infinite;
-}
-
-@keyframes pulse-input-error {
-    0%, 100% { border-color: #f44336; }
-    50% { border-color: #d32f2f; box-shadow: 0 0 5px #f44336; }
+input.input-error,
+input.input-error.no-spinner {
+    border: 3px solid #f44336 !important;
+    background-color: #ffcdd2 !important;
+    outline: none !important;
+    box-shadow: 0 0 8px #f44336 !important;
 }
