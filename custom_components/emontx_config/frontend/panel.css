@@ -527,3 +527,70 @@ input.input-error.no-spinner {
     outline: none !important;
     box-shadow: 0 0 8px #f44336 !important;
 }
+
+/* Floating bottom bar for pending changes */
+.floating-bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.2);
+    z-index: 1000;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+.floating-bar-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.floating-bar-badge {
+    background: rgba(255,255,255,0.25);
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    min-width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.floating-bar-text {
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.floating-bar-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.floating-bar-buttons .btn {
+    padding: 8px 16px;
+}
+
+@media (max-width: 600px) {
+    .floating-bottom-bar {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px 15px;
+    }
+    .floating-bar-buttons {
+        width: 100%;
+        justify-content: center;
+    }
+}

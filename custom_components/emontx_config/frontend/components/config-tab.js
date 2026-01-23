@@ -143,29 +143,36 @@ Vue.component('config-tab', {
                 <button class="btn btn-warning" @click="$emit('save-config')" style="margin-left: 15px;">{{ t.buttons.save }}</button>
             </div>
 
-            <!-- Pending Changes Banner -->
-            <div v-if="hasPendingChanges && !applyProgress" class="alert alert-warning" style="display: flex; align-items: center; justify-content: space-between;">
-                <span><strong>{{ t.pendingChanges?.title || 'Pending Changes' }}</strong> {{ t.pendingChanges?.message || 'You have ' + pendingChangesCount + ' unsent change(s).' }}</span>
-                <div style="display: flex; gap: 10px;">
-                    <button class="btn btn-success" @click="$emit('apply-changes')" :disabled="!emontxConnected">{{ t.buttons?.applyChanges || 'Apply Changes' }}</button>
-                    <button class="btn" @click="$emit('discard-changes')" style="background: #ccc;">{{ t.buttons?.discardChanges || 'Discard' }}</button>
-                </div>
-            </div>
-
-            <!-- Apply Progress -->
-            <div v-if="applyProgress" class="alert alert-info" style="padding: 15px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                    <span><strong>{{ t.pendingChanges?.applying || 'Applying changes...' }}</strong> {{ applyProgress.currentItem }}</span>
-                    <span>{{ applyProgress.current }} / {{ applyProgress.total }}</span>
-                </div>
-                <div style="background: #e0e0e0; border-radius: 4px; height: 20px; overflow: hidden;">
-                    <div :style="{
-                        width: applyProgressPercent + '%',
-                        height: '100%',
-                        background: '#4CAF50',
-                        transition: 'width 0.3s ease'
-                    }"></div>
-                </div>
+            <!-- Floating Bottom Bar for Pending Changes / Apply Progress -->
+            <div v-if="hasPendingChanges || applyProgress" class="floating-bottom-bar">
+                <!-- Pending Changes State -->
+                <template v-if="!applyProgress">
+                    <div class="floating-bar-content">
+                        <span class="floating-bar-badge">{{ pendingChangesCount }}</span>
+                        <span class="floating-bar-text">{{ t.pendingChanges?.title || 'Pending Changes' }}</span>
+                    </div>
+                    <div class="floating-bar-buttons">
+                        <button class="btn btn-success" @click="$emit('apply-changes')" :disabled="!emontxConnected">{{ t.buttons?.applyChanges || 'Apply' }}</button>
+                        <button class="btn" @click="$emit('discard-changes')" style="background: #ccc;">{{ t.buttons?.discardChanges || 'Discard' }}</button>
+                    </div>
+                </template>
+                <!-- Apply Progress State -->
+                <template v-else>
+                    <div class="floating-bar-content" style="flex: 1;">
+                        <span class="floating-bar-text"><strong>{{ t.pendingChanges?.applying || 'Applying...' }}</strong> {{ applyProgress.currentItem }}</span>
+                        <span style="margin-left: auto;">{{ applyProgress.current }} / {{ applyProgress.total }}</span>
+                    </div>
+                    <div style="flex: 2; margin-left: 15px;">
+                        <div style="background: rgba(255,255,255,0.3); border-radius: 4px; height: 12px; overflow: hidden;">
+                            <div :style="{
+                                width: applyProgressPercent + '%',
+                                height: '100%',
+                                background: '#fff',
+                                transition: 'width 0.3s ease'
+                            }"></div>
+                        </div>
+                    </div>
+                </template>
             </div>
 
             <div v-if="!configReceived" class="alert alert-info">
