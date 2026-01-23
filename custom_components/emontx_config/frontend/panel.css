@@ -500,13 +500,16 @@ h4 { margin: 20px 0 10px 0; color: #333; }
     cursor: not-allowed;
 }
 
-/* Error highlighting for failed CT rows */
-.row-error {
+/* Error highlighting for failed CT rows - must override row-changed */
+.row-error,
+.row-error.row-changed {
+    background-color: #ffebee !important;
     animation: pulse-error 1.5s ease-in-out infinite;
 }
 
-.row-error td {
-    background-color: #ffebee !important;
+.row-error td,
+.row-error.row-changed td {
+    background-color: inherit !important;
 }
 
 @keyframes pulse-error {
