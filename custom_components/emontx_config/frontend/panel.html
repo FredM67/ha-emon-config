@@ -161,7 +161,7 @@
         var app = new Vue({
             el: '#app',
             data: {
-                integrationVersion: '1.0.20-beta.5',
+                integrationVersion: '1.0.20-beta.6',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -1127,6 +1127,10 @@
                                 this.setIcal(idx);
                                 await responsePromise;
                                 this.log(`Configured CT ${ctNum} (${i + 1}/${total})`, 'info');
+                                // Update originalDevice so this channel is no longer shown as pending
+                                if (this.originalDevice && this.originalDevice.ichannels) {
+                                    this.$set(this.originalDevice.ichannels, idx, JSON.parse(JSON.stringify(this.device.ichannels[idx])));
+                                }
                             } catch (e) {
                                 this.bulkProgress = { ...this.bulkProgress, error: true };
                                 this.log(`CT ${ctNum} config rejected or timeout (${i + 1}/${total})`, 'error');
