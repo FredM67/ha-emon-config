@@ -68,6 +68,7 @@
             :live-data="liveData"
             :cts-available="ctsAvailable"
             :failed-ct-indices="failedCtIndices"
+            :failed-ct-fields="failedCtFields"
             @load-config="loadConfig"
             @save-config="saveConfig"
             @apply-changes="applyAllChanges"
@@ -188,6 +189,7 @@
                 showBulkCtModal: false,
                 bulkProgress: null,  // { current, total, currentCt, error }
                 failedCtIndices: [],  // Indices of CTs that failed to apply
+                failedCtFields: [],   // Fields that were being applied when failure occurred
                 // Pending response for sequential commands
                 pendingResponse: null,
                 // Unsaved changes warning (for flash save)
@@ -1116,6 +1118,7 @@
                     const failedChannels = [];
                     const failedIndices = [];
                     this.failedCtIndices = [];  // Clear previous failures
+                    this.failedCtFields = Object.keys(changes.values);  // Track which fields were being applied
                     this.bulkProgress = { current: 0, total: total, currentCt: 0, error: false, failedChannels: [] };
                     this.log(`Applying bulk settings to ${total} channels...`, 'info');
 
@@ -1185,6 +1188,7 @@
                         this.showBulkCtModal = false;
                         this.bulkProgress = null;
                         this.failedCtIndices = [];  // Clear error highlighting
+                        this.failedCtFields = [];
                     }
                 },
                 setRadio() {

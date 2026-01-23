@@ -18,7 +18,8 @@ Vue.component('config-tab', {
         changes: Boolean,
         liveData: Object,
         ctsAvailable: Array,
-        failedCtIndices: Array
+        failedCtIndices: Array,
+        failedCtFields: Array
     },
     data() {
         return {
@@ -101,6 +102,10 @@ Vue.component('config-tab', {
         },
         isCtFailed(index) {
             return this.failedCtIndices && this.failedCtIndices.includes(index);
+        },
+        isFieldError(index, field) {
+            // Check if this specific field on this CT should be highlighted as error
+            return this.isCtFailed(index) && this.failedCtFields && this.failedCtFields.includes(field);
         }
     },
     computed: {
@@ -240,7 +245,7 @@ Vue.component('config-tab', {
                                     </td>
                                     <td>CT {{ index + 1 }}</td>
                                     <td style="display: flex; align-items: center; gap: 5px;">
-                                        <select :value="getCtSelectValue(index)" @change="handleCtTypeChange(index, $event)" :disabled="!emontxConnected">
+                                        <select :value="getCtSelectValue(index)" @change="handleCtTypeChange(index, $event)" :disabled="!emontxConnected" :class="{ 'input-error': isFieldError(index, 'ical') }">
                                             <option v-for="rating in ctsAvailable" :value="rating" :key="rating">{{ rating }}A</option>
                                             <option value="custom">{{ t.config.custom }}</option>
                                         </select>
@@ -248,17 +253,18 @@ Vue.component('config-tab', {
                                                type="number" min="10" max="200"
                                                v-model.number="channel.ical"
                                                :disabled="!emontxConnected"
+                                               :class="{ 'input-error': isFieldError(index, 'ical') }"
                                                style="width: 60px;" />
                                         <span v-if="getCtSelectValue(index) === 'custom'">A</span>
                                     </td>
-                                    <td><input type="number" step="0.01" v-model.number="channel.ilead" style="width:70px" :disabled="!emontxConnected" class="no-spinner" /></td>
+                                    <td><input type="number" step="0.01" v-model.number="channel.ilead" style="width:70px" :disabled="!emontxConnected" :class="{ 'input-error': isFieldError(index, 'ilead') }" class="no-spinner" /></td>
                                     <td v-if="device.hardware === 'emonPi3'">
-                                        <select v-model="channel.vchan1" :disabled="!emontxConnected">
+                                        <select v-model="channel.vchan1" :disabled="!emontxConnected" :class="{ 'input-error': isFieldError(index, 'vchan1') }">
                                             <option v-for="v in [1,2,3]" :value="v" :key="v">{{ v }}</option>
                                         </select>
                                     </td>
                                     <td v-if="device.hardware === 'emonPi3'">
-                                        <select v-model="channel.vchan2" :disabled="!emontxConnected">
+                                        <select v-model="channel.vchan2" :disabled="!emontxConnected" :class="{ 'input-error': isFieldError(index, 'vchan2') }">
                                             <option v-for="v in [1,2,3]" :value="v" :key="v">{{ v }}</option>
                                         </select>
                                     </td>
