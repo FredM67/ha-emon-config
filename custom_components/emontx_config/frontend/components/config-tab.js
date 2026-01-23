@@ -130,8 +130,8 @@ Vue.component('config-tab', {
         formatVoltage(voltage) {
             if (!voltage) return '-';
             // Remove 'V' suffix if present and parse as float
-            const val = parseFloat(voltage.toString().replace('V', ''));
-            return isNaN(val) ? '-' : val.toFixed(2) + 'V';
+            const val = parseFloat(voltage.toString().replace('V', '').trim());
+            return isNaN(val) ? '-' : val.toFixed(2) + ' V';
         }
     },
     computed: {

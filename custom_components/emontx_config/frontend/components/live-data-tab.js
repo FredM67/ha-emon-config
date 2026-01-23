@@ -25,7 +25,7 @@ Vue.component('live-data-tab', {
                 if (!groups[prefix]) {
                     groups[prefix] = {};
                 }
-                groups[prefix][key] = this.liveData[key];
+                groups[prefix][key] = this.formatValue(key, this.liveData[key]);
             }
 
             // For emonPi3, add all channels including inactive ones
@@ -85,18 +85,30 @@ Vue.component('live-data-tab', {
     },
     methods: {
         getGroupLabel(group) {
+            let label = group;
             if (this.t.liveData && this.t.liveData.groups) {
                 if (this.t.liveData.groups[group]) {
-                    return this.t.liveData.groups[group];
-                }
-                if (this.t.liveData.groups[group.toUpperCase()]) {
-                    return this.t.liveData.groups[group.toUpperCase()];
-                }
-                if (this.t.liveData.groups[group.toLowerCase()]) {
-                    return this.t.liveData.groups[group.toLowerCase()];
+                    label = this.t.liveData.groups[group];
+                } else if (this.t.liveData.groups[group.toUpperCase()]) {
+                    label = this.t.liveData.groups[group.toUpperCase()];
+                } else if (this.t.liveData.groups[group.toLowerCase()]) {
+                    label = this.t.liveData.groups[group.toLowerCase()];
                 }
             }
-            return group;
+
+            // Add units for specific groups
+            const units = {
+                'V': 'V',
+                'P': 'W',
+                'E': 'Wh',
+                'T': '°C'
+            };
+
+            if (units[group]) {
+                return label + ' in ' + units[group];
+            }
+
+            return label;
         },
         isChannelInactive(key) {
             if (this.device.hardware !== 'emonPi3') {
@@ -119,6 +131,29 @@ Vue.component('live-data-tab', {
                 }
             }
             return false;
+        },
+        formatValue(key, value) {
+            // Format values with proper SI units and spacing
+            const num = parseFloat(value);
+            if (isNaN(num)) return value;
+
+            // Voltage (V1, V2, etc.) - 2 decimals
+            if (key.match(/^V\d+$/)) {
+                return num.toFixed(2) + ' V';
+            }
+            // Power (P1, P2, etc.)
+            if (key.match(/^P\d+$/)) {
+                return num.toFixed(1) + ' W';
+            }
+            // Energy (E1, E2, etc.)
+            if (key.match(/^E\d+$/)) {
+                return num.toFixed(0) + ' Wh';
+            }
+            // Temperature (T1, T2, etc.)
+            if (key.match(/^T\d+$/)) {
+                return num.toFixed(1) + ' °C';
+            }
+            return value;
         }
     },
     template: `

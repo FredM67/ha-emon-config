@@ -165,7 +165,7 @@
         var app = new Vue({
             el: '#app',
             data: {
-                integrationVersion: '1.0.22',
+                integrationVersion: '1.0.23',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -614,7 +614,7 @@
                         for (let v = 0; v < this.device.vchannels.length; v++) {
                             const vKey = 'V' + (v + 1);
                             if (sensorData[vKey] !== undefined) {
-                                this.$set(this.device.vchannels[v], 'voltage', sensorData[vKey] + 'V');
+                                this.$set(this.device.vchannels[v], 'voltage', sensorData[vKey] + ' V');
                             }
                         }
 
@@ -623,10 +623,10 @@
                             const pKey = 'P' + (c + 1);
                             const eKey = 'E' + (c + 1);
                             if (sensorData[pKey] !== undefined) {
-                                this.$set(this.device.ichannels[c], 'power', sensorData[pKey] + 'W');
+                                this.$set(this.device.ichannels[c], 'power', sensorData[pKey] + ' W');
                             }
                             if (sensorData[eKey] !== undefined) {
-                                this.$set(this.device.ichannels[c], 'energy', sensorData[eKey] + 'Wh');
+                                this.$set(this.device.ichannels[c], 'energy', sensorData[eKey] + ' Wh');
                             }
                         }
                     } else if (line.includes(' = ') || line.includes('> Error:')) {
