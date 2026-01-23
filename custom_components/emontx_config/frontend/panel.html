@@ -165,7 +165,7 @@
         var app = new Vue({
             el: '#app',
             data: {
-                integrationVersion: '1.0.20-beta.16',
+                integrationVersion: '1.0.20-beta.17',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -882,6 +882,10 @@
 
                 // Configuration methods
                 loadConfig() {
+                    // Clear error highlighting when reloading config
+                    this.failedCtIndices = [];
+                    this.failedCtFields = [];
+                    this.failedVcalIndices = [];
                     this.writeToStream('l');
                 },
                 async applyAllChanges() {
@@ -1081,6 +1085,10 @@
                 discardChanges() {
                     if (this.originalDevice) {
                         this.device = JSON.parse(JSON.stringify(this.originalDevice));
+                        // Clear error highlighting when discarding changes
+                        this.failedCtIndices = [];
+                        this.failedCtFields = [];
+                        this.failedVcalIndices = [];
                         this.log('Changes discarded', 'info');
                     }
                 },
