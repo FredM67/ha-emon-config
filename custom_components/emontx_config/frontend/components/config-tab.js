@@ -227,10 +227,6 @@ Vue.component('config-tab', {
                         </button>
                     </div>
                     <div class="card-body">
-                        <!-- DEBUG -->
-                        <div v-if="failedCtIndices.length > 0" style="background: #ffebee; padding: 10px; margin-bottom: 10px; border: 2px solid red;">
-                            DEBUG: failedCtIndices={{ failedCtIndices }}, failedCtFields={{ failedCtFields }}
-                        </div>
                         <div class="table-responsive">
                             <table class="config-table">
                                 <tr>
