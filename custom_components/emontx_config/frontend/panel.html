@@ -67,6 +67,7 @@
             :changes="changes"
             :live-data="liveData"
             :cts-available="ctsAvailable"
+            :failed-ct-indices="failedCtIndices"
             @load-config="loadConfig"
             @save-config="saveConfig"
             @apply-changes="applyAllChanges"
@@ -146,6 +147,7 @@
             :progress="bulkProgress"
             @apply="applyBulkCtSettings"
             @close="closeBulkModal"
+            @reset-progress="bulkProgress = null"
         ></bulk-ct-modal>
         </template>
     </div>
@@ -161,7 +163,7 @@
         var app = new Vue({
             el: '#app',
             data: {
-                integrationVersion: '1.0.20-beta.9',
+                integrationVersion: '1.0.20-beta.10',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -185,6 +187,7 @@
                 // Bulk CT settings
                 showBulkCtModal: false,
                 bulkProgress: null,  // { current, total, currentCt, error }
+                failedCtIndices: [],  // Indices of CTs that failed to apply
                 // Pending response for sequential commands
                 pendingResponse: null,
                 // Unsaved changes warning (for flash save)
@@ -1111,6 +1114,8 @@
                     // Apply values to selected channels one by one, waiting for acknowledgment
                     const total = changes.channels.length;
                     const failedChannels = [];
+                    const failedIndices = [];
+                    this.failedCtIndices = [];  // Clear previous failures
                     this.bulkProgress = { current: 0, total: total, currentCt: 0, error: false, failedChannels: [] };
                     this.log(`Applying bulk settings to ${total} channels...`, 'info');
 
@@ -1145,11 +1150,14 @@
                                 }
                             } catch (e) {
                                 failedChannels.push(ctNum);
+                                failedIndices.push(idx);
                                 this.bulkProgress = { ...this.bulkProgress, error: true, failedChannels: failedChannels };
                                 this.log(`CT ${ctNum} config rejected (${i + 1}/${total})`, 'error');
                             }
                         }
                     }
+                    // Store failed indices for highlighting in UI
+                    this.failedCtIndices = failedIndices;
                     // Show completion with error summary if any failed
                     const hasErrors = failedChannels.length > 0;
                     this.bulkProgress = { current: total, total: total, currentCt: 0, error: hasErrors, failedChannels: failedChannels };
@@ -1176,6 +1184,7 @@
                     if (!this.bulkProgress || (this.bulkProgress.current === this.bulkProgress.total)) {
                         this.showBulkCtModal = false;
                         this.bulkProgress = null;
+                        this.failedCtIndices = [];  // Clear error highlighting
                     }
                 },
                 setRadio() {

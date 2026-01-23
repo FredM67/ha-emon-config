@@ -92,7 +92,18 @@ Vue.component('bulk-ct-modal', {
                 this.applyVchan2 = false;
                 this.ctTypeCustom = false;
             }
-        }
+        },
+        // Reset progress when user changes any setting after completion (allows retry)
+        selectedCts() { this.resetIfComplete(); },
+        applyCtType() { this.resetIfComplete(); },
+        applyPhase() { this.resetIfComplete(); },
+        applyVchan1() { this.resetIfComplete(); },
+        applyVchan2() { this.resetIfComplete(); },
+        ctTypeValue() { this.resetIfComplete(); },
+        ctTypeCustomValue() { this.resetIfComplete(); },
+        phaseValue() { this.resetIfComplete(); },
+        vchan1Value() { this.resetIfComplete(); },
+        vchan2Value() { this.resetIfComplete(); }
     },
     computed: {
         isApplying() {
@@ -107,6 +118,12 @@ Vue.component('bulk-ct-modal', {
         }
     },
     methods: {
+        resetIfComplete() {
+            // If we're in complete state (with errors), reset so user can try again
+            if (this.isComplete) {
+                this.$emit('reset-progress');
+            }
+        },
         toggleCt(idx) {
             const pos = this.selectedCts.indexOf(idx);
             if (pos === -1) {

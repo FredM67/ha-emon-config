@@ -17,7 +17,8 @@ Vue.component('config-tab', {
         originalDevice: Object,
         changes: Boolean,
         liveData: Object,
-        ctsAvailable: Array
+        ctsAvailable: Array,
+        failedCtIndices: Array
     },
     data() {
         return {
@@ -97,6 +98,9 @@ Vue.component('config-tab', {
                 default:
                     return false;
             }
+        },
+        isCtFailed(index) {
+            return this.failedCtIndices && this.failedCtIndices.includes(index);
         }
     },
     computed: {
@@ -230,7 +234,7 @@ Vue.component('config-tab', {
                                     <th>{{ t.config.power }}</th>
                                     <th>{{ t.config.energy }}</th>
                                 </tr>
-                                <tr v-for="(channel, index) in device.ichannels" :key="'i'+index" :class="{ 'row-changed': isFieldChanged('ichannel', index) }">
+                                <tr v-for="(channel, index) in device.ichannels" :key="'i'+index" :class="{ 'row-changed': isFieldChanged('ichannel', index), 'row-error': isCtFailed(index) }">
                                     <td v-if="device.hardware === 'emonPi3'">
                                         <input type="checkbox" v-model="channel.active" :disabled="!emontxConnected" />
                                     </td>

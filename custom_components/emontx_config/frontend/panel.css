@@ -499,3 +499,17 @@ h4 { margin: 20px 0 10px 0; color: #333; }
     background: #ccc;
     cursor: not-allowed;
 }
+
+/* Error highlighting for failed CT rows */
+.row-error {
+    animation: pulse-error 1.5s ease-in-out infinite;
+}
+
+.row-error td {
+    background-color: #ffebee !important;
+}
+
+@keyframes pulse-error {
+    0%, 100% { background-color: #ffebee; }
+    50% { background-color: #ffcdd2; }
+}
