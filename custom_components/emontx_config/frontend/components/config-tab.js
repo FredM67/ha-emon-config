@@ -67,9 +67,17 @@ Vue.component('config-tab', {
             if (!this.originalDevice) return false;
             switch (type) {
                 case 'vchannel':
-                    return JSON.stringify(this.device.vchannels[index]) !== JSON.stringify(this.originalDevice.vchannels[index]);
+                    // Compare only config fields (vcal, vphase, active), exclude live voltage data
+                    const vc = this.device.vchannels[index];
+                    const vco = this.originalDevice.vchannels[index];
+                    if (!vco) return false;
+                    return vc.active !== vco.active || vc.vcal !== vco.vcal || vc.vphase !== vco.vphase;
                 case 'ichannel':
-                    return JSON.stringify(this.device.ichannels[index]) !== JSON.stringify(this.originalDevice.ichannels[index]);
+                    // Compare only config fields (active, ical, ilead, vchan1, vchan2), exclude live power/energy
+                    const ic = this.device.ichannels[index];
+                    const ico = this.originalDevice.ichannels[index];
+                    if (!ico) return false;
+                    return ic.active !== ico.active || ic.ical !== ico.ical || ic.ilead !== ico.ilead || ic.vchan1 !== ico.vchan1 || ic.vchan2 !== ico.vchan2;
                 case 'opa':
                     return JSON.stringify(this.device.opa[index]) !== JSON.stringify(this.originalDevice.opa[index]);
                 case 'radio':
@@ -180,6 +188,7 @@ Vue.component('config-tab', {
                                     <th>{{ t.config.channel }}</th>
                                     <th>{{ t.config.calibration }}</th>
                                     <th>{{ t.config.phase }}</th>
+                                    <th>{{ t.liveData?.groups?.V || 'Voltage' }}</th>
                                 </tr>
                                 <tr v-for="(vchannel, index) in device.vchannels" :key="'v'+index" :class="{ 'row-changed': isFieldChanged('vchannel', index) }">
                                     <td><input type="checkbox" v-model="vchannel.active" :disabled="!emontxConnected" /></td>
@@ -192,6 +201,7 @@ Vue.component('config-tab', {
                                         <input type="number" step="0.01" v-model="vchannel.vphase" :disabled="!emontxConnected" />
                                         <span class="unit">&deg;</span>
                                     </td>
+                                    <td class="live-value">{{ vchannel.voltage || '-' }}</td>
                                 </tr>
                             </table>
                         </div>

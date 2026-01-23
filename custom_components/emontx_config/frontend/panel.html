@@ -161,7 +161,7 @@
         var app = new Vue({
             el: '#app',
             data: {
-                integrationVersion: '1.0.20-beta.2',
+                integrationVersion: '1.0.20-beta.3',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -217,9 +217,9 @@
                     json: 0,
                     vcal: '',
                     vchannels: [
-                        { vcal: 100, vphase: 0, active: true },
-                        { vcal: 100, vphase: 0, active: false },
-                        { vcal: 100, vphase: 0, active: false }
+                        { vcal: 100, vphase: 0, active: true, voltage: '' },
+                        { vcal: 100, vphase: 0, active: false, voltage: '' },
+                        { vcal: 100, vphase: 0, active: false, voltage: '' }
                     ],
                     ichannels: [],
                     opa: [
@@ -263,8 +263,8 @@
                     return 1;
                 },
                 hasPendingChanges() {
-                    if (!this.originalDevice) return false;
-                    return JSON.stringify(this.device) !== JSON.stringify(this.originalDevice);
+                    // Use pendingChangesList to determine if there are pending changes
+                    return this.pendingChangesList.length > 0;
                 },
                 pendingChangesList() {
                     // Returns list of what changed for display/apply
@@ -273,15 +273,31 @@
                     const orig = this.originalDevice;
                     const curr = this.device;
 
-                    // Check voltage channels
+                    // Helper to compare only config fields of vchannel (exclude live data: voltage)
+                    const vChannelConfigEqual = (a, b) => {
+                        return a.active === b.active &&
+                               a.vcal === b.vcal &&
+                               a.vphase === b.vphase;
+                    };
+
+                    // Helper to compare only config fields of ichannel (exclude live data: power, energy)
+                    const iChannelConfigEqual = (a, b) => {
+                        return a.active === b.active &&
+                               a.ical === b.ical &&
+                               a.ilead === b.ilead &&
+                               a.vchan1 === b.vchan1 &&
+                               a.vchan2 === b.vchan2;
+                    };
+
+                    // Check voltage channels (config fields only, exclude live voltage)
                     for (let i = 0; i < curr.vchannels.length; i++) {
-                        if (JSON.stringify(curr.vchannels[i]) !== JSON.stringify(orig.vchannels[i])) {
+                        if (orig.vchannels[i] && !vChannelConfigEqual(curr.vchannels[i], orig.vchannels[i])) {
                             changes.push({ type: 'vchannel', index: i });
                         }
                     }
-                    // Check current channels
+                    // Check current channels (config fields only, exclude live power/energy)
                     for (let i = 0; i < curr.ichannels.length; i++) {
-                        if (JSON.stringify(curr.ichannels[i]) !== JSON.stringify(orig.ichannels[i])) {
+                        if (orig.ichannels[i] && !iChannelConfigEqual(curr.ichannels[i], orig.ichannels[i])) {
                             changes.push({ type: 'ichannel', index: i });
                         }
                     }
@@ -587,6 +603,15 @@
                         this.emontxConnected = true;
                         this.emontxStatus = 'Connected';
 
+                        // Update voltage channels with live voltage data
+                        for (let v = 0; v < this.device.vchannels.length; v++) {
+                            const vKey = 'V' + (v + 1);
+                            if (sensorData[vKey] !== undefined) {
+                                this.$set(this.device.vchannels[v], 'voltage', sensorData[vKey] + 'V');
+                            }
+                        }
+
+                        // Update current channels with live power/energy data
                         for (let c = 0; c < this.device.ichannels.length; c++) {
                             const pKey = 'P' + (c + 1);
                             const eKey = 'E' + (c + 1);
