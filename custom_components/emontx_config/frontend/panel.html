@@ -161,7 +161,7 @@
         var app = new Vue({
             el: '#app',
             data: {
-                integrationVersion: '1.0.20-beta.4',
+                integrationVersion: '1.0.20-beta.5',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -930,44 +930,45 @@
                 },
                 markChangeAsApplied(change) {
                     // Update originalDevice for this specific change so it's no longer pending
+                    // Use $set for arrays to ensure Vue 2 reactivity
                     if (!this.originalDevice) return;
 
                     switch (change.type) {
                         case 'vchannel':
                             if (this.originalDevice.vchannels && this.device.vchannels) {
-                                this.originalDevice.vchannels[change.index] = JSON.parse(JSON.stringify(this.device.vchannels[change.index]));
+                                this.$set(this.originalDevice.vchannels, change.index, JSON.parse(JSON.stringify(this.device.vchannels[change.index])));
                             }
                             break;
                         case 'ichannel':
                             if (this.originalDevice.ichannels && this.device.ichannels) {
-                                this.originalDevice.ichannels[change.index] = JSON.parse(JSON.stringify(this.device.ichannels[change.index]));
+                                this.$set(this.originalDevice.ichannels, change.index, JSON.parse(JSON.stringify(this.device.ichannels[change.index])));
                             }
                             break;
                         case 'opa':
                             if (this.originalDevice.opa && this.device.opa) {
-                                this.originalDevice.opa[change.index] = JSON.parse(JSON.stringify(this.device.opa[change.index]));
+                                this.$set(this.originalDevice.opa, change.index, JSON.parse(JSON.stringify(this.device.opa[change.index])));
                             }
                             break;
                         case 'radio':
-                            this.originalDevice.radioEnabled = this.device.radioEnabled;
+                            this.$set(this.originalDevice, 'RF', this.device.RF);
                             break;
                         case 'rfNode':
-                            this.originalDevice.rfNode = this.device.rfNode;
+                            this.$set(this.originalDevice, 'rfNode', this.device.rfNode);
                             break;
                         case 'rfGroup':
-                            this.originalDevice.rfGroup = this.device.rfGroup;
+                            this.$set(this.originalDevice, 'rfGroup', this.device.rfGroup);
                             break;
                         case 'rf433Toggle':
-                            this.originalDevice.rf433High = this.device.rf433High;
+                            this.$set(this.originalDevice, 'rf433High', this.device.rf433High);
                             break;
                         case 'rfPower':
-                            this.originalDevice.rfPower = this.device.rfPower;
+                            this.$set(this.originalDevice, 'rfPower', this.device.rfPower);
                             break;
                         case 'datalog':
-                            this.originalDevice.datalogInterval = this.device.datalogInterval;
+                            this.$set(this.originalDevice, 'datalog', this.device.datalog);
                             break;
                         case 'json':
-                            this.originalDevice.jsonEnabled = this.device.jsonEnabled;
+                            this.$set(this.originalDevice, 'json', this.device.json);
                             break;
                     }
                 },
