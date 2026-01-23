@@ -161,7 +161,7 @@
         var app = new Vue({
             el: '#app',
             data: {
-                integrationVersion: '1.0.20-beta.6',
+                integrationVersion: '1.0.20-beta.7',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -629,10 +629,16 @@
 
                 processLine(line) {
                     // Check for pending response (used by bulk operations)
-                    // Wait for iCal acknowledgment line (only sent if config accepted)
-                    if (this.pendingResponse && line.includes(this.pendingResponse.pattern)) {
-                        this.pendingResponse.resolve();
-                        this.pendingResponse = null;
+                    if (this.pendingResponse) {
+                        // Check for success pattern
+                        if (line.includes(this.pendingResponse.pattern)) {
+                            this.pendingResponse.resolve();
+                            this.pendingResponse = null;
+                        }
+                        // Check for error response (device sends "> Error: " prefix)
+                        else if (line.includes('> Error:')) {
+                            this.pendingResponse.reject();
+                        }
                     }
 
                     if (line.startsWith('firmware = ')) {
@@ -1092,6 +1098,11 @@
                             resolve: () => {
                                 clearTimeout(timeoutId);
                                 resolve();
+                            },
+                            reject: () => {
+                                clearTimeout(timeoutId);
+                                this.pendingResponse = null;
+                                reject(new Error('Command rejected'));
                             }
                         };
                     });
