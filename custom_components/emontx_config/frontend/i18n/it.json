@@ -18,11 +18,18 @@
     },
     "buttons": {
         "loadConfig": "Carica Config",
-        "save": "Salva Modifiche",
+        "save": "Salva su Flash",
         "zeroEnergy": "Azzera Energia",
         "resetDefaults": "Ripristina Predefiniti",
         "reloadConfig": "Ricarica Config",
-        "generateYaml": "Genera YAML"
+        "generateYaml": "Genera YAML",
+        "applyChanges": "Applica",
+        "discardChanges": "Annulla"
+    },
+    "pendingChanges": {
+        "title": "Modifiche in Sospeso",
+        "message": "Hai modifiche non inviate. Clicca Applica per inviarle al dispositivo.",
+        "applying": "Applicazione in corso..."
     },
     "yamlModal": {
         "title": "YAML Sensori ESPHome",

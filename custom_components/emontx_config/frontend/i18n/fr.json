@@ -18,11 +18,18 @@
     },
     "buttons": {
         "loadConfig": "Charger Config",
-        "save": "Enregistrer les Modifications",
+        "save": "Enregistrer en Flash",
         "zeroEnergy": "Remettre à Zéro",
         "resetDefaults": "Réinitialiser",
         "reloadConfig": "Recharger Config",
-        "generateYaml": "Générer YAML"
+        "generateYaml": "Générer YAML",
+        "applyChanges": "Appliquer",
+        "discardChanges": "Annuler"
+    },
+    "pendingChanges": {
+        "title": "Modifications en attente",
+        "message": "Vous avez des modifications non envoyées. Cliquez sur Appliquer pour envoyer.",
+        "applying": "Application en cours..."
     },
     "yamlModal": {
         "title": "YAML Capteurs ESPHome",

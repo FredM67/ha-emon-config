@@ -1,6 +1,7 @@
 /**
  * Config Tab Component
  * Handles device configuration with sub-tabs for calibration, sensors, and misc settings
+ * Uses batch apply mode - changes are collected locally and sent on Apply
  */
 Vue.component('config-tab', {
     props: {
@@ -10,6 +11,10 @@ Vue.component('config-tab', {
         configReceived: Boolean,
         upgradeRequired: Boolean,
         hasUnsavedChanges: Boolean,
+        hasPendingChanges: Boolean,
+        pendingChangesCount: Number,
+        applyProgress: Object,
+        originalDevice: Object,
         changes: Boolean,
         liveData: Object,
         ctsAvailable: Array
@@ -38,11 +43,7 @@ Vue.component('config-tab', {
             } else {
                 this.$set(this.customCtChannels, index, false);
                 this.device.ichannels[index].ical = parseInt(value);
-                this.$emit('set-ical', index);
             }
-        },
-        handleCustomCtChange(index) {
-            this.$emit('set-ical', index);
         },
         handleOpaFuncChange(idx, event) {
             const newFunc = event.target.value;
@@ -61,17 +62,73 @@ Vue.component('config-tab', {
                 opa.pullUp = false;
                 opa.period = 100;  // 100ms default debounce
             }
-
-            this.$emit('set-opa', idx);
+        },
+        isFieldChanged(type, index) {
+            if (!this.originalDevice) return false;
+            switch (type) {
+                case 'vchannel':
+                    return JSON.stringify(this.device.vchannels[index]) !== JSON.stringify(this.originalDevice.vchannels[index]);
+                case 'ichannel':
+                    return JSON.stringify(this.device.ichannels[index]) !== JSON.stringify(this.originalDevice.ichannels[index]);
+                case 'opa':
+                    return JSON.stringify(this.device.opa[index]) !== JSON.stringify(this.originalDevice.opa[index]);
+                case 'radio':
+                    return this.device.RF !== this.originalDevice.RF;
+                case 'rfNode':
+                    return this.device.rfNode !== this.originalDevice.rfNode;
+                case 'rfGroup':
+                    return this.device.rfGroup !== this.originalDevice.rfGroup;
+                case 'rf433Toggle':
+                    return this.device.rf433High !== this.originalDevice.rf433High;
+                case 'rfPower':
+                    return this.device.rfPower !== this.originalDevice.rfPower;
+                case 'datalog':
+                    return this.device.datalog !== this.originalDevice.datalog;
+                case 'json':
+                    return this.device.json !== this.originalDevice.json;
+                default:
+                    return false;
+            }
+        }
+    },
+    computed: {
+        applyProgressPercent() {
+            if (!this.applyProgress || this.applyProgress.total === 0) return 0;
+            return Math.round((this.applyProgress.current / this.applyProgress.total) * 100);
         }
     },
     template: `
         <form autocomplete="off" @submit.prevent>
         <div class="tab-content active">
-            <!-- Unsaved Changes Warning Banner -->
+            <!-- Unsaved Changes Warning Banner (for flash save) -->
             <div v-if="hasUnsavedChanges" class="alert alert-danger" style="display: flex; align-items: center; justify-content: space-between;">
                 <span><strong>{{ t.unsavedChanges.title }}</strong> {{ t.unsavedChanges.message }}</span>
                 <button class="btn btn-warning" @click="$emit('save-config')" style="margin-left: 15px;">{{ t.buttons.save }}</button>
+            </div>
+
+            <!-- Pending Changes Banner -->
+            <div v-if="hasPendingChanges && !applyProgress" class="alert alert-warning" style="display: flex; align-items: center; justify-content: space-between;">
+                <span><strong>{{ t.pendingChanges?.title || 'Pending Changes' }}</strong> {{ t.pendingChanges?.message || 'You have ' + pendingChangesCount + ' unsent change(s).' }}</span>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-success" @click="$emit('apply-changes')" :disabled="!emontxConnected">{{ t.buttons?.applyChanges || 'Apply Changes' }}</button>
+                    <button class="btn" @click="$emit('discard-changes')" style="background: #ccc;">{{ t.buttons?.discardChanges || 'Discard' }}</button>
+                </div>
+            </div>
+
+            <!-- Apply Progress -->
+            <div v-if="applyProgress" class="alert alert-info" style="padding: 15px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span><strong>{{ t.pendingChanges?.applying || 'Applying changes...' }}</strong> {{ applyProgress.currentItem }}</span>
+                    <span>{{ applyProgress.current }} / {{ applyProgress.total }}</span>
+                </div>
+                <div style="background: #e0e0e0; border-radius: 4px; height: 20px; overflow: hidden;">
+                    <div :style="{
+                        width: applyProgressPercent + '%',
+                        height: '100%',
+                        background: '#4CAF50',
+                        transition: 'width 0.3s ease'
+                    }"></div>
+                </div>
             </div>
 
             <div v-if="!configReceived" class="alert alert-info">
@@ -106,7 +163,7 @@ Vue.component('config-tab', {
                     <div class="card-body">
                         <div class="form-group">
                             <label>{{ t.config.vCal }}</label>
-                            <input type="number" step="0.001" v-model="device.vcal" @change="$emit('set-vcal')" :disabled="!emontxConnected" />
+                            <input type="number" step="0.001" v-model="device.vcal" :disabled="!emontxConnected" />
                             <span class="unit">%</span>
                         </div>
                     </div>
@@ -124,15 +181,15 @@ Vue.component('config-tab', {
                                     <th>{{ t.config.calibration }}</th>
                                     <th>{{ t.config.phase }}</th>
                                 </tr>
-                                <tr v-for="(vchannel, index) in device.vchannels" :key="'v'+index">
-                                    <td><input type="checkbox" v-model="vchannel.active" @change="$emit('set-vchannel', index)" :disabled="!emontxConnected" /></td>
+                                <tr v-for="(vchannel, index) in device.vchannels" :key="'v'+index" :class="{ 'row-changed': isFieldChanged('vchannel', index) }">
+                                    <td><input type="checkbox" v-model="vchannel.active" :disabled="!emontxConnected" /></td>
                                     <td>V{{ index + 1 }}</td>
                                     <td>
-                                        <input type="number" step="0.001" v-model="vchannel.vcal" @change="$emit('set-vchannel', index)" :disabled="!emontxConnected" />
+                                        <input type="number" step="0.001" v-model="vchannel.vcal" :disabled="!emontxConnected" />
                                         <span class="unit">%</span>
                                     </td>
                                     <td>
-                                        <input type="number" step="0.01" v-model="vchannel.vphase" @change="$emit('set-vchannel', index)" :disabled="!emontxConnected" />
+                                        <input type="number" step="0.01" v-model="vchannel.vphase" :disabled="!emontxConnected" />
                                         <span class="unit">&deg;</span>
                                     </td>
                                 </tr>
@@ -163,9 +220,9 @@ Vue.component('config-tab', {
                                     <th>{{ t.config.power }}</th>
                                     <th>{{ t.config.energy }}</th>
                                 </tr>
-                                <tr v-for="(channel, index) in device.ichannels" :key="'i'+index">
+                                <tr v-for="(channel, index) in device.ichannels" :key="'i'+index" :class="{ 'row-changed': isFieldChanged('ichannel', index) }">
                                     <td v-if="device.hardware === 'emonPi3'">
-                                        <input type="checkbox" v-model="channel.active" @change="$emit('set-ical', index)" :disabled="!emontxConnected" />
+                                        <input type="checkbox" v-model="channel.active" :disabled="!emontxConnected" />
                                     </td>
                                     <td>CT {{ index + 1 }}</td>
                                     <td style="display: flex; align-items: center; gap: 5px;">
@@ -176,19 +233,18 @@ Vue.component('config-tab', {
                                         <input v-if="getCtSelectValue(index) === 'custom'"
                                                type="number" min="10" max="200"
                                                v-model.number="channel.ical"
-                                               @change="handleCustomCtChange(index)"
                                                :disabled="!emontxConnected"
                                                style="width: 60px;" />
                                         <span v-if="getCtSelectValue(index) === 'custom'">A</span>
                                     </td>
-                                    <td><input type="number" step="0.01" v-model.number="channel.ilead" @change="$emit('set-ical', index)" style="width:70px" :disabled="!emontxConnected" class="no-spinner" /></td>
+                                    <td><input type="number" step="0.01" v-model.number="channel.ilead" style="width:70px" :disabled="!emontxConnected" class="no-spinner" /></td>
                                     <td v-if="device.hardware === 'emonPi3'">
-                                        <select v-model="channel.vchan1" @change="$emit('set-ical', index)" :disabled="!emontxConnected">
+                                        <select v-model="channel.vchan1" :disabled="!emontxConnected">
                                             <option v-for="v in [1,2,3]" :value="v" :key="v">{{ v }}</option>
                                         </select>
                                     </td>
                                     <td v-if="device.hardware === 'emonPi3'">
-                                        <select v-model="channel.vchan2" @change="$emit('set-ical', index)" :disabled="!emontxConnected">
+                                        <select v-model="channel.vchan2" :disabled="!emontxConnected">
                                             <option v-for="v in [1,2,3]" :value="v" :key="v">{{ v }}</option>
                                         </select>
                                     </td>
@@ -217,9 +273,9 @@ Vue.component('config-tab', {
                                     <th>{{ t.config.pullUp }}</th>
                                     <th>{{ t.config.period }}</th>
                                 </tr>
-                                <tr v-for="(opa, idx) in device.opa" :key="'opa'+idx">
+                                <tr v-for="(opa, idx) in device.opa" :key="'opa'+idx" :class="{ 'row-changed': isFieldChanged('opa', idx) }">
                                     <td>OPA{{ idx + 1 }}</td>
-                                    <td><input type="checkbox" v-model="opa.active" @change="$emit('set-opa', idx)" :disabled="!emontxConnected" /></td>
+                                    <td><input type="checkbox" v-model="opa.active" :disabled="!emontxConnected" /></td>
                                     <td>
                                         <select v-model="opa.func" @change="handleOpaFuncChange(idx, $event)" :disabled="!emontxConnected">
                                             <option value="o" v-if="idx !== 2">{{ t.config.oneWire }}</option>
@@ -228,8 +284,8 @@ Vue.component('config-tab', {
                                             <option value="b">{{ t.config.pulseBoth }}</option>
                                         </select>
                                     </td>
-                                    <td><input type="checkbox" v-model="opa.pullUp" @change="$emit('set-opa', idx)" :disabled="!emontxConnected || opa.func === 'o' || idx === 2" /></td>
-                                    <td><input type="number" v-model="opa.period" @change="$emit('set-opa', idx)" :disabled="!emontxConnected || opa.func === 'o'" style="width:80px" /></td>
+                                    <td><input type="checkbox" v-model="opa.pullUp" :disabled="!emontxConnected || opa.func === 'o' || idx === 2" /></td>
+                                    <td><input type="number" v-model="opa.period" :disabled="!emontxConnected || opa.func === 'o'" style="width:80px" /></td>
                                 </tr>
                             </table>
                         </div>
@@ -285,8 +341,8 @@ Vue.component('config-tab', {
                                     <th>{{ t.config.pulsePeriod }}</th>
                                 </tr>
                                 <tr>
-                                    <td><input type="checkbox" v-model="device.pulse" @change="$emit('set-pulse')" :disabled="!emontxConnected" /></td>
-                                    <td><input type="number" v-model="device.pulsePeriod" @change="$emit('set-pulse-period')" :disabled="!emontxConnected" style="width:80px" /></td>
+                                    <td><input type="checkbox" v-model="device.pulse" :disabled="!emontxConnected" /></td>
+                                    <td><input type="number" v-model="device.pulsePeriod" :disabled="!emontxConnected" style="width:80px" /></td>
                                 </tr>
                             </table>
                         </div>
@@ -301,9 +357,9 @@ Vue.component('config-tab', {
                 <div class="card" v-if="device.hardware !== 'emonPi2'">
                     <div class="card-header">{{ t.config.radioSettings }}</div>
                     <div class="card-body">
-                        <div class="form-group">
+                        <div class="form-group" :class="{ 'field-changed': isFieldChanged('radio') }">
                             <label>{{ t.config.radioEnabled }}</label>
-                            <input type="checkbox" v-model="device.RF" @change="$emit('set-radio')" :disabled="!emontxConnected" />
+                            <input type="checkbox" v-model="device.RF" :disabled="!emontxConnected" />
                         </div>
                         <div class="table-responsive">
                             <table class="device-info-table">
@@ -315,16 +371,16 @@ Vue.component('config-tab', {
                                     <th>{{ t.config.format }}</th>
                                 </tr>
                                 <tr>
-                                    <td><input type="number" v-model="device.rfNode" @change="$emit('set-rf-node')" :disabled="!emontxConnected" style="width:60px" /></td>
-                                    <td><input type="number" v-model="device.rfGroup" @change="$emit('set-rf-group')" :disabled="!emontxConnected" style="width:60px" /></td>
+                                    <td :class="{ 'field-changed': isFieldChanged('rfNode') }"><input type="number" v-model="device.rfNode" :disabled="!emontxConnected" style="width:60px" /></td>
+                                    <td :class="{ 'field-changed': isFieldChanged('rfGroup') }"><input type="number" v-model="device.rfGroup" :disabled="!emontxConnected" style="width:60px" /></td>
                                     <td>
-                                        <select v-model="device.rfBand" @change="$emit('set-rf-band')" :disabled="!emontxConnected">
-                                            <option value="433 MHz">433 MHz</option>
-                                            <option value="868 MHz">868 MHz</option>
-                                            <option value="915 MHz">915 MHz</option>
-                                        </select>
+                                        <span>{{ device.rfBand }}</span>
+                                        <label v-if="device.rfBand && device.rfBand.includes('433')" style="margin-left: 10px; font-size: 12px;" :class="{ 'field-changed': isFieldChanged('rf433Toggle') }">
+                                            <input type="checkbox" v-model="device.rf433High" :disabled="!emontxConnected" style="margin-right: 4px;" />
+                                            433.92
+                                        </label>
                                     </td>
-                                    <td><input type="number" min="0" max="31" v-model="device.rfPower" @change="$emit('set-rf-power')" :disabled="!emontxConnected" style="width:60px" /></td>
+                                    <td :class="{ 'field-changed': isFieldChanged('rfPower') }"><input type="number" min="0" max="31" v-model="device.rfPower" :disabled="!emontxConnected" style="width:60px" /></td>
                                     <td>{{ device.rfFormat }}</td>
                                 </tr>
                             </table>
@@ -336,14 +392,14 @@ Vue.component('config-tab', {
                 <div class="card">
                     <div class="card-header">{{ t.config.otherSettings }}</div>
                     <div class="card-body">
-                        <div class="form-group">
+                        <div class="form-group" :class="{ 'field-changed': isFieldChanged('datalog') }">
                             <label>{{ t.config.datalogInterval }}</label>
-                            <input type="number" step="0.1" v-model="device.datalog" @change="$emit('set-datalog')" :disabled="!emontxConnected" style="width:80px" />
+                            <input type="number" step="0.1" v-model="device.datalog" :disabled="!emontxConnected" style="width:80px" />
                             <span class="unit">s</span>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" :class="{ 'field-changed': isFieldChanged('json') }">
                             <label>{{ t.config.jsonSerialFormat }}</label>
-                            <input type="checkbox" v-model="device.json" :true-value="1" :false-value="0" @change="$emit('set-json')" :disabled="!emontxConnected" />
+                            <input type="checkbox" v-model="device.json" :true-value="1" :false-value="0" :disabled="!emontxConnected" />
                         </div>
                     </div>
                 </div>
@@ -351,6 +407,12 @@ Vue.component('config-tab', {
 
                 <!-- Action Buttons -->
                 <div class="button-group">
+                    <button class="btn btn-success" @click="$emit('apply-changes')" :disabled="!hasPendingChanges || !emontxConnected || applyProgress" :title="t.tooltips?.btnApplyChanges || 'Send pending changes to device'">
+                        {{ t.buttons?.applyChanges || 'Apply Changes' }} <span v-if="pendingChangesCount > 0">({{ pendingChangesCount }})</span>
+                    </button>
+                    <button class="btn" @click="$emit('discard-changes')" :disabled="!hasPendingChanges || applyProgress" style="background: #ccc;" :title="t.tooltips?.btnDiscardChanges || 'Discard pending changes'">
+                        {{ t.buttons?.discardChanges || 'Discard' }}
+                    </button>
                     <button class="btn btn-warning" @click="$emit('save-config')" :disabled="!changes || !emontxConnected" :title="t.tooltips.btnSave">{{ t.buttons.save }}</button>
                     <button class="btn btn-info" @click="$emit('zero-energy')" :disabled="!emontxConnected" :title="t.tooltips.btnZeroEnergy">{{ t.buttons.zeroEnergy }}</button>
                     <button class="btn btn-danger" @click="$emit('reset-defaults')" :disabled="!emontxConnected" :title="t.tooltips.btnResetDefaults">{{ t.buttons.resetDefaults }}</button>

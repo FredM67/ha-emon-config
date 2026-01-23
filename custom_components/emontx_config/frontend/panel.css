@@ -469,3 +469,33 @@ h4 { margin: 20px 0 10px 0; color: #333; }
     justify-content: center;
     margin-top: 15px;
 }
+
+/* Changed field highlighting for batch apply mode */
+.row-changed {
+    background-color: #fff8e1 !important;
+}
+
+.row-changed td {
+    background-color: #fff8e1;
+}
+
+.field-changed {
+    background-color: #fff8e1;
+    border-radius: 4px;
+    padding: 4px 8px;
+    margin: -4px -8px;
+}
+
+.btn-success {
+    background: #4CAF50;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #45a049;
+}
+
+.btn-success:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}

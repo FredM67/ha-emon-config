@@ -60,27 +60,20 @@
             :config-received="configReceived"
             :upgrade-required="upgradeRequired"
             :has-unsaved-changes="hasUnsavedChanges"
+            :has-pending-changes="hasPendingChanges"
+            :pending-changes-count="pendingChangesList.length"
+            :apply-progress="applyProgress"
+            :original-device="originalDevice"
             :changes="changes"
             :live-data="liveData"
             :cts-available="ctsAvailable"
             @load-config="loadConfig"
             @save-config="saveConfig"
-            @set-vcal="setVcal"
-            @set-vchannel="setVchannel"
-            @set-ical="setIcal"
-            @set-opa="setOpa"
+            @apply-changes="applyAllChanges"
+            @discard-changes="discardChanges"
             @scan-temp-sensors="scanTempSensors"
             @list-temp-sensors="listTempSensors"
             @save-temp-mapping="saveTempMapping"
-            @set-pulse="setPulse"
-            @set-pulse-period="setPulsePeriod"
-            @set-radio="setRadio"
-            @set-rf-node="setRfNode"
-            @set-rf-group="setRfGroup"
-            @set-rf-band="setRfBand"
-            @set-rf-power="setRfPower"
-            @set-datalog="setDatalog"
-            @set-json="setJson"
             @zero-energy="zeroEnergy"
             @reset-defaults="resetDefaults"
             @generate-yaml="generateYaml"
@@ -194,8 +187,11 @@
                 bulkProgress: null,  // { current, total, currentCt, error }
                 // Pending response for sequential commands
                 pendingResponse: null,
-                // Unsaved changes warning
+                // Unsaved changes warning (for flash save)
                 hasUnsavedChanges: false,
+                // Batch apply mode
+                originalDevice: null,
+                applyProgress: null,  // { current, total, currentItem }
                 // i18n
                 lang: 'en',
                 translations: {},
@@ -212,6 +208,7 @@
                     rfNode: '',
                     rfGroup: '',
                     rfBand: '868 MHz',
+                    rf433High: false,  // true = 433.92 MHz, false = 433.06 MHz
                     rfPower: 25,
                     rfFormat: '',
                     pulse: false,
@@ -242,6 +239,14 @@
             watch: {
                 activeTab(newTab) {
                     (window.parent.localStorage || localStorage).setItem('emontx_active_tab', newTab);
+                },
+                configReceived(newVal) {
+                    if (newVal && !this.originalDevice) {
+                        // Store original config after a short delay to ensure all parsing is complete
+                        setTimeout(() => {
+                            this.originalDevice = JSON.parse(JSON.stringify(this.device));
+                        }, 500);
+                    }
                 }
             },
             computed: {
@@ -256,6 +261,47 @@
                     if (voltage.includes('3phase')) return 3;
                     if (voltage.includes('2phase')) return 2;
                     return 1;
+                },
+                hasPendingChanges() {
+                    if (!this.originalDevice) return false;
+                    return JSON.stringify(this.device) !== JSON.stringify(this.originalDevice);
+                },
+                pendingChangesList() {
+                    // Returns list of what changed for display/apply
+                    if (!this.originalDevice) return [];
+                    const changes = [];
+                    const orig = this.originalDevice;
+                    const curr = this.device;
+
+                    // Check voltage channels
+                    for (let i = 0; i < curr.vchannels.length; i++) {
+                        if (JSON.stringify(curr.vchannels[i]) !== JSON.stringify(orig.vchannels[i])) {
+                            changes.push({ type: 'vchannel', index: i });
+                        }
+                    }
+                    // Check current channels
+                    for (let i = 0; i < curr.ichannels.length; i++) {
+                        if (JSON.stringify(curr.ichannels[i]) !== JSON.stringify(orig.ichannels[i])) {
+                            changes.push({ type: 'ichannel', index: i });
+                        }
+                    }
+                    // Check OPA channels
+                    for (let i = 0; i < curr.opa.length; i++) {
+                        if (JSON.stringify(curr.opa[i]) !== JSON.stringify(orig.opa[i])) {
+                            changes.push({ type: 'opa', index: i });
+                        }
+                    }
+                    // Check RF settings
+                    if (curr.RF !== orig.RF) changes.push({ type: 'radio' });
+                    if (curr.rfNode !== orig.rfNode) changes.push({ type: 'rfNode' });
+                    if (curr.rfGroup !== orig.rfGroup) changes.push({ type: 'rfGroup' });
+                    if (curr.rf433High !== orig.rf433High) changes.push({ type: 'rf433Toggle' });
+                    if (curr.rfPower !== orig.rfPower) changes.push({ type: 'rfPower' });
+                    // Check misc settings
+                    if (curr.datalog !== orig.datalog) changes.push({ type: 'datalog' });
+                    if (curr.json !== orig.json) changes.push({ type: 'json' });
+
+                    return changes;
                 }
             },
             mounted() {
@@ -730,10 +776,12 @@
                                 this.device.rfGroup = parseInt(val);
                             }
                             else if (key === 'rfBand') {
-                                if (val.startsWith('433')) {
-                                    this.device.rfBand = '433 MHz';
-                                } else {
-                                    this.device.rfBand = val;
+                                this.device.rfBand = val;
+                                // Set rf433High based on which 433 MHz variant
+                                if (val.includes('433.92')) {
+                                    this.device.rf433High = true;
+                                } else if (val.includes('433')) {
+                                    this.device.rf433High = false;
                                 }
                             }
                             else if (key === 'rfPower') {
@@ -797,6 +845,189 @@
                 // Configuration methods
                 loadConfig() {
                     this.writeToStream('l');
+                },
+                async applyAllChanges() {
+                    const changes = this.pendingChangesList;
+                    if (changes.length === 0) return;
+
+                    this.applyProgress = { current: 0, total: changes.length, currentItem: '' };
+                    this.log(`Applying ${changes.length} configuration changes...`, 'info');
+
+                    const successfulChanges = [];
+                    const failedChanges = [];
+
+                    for (let i = 0; i < changes.length; i++) {
+                        const change = changes[i];
+                        this.applyProgress = { current: i, total: changes.length, currentItem: this.getChangeLabel(change) };
+
+                        try {
+                            // Get the acknowledgment pattern for this change type
+                            const ackPattern = this.getAckPattern(change);
+                            const responsePromise = ackPattern ? this.waitForResponse(ackPattern) : null;
+
+                            // Send the command
+                            this.applyChange(change);
+
+                            // Wait for acknowledgment if pattern is defined
+                            if (responsePromise) {
+                                await responsePromise;
+                            }
+                            this.log(`Applied: ${this.getChangeLabel(change)}`, 'info');
+                            successfulChanges.push(change);
+                        } catch (e) {
+                            this.log(`Failed to apply: ${this.getChangeLabel(change)} (timeout or rejected)`, 'error');
+                            failedChanges.push(change);
+                        }
+                    }
+
+                    // Update originalDevice only for successful changes
+                    if (successfulChanges.length > 0) {
+                        for (const change of successfulChanges) {
+                            this.markChangeAsApplied(change);
+                        }
+                    }
+
+                    // Show summary
+                    const statusItem = failedChanges.length > 0
+                        ? `${successfulChanges.length}/${changes.length} applied, ${failedChanges.length} failed`
+                        : 'Done';
+                    this.applyProgress = { current: changes.length, total: changes.length, currentItem: statusItem };
+
+                    if (failedChanges.length > 0) {
+                        this.log(`Applied ${successfulChanges.length}/${changes.length} changes, ${failedChanges.length} failed`, 'warning');
+                    } else {
+                        this.log(`Applied ${successfulChanges.length} changes`, 'info');
+                    }
+
+                    setTimeout(() => {
+                        this.applyProgress = null;
+                    }, failedChanges.length > 0 ? 2000 : 500);
+                },
+                markChangeAsApplied(change) {
+                    // Update originalDevice for this specific change so it's no longer pending
+                    if (!this.originalDevice) return;
+
+                    switch (change.type) {
+                        case 'vchannel':
+                            if (this.originalDevice.vchannels && this.device.vchannels) {
+                                this.originalDevice.vchannels[change.index] = JSON.parse(JSON.stringify(this.device.vchannels[change.index]));
+                            }
+                            break;
+                        case 'ichannel':
+                            if (this.originalDevice.ichannels && this.device.ichannels) {
+                                this.originalDevice.ichannels[change.index] = JSON.parse(JSON.stringify(this.device.ichannels[change.index]));
+                            }
+                            break;
+                        case 'opa':
+                            if (this.originalDevice.opa && this.device.opa) {
+                                this.originalDevice.opa[change.index] = JSON.parse(JSON.stringify(this.device.opa[change.index]));
+                            }
+                            break;
+                        case 'radio':
+                            this.originalDevice.radioEnabled = this.device.radioEnabled;
+                            break;
+                        case 'rfNode':
+                            this.originalDevice.rfNode = this.device.rfNode;
+                            break;
+                        case 'rfGroup':
+                            this.originalDevice.rfGroup = this.device.rfGroup;
+                            break;
+                        case 'rf433Toggle':
+                            this.originalDevice.rf433High = this.device.rf433High;
+                            break;
+                        case 'rfPower':
+                            this.originalDevice.rfPower = this.device.rfPower;
+                            break;
+                        case 'datalog':
+                            this.originalDevice.datalogInterval = this.device.datalogInterval;
+                            break;
+                        case 'json':
+                            this.originalDevice.jsonEnabled = this.device.jsonEnabled;
+                            break;
+                    }
+                },
+                getAckPattern(change) {
+                    // Returns the acknowledgment pattern to wait for after sending a command
+                    // Based on firmware response format
+                    switch (change.type) {
+                        case 'vchannel':
+                            return `vCal${change.index + 1} =`;
+                        case 'ichannel':
+                            return `iCal${change.index + 1} =`;
+                        case 'opa':
+                            return `opa${change.index + 1} active =`;
+                        case 'radio':
+                            return 'RF =';
+                        case 'rfNode':
+                            return 'rfNode =';
+                        case 'rfGroup':
+                            return 'rfGroup =';
+                        case 'rf433Toggle':
+                            return 'rfBand =';
+                        case 'rfPower':
+                            return 'rfPower =';
+                        case 'datalog':
+                            return 'datalog =';
+                        case 'json':
+                            return 'json =';
+                        default:
+                            return null;
+                    }
+                },
+                applyChange(change) {
+                    switch (change.type) {
+                        case 'vchannel':
+                            this.setVchannel(change.index);
+                            break;
+                        case 'ichannel':
+                            this.setIcal(change.index);
+                            break;
+                        case 'opa':
+                            this.setOpa(change.index);
+                            break;
+                        case 'radio':
+                            this.setRadio();
+                            break;
+                        case 'rfNode':
+                            this.setRfNode();
+                            break;
+                        case 'rfGroup':
+                            this.setRfGroup();
+                            break;
+                        case 'rf433Toggle':
+                            this.setRf433Toggle();
+                            break;
+                        case 'rfPower':
+                            this.setRfPower();
+                            break;
+                        case 'datalog':
+                            this.setDatalog();
+                            break;
+                        case 'json':
+                            this.setJson();
+                            break;
+                    }
+                },
+                getChangeLabel(change) {
+                    switch (change.type) {
+                        case 'vchannel': return `V${change.index + 1}`;
+                        case 'ichannel': return `CT${change.index + 1}`;
+                        case 'opa': return `OPA${change.index + 1}`;
+                        case 'radio': return 'RF Enable';
+                        case 'rfNode': return 'RF Node';
+                        case 'rfGroup': return 'RF Group';
+                        case 'rf433Toggle': return 'RF 433 Variant';
+                        case 'rfPower': return 'RF Power';
+                        case 'datalog': return 'Datalog';
+                        case 'json': return 'JSON';
+                        default: return change.type;
+                    }
+                },
+                discardChanges() {
+                    if (this.originalDevice) {
+                        this.device = JSON.parse(JSON.stringify(this.originalDevice));
+                        this.log('Changes discarded', 'info');
+                    }
                 },
                 setVcal() {
                     this.writeToStream('k0 ' + parseFloat(this.device.vcal).toFixed(2) + ' 0');
@@ -909,8 +1140,9 @@
                     this.changes = true;
                     this.hasUnsavedChanges = true;
                 },
-                setRfBand() {
-                    this.writeToStream('b' + this.device.rfBand[0]);
+                setRf433Toggle() {
+                    // x command toggles between 433.06 (x0) and 433.92 (x1) MHz
+                    this.writeToStream('x' + (this.device.rf433High ? '1' : '0'));
                     this.changes = true;
                     this.hasUnsavedChanges = true;
                 },

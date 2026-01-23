@@ -18,11 +18,18 @@
     },
     "buttons": {
         "loadConfig": "Konfig Laden",
-        "save": "Änderungen Speichern",
+        "save": "Im Flash Speichern",
         "zeroEnergy": "Energie Nullstellen",
         "resetDefaults": "Auf Standard Zurücksetzen",
         "reloadConfig": "Konfig Neu Laden",
-        "generateYaml": "YAML Generieren"
+        "generateYaml": "YAML Generieren",
+        "applyChanges": "Anwenden",
+        "discardChanges": "Verwerfen"
+    },
+    "pendingChanges": {
+        "title": "Ausstehende Änderungen",
+        "message": "Sie haben nicht gesendete Änderungen. Klicken Sie auf Anwenden zum Senden.",
+        "applying": "Änderungen werden angewendet..."
     },
     "yamlModal": {
         "title": "ESPHome Sensor YAML",
