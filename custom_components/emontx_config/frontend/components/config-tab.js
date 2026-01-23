@@ -126,6 +126,12 @@ Vue.component('config-tab', {
             const orig = this.originalDevice.vchannels[index];
             // Check if this specific field differs from original
             return curr[field] !== orig[field];
+        },
+        formatVoltage(voltage) {
+            if (!voltage) return '-';
+            // Remove 'V' suffix if present and parse as float
+            const val = parseFloat(voltage.toString().replace('V', ''));
+            return isNaN(val) ? '-' : val.toFixed(2) + 'V';
         }
     },
     computed: {
@@ -237,7 +243,7 @@ Vue.component('config-tab', {
                                         <input type="number" step="0.01" v-model="vchannel.vphase" :disabled="!emontxConnected" :class="{ 'input-error': isVcalFieldError(index, 'vphase') }" />
                                         <span class="unit">&deg;</span>
                                     </td>
-                                    <td>{{ vchannel.voltage || '-' }}</td>
+                                    <td>{{ formatVoltage(vchannel.voltage) }}</td>
                                 </tr>
                             </table>
                         </div>
