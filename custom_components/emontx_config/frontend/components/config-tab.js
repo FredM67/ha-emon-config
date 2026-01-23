@@ -106,10 +106,26 @@ Vue.component('config-tab', {
         },
         isFieldError(index, field) {
             // Check if this specific field on this CT should be highlighted as error
-            return this.isCtFailed(index) && this.failedCtFields && this.failedCtFields.includes(field);
+            // Must be: CT failed AND field was in the applied set AND field was actually changed
+            if (!this.isCtFailed(index)) return false;
+            if (!this.failedCtFields || !this.failedCtFields.includes(field)) return false;
+            if (!this.originalDevice || !this.originalDevice.ichannels || !this.originalDevice.ichannels[index]) return false;
+            const curr = this.device.ichannels[index];
+            const orig = this.originalDevice.ichannels[index];
+            // Check if this specific field differs from original
+            return curr[field] !== orig[field];
         },
         isVcalFailed(index) {
             return this.failedVcalIndices && this.failedVcalIndices.includes(index);
+        },
+        isVcalFieldError(index, field) {
+            // Only show error if this vchannel failed AND this specific field was changed
+            if (!this.isVcalFailed(index)) return false;
+            if (!this.originalDevice || !this.originalDevice.vchannels || !this.originalDevice.vchannels[index]) return false;
+            const curr = this.device.vchannels[index];
+            const orig = this.originalDevice.vchannels[index];
+            // Check if this specific field differs from original
+            return curr[field] !== orig[field];
         }
     },
     computed: {
@@ -207,11 +223,11 @@ Vue.component('config-tab', {
                                     <td><input type="checkbox" v-model="vchannel.active" :disabled="!emontxConnected" /></td>
                                     <td>V{{ index + 1 }}</td>
                                     <td>
-                                        <input type="number" step="0.01" v-model="vchannel.vcal" :disabled="!emontxConnected" :class="{ 'input-error': isVcalFailed(index) }" />
+                                        <input type="number" step="0.01" v-model="vchannel.vcal" :disabled="!emontxConnected" :class="{ 'input-error': isVcalFieldError(index, 'vcal') }" />
                                         <span class="unit">%</span>
                                     </td>
                                     <td>
-                                        <input type="number" step="0.01" v-model="vchannel.vphase" :disabled="!emontxConnected" :class="{ 'input-error': isVcalFailed(index) }" />
+                                        <input type="number" step="0.01" v-model="vchannel.vphase" :disabled="!emontxConnected" :class="{ 'input-error': isVcalFieldError(index, 'vphase') }" />
                                         <span class="unit">&deg;</span>
                                     </td>
                                     <td>{{ vchannel.voltage || '-' }}</td>
