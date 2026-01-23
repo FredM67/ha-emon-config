@@ -201,7 +201,7 @@ Vue.component('config-tab', {
                                         <input type="number" step="0.01" v-model="vchannel.vphase" :disabled="!emontxConnected" />
                                         <span class="unit">&deg;</span>
                                     </td>
-                                    <td class="live-value">{{ vchannel.voltage || '-' }}</td>
+                                    <td>{{ vchannel.voltage || '-' }}</td>
                                 </tr>
                             </table>
                         </div>
