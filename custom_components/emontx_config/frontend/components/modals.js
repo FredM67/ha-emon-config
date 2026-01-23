@@ -232,7 +232,11 @@ Vue.component('bulk-ct-modal', {
                 <!-- Progress bar (shown during apply) -->
                 <div v-if="isApplying" style="margin-bottom: 15px;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                        <span style="font-weight: 500;">{{ t.bulk.applying }} CT {{ progress.currentCt }}</span>
+                        <span style="font-weight: 500;">
+                            <template v-if="progress.currentCt > 0">{{ t.bulk.applying }} CT {{ progress.currentCt }}</template>
+                            <template v-else-if="progress.current === progress.total && !progress.error">Done</template>
+                            <template v-else-if="progress.current === progress.total && progress.error">Completed with errors</template>
+                        </span>
                         <span>{{ progress.current }} / {{ progress.total }}</span>
                     </div>
                     <div style="background: #e0e0e0; border-radius: 4px; height: 20px; overflow: hidden;">
@@ -242,6 +246,11 @@ Vue.component('bulk-ct-modal', {
                             background: progress.error ? '#f44336' : '#4CAF50',
                             transition: 'width 0.3s ease'
                         }"></div>
+                    </div>
+                    <!-- Show failed channels -->
+                    <div v-if="progress.failedChannels && progress.failedChannels.length > 0" style="margin-top: 10px; padding: 10px; background: #ffebee; border: 1px solid #f44336; border-radius: 4px; color: #c62828;">
+                        <strong>Failed:</strong> CT {{ progress.failedChannels.join(', CT ') }}
+                        <div style="font-size: 12px; margin-top: 5px; color: #666;">Check values are within valid ranges (e.g., iCal: 10-200)</div>
                     </div>
                 </div>
 

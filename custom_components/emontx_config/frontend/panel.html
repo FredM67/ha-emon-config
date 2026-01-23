@@ -161,7 +161,7 @@
         var app = new Vue({
             el: '#app',
             data: {
-                integrationVersion: '1.0.20-beta.7',
+                integrationVersion: '1.0.20-beta.8',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -1110,13 +1110,14 @@
                 async applyBulkCtSettings(changes) {
                     // Apply values to selected channels one by one, waiting for acknowledgment
                     const total = changes.channels.length;
-                    this.bulkProgress = { current: 0, total: total, currentCt: 0, error: false };
+                    const failedChannels = [];
+                    this.bulkProgress = { current: 0, total: total, currentCt: 0, error: false, failedChannels: [] };
                     this.log(`Applying bulk settings to ${total} channels...`, 'info');
 
                     for (let i = 0; i < changes.channels.length; i++) {
                         const idx = changes.channels[i];
                         const ctNum = idx + 1;
-                        this.bulkProgress = { current: i, total: total, currentCt: ctNum, error: false };
+                        this.bulkProgress = { current: i, total: total, currentCt: ctNum, error: false, failedChannels: failedChannels };
 
                         if (idx < this.device.ichannels.length) {
                             if (changes.values.ical !== undefined) {
@@ -1143,19 +1144,25 @@
                                     this.$set(this.originalDevice.ichannels, idx, JSON.parse(JSON.stringify(this.device.ichannels[idx])));
                                 }
                             } catch (e) {
-                                this.bulkProgress = { ...this.bulkProgress, error: true };
-                                this.log(`CT ${ctNum} config rejected or timeout (${i + 1}/${total})`, 'error');
+                                failedChannels.push(ctNum);
+                                this.bulkProgress = { ...this.bulkProgress, error: true, failedChannels: failedChannels };
+                                this.log(`CT ${ctNum} config rejected (${i + 1}/${total})`, 'error');
                             }
                         }
                     }
-                    // Show completion
-                    this.bulkProgress = { current: total, total: total, currentCt: 0, error: false };
-                    this.log(`Bulk settings applied to ${total} channels`, 'info');
-                    // Close modal after brief delay to show 100%
+                    // Show completion with error summary if any failed
+                    const hasErrors = failedChannels.length > 0;
+                    this.bulkProgress = { current: total, total: total, currentCt: 0, error: hasErrors, failedChannels: failedChannels };
+                    if (hasErrors) {
+                        this.log(`Bulk settings: ${total - failedChannels.length}/${total} applied, failed: CT ${failedChannels.join(', CT ')}`, 'warning');
+                    } else {
+                        this.log(`Bulk settings applied to ${total} channels`, 'info');
+                    }
+                    // Close modal after delay (longer if errors so user can see)
                     setTimeout(() => {
                         this.showBulkCtModal = false;
                         this.bulkProgress = null;
-                    }, 500);
+                    }, hasErrors ? 3000 : 500);
                 },
                 openBulkCtModal() {
                     this.showBulkCtModal = true;
