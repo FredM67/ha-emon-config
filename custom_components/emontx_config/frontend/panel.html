@@ -69,6 +69,7 @@
             :cts-available="ctsAvailable"
             :failed-ct-indices="failedCtIndices"
             :failed-ct-fields="failedCtFields"
+            :failed-vcal-indices="failedVcalIndices"
             @load-config="loadConfig"
             @save-config="saveConfig"
             @apply-changes="applyAllChanges"
@@ -164,7 +165,7 @@
         var app = new Vue({
             el: '#app',
             data: {
-                integrationVersion: '1.0.20-beta.15',
+                integrationVersion: '1.0.20-beta.16',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -190,6 +191,7 @@
                 bulkProgress: null,  // { current, total, currentCt, error }
                 failedCtIndices: [],  // Indices of CTs that failed to apply
                 failedCtFields: [],   // Fields that were being applied when failure occurred
+                failedVcalIndices: [], // Indices of voltage channels that failed to apply
                 // Pending response for sequential commands
                 pendingResponse: null,
                 // Unsaved changes warning (for flash save)
@@ -886,6 +888,11 @@
                     const changes = this.pendingChangesList;
                     if (changes.length === 0) return;
 
+                    // Clear previous error highlighting
+                    this.failedCtIndices = [];
+                    this.failedCtFields = [];
+                    this.failedVcalIndices = [];
+
                     this.applyProgress = { current: 0, total: changes.length, currentItem: '' };
                     this.log(`Applying ${changes.length} configuration changes...`, 'info');
 
@@ -920,6 +927,17 @@
                     if (successfulChanges.length > 0) {
                         for (const change of successfulChanges) {
                             this.markChangeAsApplied(change);
+                        }
+                    }
+
+                    // Track failed changes for error highlighting
+                    for (const change of failedChanges) {
+                        if (change.type === 'vchannel') {
+                            this.failedVcalIndices.push(change.index);
+                        } else if (change.type === 'ichannel') {
+                            this.failedCtIndices.push(change.index);
+                            // Mark all ichannel fields as failed
+                            this.failedCtFields = ['ical', 'ilead', 'vchan1', 'vchan2'];
                         }
                     }
 

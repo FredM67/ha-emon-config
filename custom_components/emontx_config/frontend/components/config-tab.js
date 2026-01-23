@@ -19,7 +19,8 @@ Vue.component('config-tab', {
         liveData: Object,
         ctsAvailable: Array,
         failedCtIndices: { type: Array, default: () => [] },
-        failedCtFields: { type: Array, default: () => [] }
+        failedCtFields: { type: Array, default: () => [] },
+        failedVcalIndices: { type: Array, default: () => [] }
     },
     data() {
         return {
@@ -106,6 +107,9 @@ Vue.component('config-tab', {
         isFieldError(index, field) {
             // Check if this specific field on this CT should be highlighted as error
             return this.isCtFailed(index) && this.failedCtFields && this.failedCtFields.includes(field);
+        },
+        isVcalFailed(index) {
+            return this.failedVcalIndices && this.failedVcalIndices.includes(index);
         }
     },
     computed: {
@@ -199,15 +203,15 @@ Vue.component('config-tab', {
                                     <th>{{ t.config.phase }}</th>
                                     <th>{{ t.liveData?.groups?.V || 'Voltage' }}</th>
                                 </tr>
-                                <tr v-for="(vchannel, index) in device.vchannels" :key="'v'+index" :class="{ 'row-changed': isFieldChanged('vchannel', index) }">
+                                <tr v-for="(vchannel, index) in device.vchannels" :key="'v'+index" :class="{ 'row-changed': isFieldChanged('vchannel', index), 'row-error': isVcalFailed(index) }">
                                     <td><input type="checkbox" v-model="vchannel.active" :disabled="!emontxConnected" /></td>
                                     <td>V{{ index + 1 }}</td>
                                     <td>
-                                        <input type="number" step="0.01" v-model="vchannel.vcal" :disabled="!emontxConnected" />
+                                        <input type="number" step="0.01" v-model="vchannel.vcal" :disabled="!emontxConnected" :class="{ 'input-error': isVcalFailed(index) }" />
                                         <span class="unit">%</span>
                                     </td>
                                     <td>
-                                        <input type="number" step="0.01" v-model="vchannel.vphase" :disabled="!emontxConnected" />
+                                        <input type="number" step="0.01" v-model="vchannel.vphase" :disabled="!emontxConnected" :class="{ 'input-error': isVcalFailed(index) }" />
                                         <span class="unit">&deg;</span>
                                     </td>
                                     <td>{{ vchannel.voltage || '-' }}</td>
