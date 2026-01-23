@@ -66,6 +66,15 @@ Vue.component('config-tab', {
                 opa.period = 100;  // 100ms default debounce
             }
         },
+        applyOpaPreset(idx, preset) {
+            const opa = this.device.opa[idx];
+            if (preset === 'oem-pulse') {
+                opa.active = true;
+                opa.func = 'r';  // Rising edge
+                opa.pullUp = false;
+                opa.period = 25;
+            }
+        },
         isFieldChanged(type, index) {
             if (!this.originalDevice) return false;
             switch (type) {
@@ -325,6 +334,7 @@ Vue.component('config-tab', {
                                     <th>{{ t.config.function }}</th>
                                     <th>{{ t.config.pullUp }}</th>
                                     <th>{{ t.config.period }}</th>
+                                    <th>{{ t.config?.preset || 'Preset' }}</th>
                                 </tr>
                                 <tr v-for="(opa, idx) in device.opa" :key="'opa'+idx" :class="{ 'row-changed': isFieldChanged('opa', idx) }">
                                     <td>OPA{{ idx + 1 }}</td>
@@ -339,6 +349,11 @@ Vue.component('config-tab', {
                                     </td>
                                     <td><input type="checkbox" v-model="opa.pullUp" :disabled="!emontxConnected || opa.func === 'o' || idx === 2" /></td>
                                     <td><input type="number" v-model="opa.period" :disabled="!emontxConnected || opa.func === 'o'" style="width:80px" /></td>
+                                    <td>
+                                        <button class="btn btn-sm" @click="applyOpaPreset(idx, 'oem-pulse')" :disabled="!emontxConnected" style="padding: 4px 8px; font-size: 12px;">
+                                            {{ t.config?.oemPulseSensor || 'OEM pulse sensor' }}
+                                        </button>
+                                    </td>
                                 </tr>
                             </table>
                         </div>

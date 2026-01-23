@@ -84,6 +84,8 @@
         "pulseBoth": "Pulse - Both",
         "pullUp": "Pull-up",
         "period": "Period (ms)",
+        "preset": "Preset",
+        "oemPulseSensor": "OEM pulse sensor",
         "tempSensors": "Temperature Sensors",
         "tempSensorsDesc": "DS18B20 OneWire temperature sensors connected to OPA channels configured as OneWire.",
         "scanSensors": "Scan Sensors",
