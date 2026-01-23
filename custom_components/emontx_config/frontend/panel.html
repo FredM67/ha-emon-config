@@ -161,7 +161,7 @@
         var app = new Vue({
             el: '#app',
             data: {
-                integrationVersion: '1.0.20-beta.8',
+                integrationVersion: '1.0.20-beta.9',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -622,7 +622,7 @@
                                 this.$set(this.device.ichannels[c], 'energy', sensorData[eKey] + 'Wh');
                             }
                         }
-                    } else if (line.includes(' = ')) {
+                    } else if (line.includes(' = ') || line.includes('> Error:')) {
                         this.processLine(line);
                     }
                 },
@@ -1158,19 +1158,24 @@
                     } else {
                         this.log(`Bulk settings applied to ${total} channels`, 'info');
                     }
-                    // Close modal after delay (longer if errors so user can see)
-                    setTimeout(() => {
-                        this.showBulkCtModal = false;
-                        this.bulkProgress = null;
-                    }, hasErrors ? 3000 : 500);
+                    // Close modal after delay only if no errors
+                    // If errors, keep modal open so user can see which CTs failed
+                    if (!hasErrors) {
+                        setTimeout(() => {
+                            this.showBulkCtModal = false;
+                            this.bulkProgress = null;
+                        }, 500);
+                    }
                 },
                 openBulkCtModal() {
                     this.showBulkCtModal = true;
                     this.bulkProgress = null;
                 },
                 closeBulkModal() {
-                    if (!this.bulkProgress) {
+                    // Allow closing if not in progress, or if complete (with or without errors)
+                    if (!this.bulkProgress || (this.bulkProgress.current === this.bulkProgress.total)) {
                         this.showBulkCtModal = false;
+                        this.bulkProgress = null;
                     }
                 },
                 setRadio() {

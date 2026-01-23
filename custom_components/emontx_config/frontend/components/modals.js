@@ -98,6 +98,9 @@ Vue.component('bulk-ct-modal', {
         isApplying() {
             return this.progress !== null && this.progress !== undefined;
         },
+        isComplete() {
+            return this.progress && this.progress.current === this.progress.total;
+        },
         progressPercent() {
             if (!this.progress || this.progress.total === 0) return 0;
             return Math.round((this.progress.current / this.progress.total) * 100);
@@ -261,7 +264,9 @@ Vue.component('bulk-ct-modal', {
                             style="padding: 12px 25px;">
                         {{ t.bulk.apply }} {{ selectedCts.length }} {{ t.bulk.selected }}
                     </button>
-                    <button class="btn" @click="$emit('close')" :disabled="isApplying" style="padding: 12px 25px; background: #ccc;">{{ t.bulk.cancel }}</button>
+                    <button class="btn" @click="$emit('close')" :disabled="isApplying && !isComplete" style="padding: 12px 25px; background: #ccc;">
+                        {{ isComplete ? 'Close' : t.bulk.cancel }}
+                    </button>
                 </div>
             </div>
         </div>
