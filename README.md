@@ -136,6 +136,13 @@ Real-time display of all sensor values received from the emonPi/Tx, grouped by t
 
 Inactive channels are displayed with a strikethrough indicator.
 
+## Documentation
+
+For detailed information about emonTx/emonPi devices, firmware configuration, and hardware specifications:
+
+- **[emonPi/Tx Documentation](https://docs.openenergymonitor.org/)** - Complete hardware and firmware guide
+- **[OpenEnergyMonitor Community](https://community.openenergymonitor.org/)** - Community forum for support
+
 ## Common emonPi/Tx Commands
 
 | Command | Description |
