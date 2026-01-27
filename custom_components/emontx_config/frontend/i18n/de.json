@@ -37,6 +37,7 @@
         "title": "ESPHome Sensor YAML",
         "description": "Kopieren Sie dieses YAML in Ihre ESPHome-Konfiguration, um Sensoren für aktive Kanäle hinzuzufügen:",
         "copy": "In Zwischenablage",
+        "save": "Speichern",
         "close": "Schließen",
         "copied": "Kopiert!",
         "applyFirst": "Sie haben ausstehende Änderungen. Vor dem Generieren des YAML anwenden?",

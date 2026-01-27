@@ -298,13 +298,26 @@ Vue.component('yaml-modal', {
         yaml: String
     },
     methods: {
-        copyYaml() {
+        copyYaml(event) {
             navigator.clipboard.writeText(this.yaml).then(() => {
                 const btn = event.target;
                 const originalText = btn.textContent;
                 btn.textContent = this.t.yamlModal.copied;
                 setTimeout(() => { btn.textContent = originalText; }, 1500);
+            }).catch(err => {
+                console.error('Failed to copy YAML:', err);
             });
+        },
+        saveYaml() {
+            const blob = new Blob([this.yaml], { type: 'text/yaml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'emontx-sensors.yaml';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
     },
     template: `
@@ -314,7 +327,8 @@ Vue.component('yaml-modal', {
                 <p style="font-size: 14px; color: #666;">{{ t.yamlModal.description }}</p>
                 <textarea readonly style="flex: 1; min-height: 300px; font-family: monospace; font-size: 12px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; background: #f5f5f5; resize: none;">{{ yaml }}</textarea>
                 <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
-                    <button class="btn btn-primary" @click="copyYaml" style="padding: 12px 30px; font-size: 16px; background: #9c27b0;">{{ t.yamlModal.copy }}</button>
+                    <button class="btn btn-primary" @click="copyYaml($event)" style="padding: 12px 30px; font-size: 16px; background: #9c27b0;">{{ t.yamlModal.copy }}</button>
+                    <button class="btn btn-info" @click="saveYaml" style="padding: 12px 30px; font-size: 16px;">{{ t.yamlModal.save || 'Save' }}</button>
                     <button class="btn" @click="$emit('close')" style="padding: 12px 30px; font-size: 16px; background: #ccc;">{{ t.yamlModal.close }}</button>
                 </div>
             </div>
