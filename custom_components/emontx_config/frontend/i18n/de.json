@@ -189,6 +189,8 @@
         "btnZeroPulse": "Diesen Impulszähler auf Null setzen",
         "btnZeroAll": "Alle Energie- und Impulsakkumulatoren auf Null setzen",
         "btnExportNames": "Kanalnamen als JSON-Datei herunterladen",
-        "btnImportNames": "Kanalnamen aus JSON-Datei importieren"
+        "btnImportNames": "Kanalnamen aus JSON-Datei importieren",
+        "btnApplyChanges": "Ausstehende Änderungen an Gerät senden",
+        "btnDiscardChanges": "Ausstehende Änderungen verwerfen"
     }
 }

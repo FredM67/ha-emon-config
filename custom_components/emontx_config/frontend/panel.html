@@ -169,7 +169,7 @@
         var app = new Vue({
             el: '#app',
             data: {
-                integrationVersion: '1.1.0-beta.7',
+                integrationVersion: '1.1.0-beta.8',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -1386,7 +1386,7 @@
                     let yaml = 'sensor:\n';
 
                     const numVoltages = this.voltageChannelCount;
-                    const voltageLabel = this.t.liveData?.groups?.V || 'Voltage';
+                    const voltageLabel = this.t.liveData.groups.V;
                     for (let i = 0; i < numVoltages; i++) {
                         if (this.device.hardware === 'emonPi3' && this.device.vchannels[i] && !this.device.vchannels[i].active) {
                             continue;
@@ -1404,8 +1404,8 @@
                             continue;
                         }
                         const ctName = this.channelNames.ct[String(i + 1)];
-                        const powerLabel = this.t.config?.power || 'Power';
-                        const energyLabel = this.t.config?.energy || 'Energy';
+                        const powerLabel = this.t.config.power;
+                        const energyLabel = this.t.config.energy;
                         const powerName = ctName ? `${ctName} ${powerLabel}` : `${powerLabel} ${i + 1}`;
                         const energyName = ctName ? `${ctName} ${energyLabel}` : `${energyLabel} ${i + 1}`;
 
@@ -1419,7 +1419,7 @@
                     }
 
                     // OPA channels (pulse sensors)
-                    const pulseLabel = this.t.liveData?.groups?.pulse || 'Pulse';
+                    const pulseLabel = this.t.liveData.groups.pulse;
                     for (let i = 0; i < this.device.opa.length; i++) {
                         const opa = this.device.opa[i];
                         // Only generate for active pulse channels (not OneWire)
@@ -1435,7 +1435,7 @@
                     }
 
                     // Temperature sensors
-                    const tempLabel = this.t.liveData?.groups?.T || 'Temperature';
+                    const tempLabel = this.t.liveData.groups.T;
                     for (let i = 0; i < this.device.tempSensors.length; i++) {
                         const sensor = this.device.tempSensors[i];
                         const tempName = this.channelNames.temp[sensor.addr];

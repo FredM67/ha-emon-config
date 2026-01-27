@@ -178,17 +178,17 @@ Vue.component('config-tab', {
                 <template v-if="!applyProgress">
                     <div class="floating-bar-content">
                         <span class="floating-bar-badge">{{ pendingChangesCount }}</span>
-                        <span class="floating-bar-text">{{ t.pendingChanges?.title || 'Pending Changes' }}</span>
+                        <span class="floating-bar-text">{{ t.pendingChanges.title }}</span>
                     </div>
                     <div class="floating-bar-buttons">
-                        <button class="btn btn-success" @click="$emit('apply-changes')" :disabled="!emontxConnected">{{ t.buttons?.applyChanges || 'Apply' }}</button>
-                        <button class="btn" @click="$emit('discard-changes')" style="background: #ccc;">{{ t.buttons?.discardChanges || 'Discard' }}</button>
+                        <button class="btn btn-success" @click="$emit('apply-changes')" :disabled="!emontxConnected">{{ t.buttons.applyChanges }}</button>
+                        <button class="btn" @click="$emit('discard-changes')" style="background: #ccc;">{{ t.buttons.discardChanges }}</button>
                     </div>
                 </template>
                 <!-- Apply Progress State -->
                 <template v-else>
                     <div class="floating-bar-content" style="flex: 1;">
-                        <span class="floating-bar-text"><strong>{{ t.pendingChanges?.applying || 'Applying...' }}</strong> {{ applyProgress.currentItem }}</span>
+                        <span class="floating-bar-text"><strong>{{ t.pendingChanges.applying }}</strong> {{ applyProgress.currentItem }}</span>
                         <span style="margin-left: auto;">{{ applyProgress.current }} / {{ applyProgress.total }}</span>
                     </div>
                     <div style="flex: 2; margin-left: 15px;">
@@ -225,8 +225,8 @@ Vue.component('config-tab', {
                     <div :class="['sub-tab', configSubTab === 'misc' ? 'active' : '']" @click="configSubTab = 'misc'" :title="t.tooltips.subMisc">
                         {{ t.configTabs.misc }}
                     </div>
-                    <a href="https://docs.openenergymonitor.org/" target="_blank" class="sub-tab-link" :title="t.config?.documentation || 'Documentation'">
-                        {{ t.config?.documentation || 'Documentation' }} ↗
+                    <a href="https://docs.openenergymonitor.org/" target="_blank" class="sub-tab-link" :title="t.config.documentation">
+                        {{ t.config.documentation }} ↗
                     </a>
                 </div>
 
@@ -254,15 +254,15 @@ Vue.component('config-tab', {
                                 <tr>
                                     <th>{{ t.config.active }}</th>
                                     <th>{{ t.config.channel }}</th>
-                                    <th>{{ t.config?.name || 'Name' }}</th>
+                                    <th>{{ t.config.name }}</th>
                                     <th>{{ t.config.calibration }}</th>
                                     <th>{{ t.config.phase }}</th>
-                                    <th>{{ t.liveData?.groups?.V || 'Voltage' }}</th>
+                                    <th>{{ t.liveData.groups.V }}</th>
                                 </tr>
                                 <tr v-for="(vchannel, index) in device.vchannels" :key="'v'+index" :class="{ 'row-changed': isFieldChanged('vchannel', index), 'row-error': isVcalFailed(index) }">
                                     <td><input type="checkbox" v-model="vchannel.active" :disabled="!emontxConnected" /></td>
                                     <td>V{{ index + 1 }}</td>
-                                    <td><input type="text" :value="getChannelName('voltage', String(index + 1))" @input="onNameChange('voltage', String(index + 1), $event)" :placeholder="t.config?.namePlaceholder || 'e.g. Main'" style="width: 150px;" /></td>
+                                    <td><input type="text" :value="getChannelName('voltage', String(index + 1))" @input="onNameChange('voltage', String(index + 1), $event)" :placeholder="t.config.namePlaceholder" style="width: 150px;" /></td>
                                     <td>
                                         <input type="number" step="0.01" v-model="vchannel.vcal" :disabled="!emontxConnected" :class="{ 'input-error': isVcalFieldError(index, 'vcal') }" />
                                         <span class="unit">%</span>
@@ -293,7 +293,7 @@ Vue.component('config-tab', {
                                 <tr>
                                     <th v-if="device.hardware === 'emonPi3'">{{ t.config.active }}</th>
                                     <th>{{ t.config.channel }}</th>
-                                    <th>{{ t.config?.name || 'Name' }}</th>
+                                    <th>{{ t.config.name }}</th>
                                     <th>{{ t.config.ctType }}</th>
                                     <th>{{ t.config.phase }}</th>
                                     <th v-if="device.hardware === 'emonPi3'">{{ t.config.vChan1 }}</th>
@@ -306,7 +306,7 @@ Vue.component('config-tab', {
                                         <input type="checkbox" v-model="channel.active" :disabled="!emontxConnected" />
                                     </td>
                                     <td>CT {{ index + 1 }}</td>
-                                    <td><input type="text" :value="getChannelName('ct', String(index + 1))" @input="onNameChange('ct', String(index + 1), $event)" :placeholder="t.config?.namePlaceholder || 'e.g. Solar'" style="width: 150px;" /></td>
+                                    <td><input type="text" :value="getChannelName('ct', String(index + 1))" @input="onNameChange('ct', String(index + 1), $event)" :placeholder="t.config.namePlaceholder" style="width: 150px;" /></td>
                                     <td style="display: flex; align-items: center; gap: 5px;">
                                         <select :value="getCtSelectValue(index)" @change="handleCtTypeChange(index, $event)" :disabled="!emontxConnected" :class="{ 'input-error': isFieldError(index, 'ical') }">
                                             <option v-for="rating in ctsAvailable" :value="rating" :key="rating">{{ rating }}A</option>
@@ -351,17 +351,17 @@ Vue.component('config-tab', {
                             <table class="device-info-table">
                                 <tr>
                                     <th>{{ t.config.channel }}</th>
-                                    <th>{{ t.config?.name || 'Name' }}</th>
+                                    <th>{{ t.config.name }}</th>
                                     <th>{{ t.config.active }}</th>
                                     <th>{{ t.config.function }}</th>
                                     <th>{{ t.config.pullUp }}</th>
                                     <th>{{ t.config.period }}</th>
-                                    <th>{{ t.config?.preset || 'Preset' }}</th>
+                                    <th>{{ t.config.preset }}</th>
                                 </tr>
                                 <tr v-for="(opa, idx) in device.opa" :key="'opa'+idx" :class="{ 'row-changed': isFieldChanged('opa', idx) }">
                                     <td>OPA{{ idx + 1 }}</td>
                                     <td>
-                                        <input v-if="opa.func !== 'o'" type="text" :value="getChannelName('opa', String(idx + 1))" @input="onNameChange('opa', String(idx + 1), $event)" :placeholder="t.config?.namePlaceholder || 'e.g. Gas'" style="width: 120px;" />
+                                        <input v-if="opa.func !== 'o'" type="text" :value="getChannelName('opa', String(idx + 1))" @input="onNameChange('opa', String(idx + 1), $event)" :placeholder="t.config.namePlaceholder" style="width: 120px;" />
                                         <span v-else style="color: #999; font-size: 12px;">-</span>
                                     </td>
                                     <td><input type="checkbox" v-model="opa.active" :disabled="!emontxConnected" /></td>
@@ -377,7 +377,7 @@ Vue.component('config-tab', {
                                     <td><input type="number" v-model="opa.period" :disabled="!emontxConnected || opa.func === 'o'" style="width:80px" /></td>
                                     <td>
                                         <button class="btn btn-sm" @click="applyOpaPreset(idx, 'oem-pulse')" :disabled="!emontxConnected" style="padding: 4px 8px; font-size: 12px;">
-                                            {{ t.config?.oemPulseSensor || 'OEM pulse sensor' }}
+                                            {{ t.config.oemPulseSensor }}
                                         </button>
                                     </td>
                                 </tr>
@@ -408,13 +408,13 @@ Vue.component('config-tab', {
                             <table class="device-info-table">
                                 <tr>
                                     <th>{{ t.config.sensor }}</th>
-                                    <th>{{ t.config?.name || 'Name' }}</th>
+                                    <th>{{ t.config.name }}</th>
                                     <th>{{ t.config.address }}</th>
                                     <th>{{ t.config.temperature }}</th>
                                 </tr>
                                 <tr v-for="(sensor, idx) in device.tempSensors" :key="'temp'+idx">
                                     <td>T{{ idx + 1 }}</td>
-                                    <td><input type="text" :value="getChannelName('temp', sensor.addr)" @input="onNameChange('temp', sensor.addr, $event)" :placeholder="t.config?.namePlaceholder || 'e.g. Kitchen'" style="width: 120px;" /></td>
+                                    <td><input type="text" :value="getChannelName('temp', sensor.addr)" @input="onNameChange('temp', sensor.addr, $event)" :placeholder="t.config.namePlaceholder" style="width: 120px;" /></td>
                                     <td style="font-family: monospace; font-size: 12px;">{{ sensor.addr }}</td>
                                     <td>{{ liveData['T' + (idx + 1)] || '-' }}</td>
                                 </tr>
@@ -474,7 +474,7 @@ Vue.component('config-tab', {
                                         <span v-else>433 MHz</span>
                                         <label v-if="device.rfBand && device.rfBand.includes('433')" style="margin-left: 10px; font-size: 12px;" :class="{ 'field-changed': isFieldChanged('rf433Toggle') }">
                                             <input type="checkbox" v-model="device.rf433High" :disabled="!emontxConnected" style="margin-right: 4px;" />
-                                            {{ t.config?.compatMode || 'Compat. (433.00 MHz)' }}
+                                            {{ t.config.compatMode }}
                                         </label>
                                     </td>
                                     <td :class="{ 'field-changed': isFieldChanged('rfPower') }"><input type="number" min="0" max="31" v-model="device.rfPower" :disabled="!emontxConnected" style="width:60px" /></td>
@@ -502,17 +502,17 @@ Vue.component('config-tab', {
                 </div>
                 <!-- Channel Names Backup -->
                 <div class="card">
-                    <div class="card-header">{{ t.config?.channelNamesBackup || 'Channel Names Backup' }}</div>
+                    <div class="card-header">{{ t.config.channelNamesBackup }}</div>
                     <div class="card-body">
                         <p style="font-size: 13px; color: #666; margin-bottom: 15px;">
-                            {{ t.config?.channelNamesBackupDesc || 'Export or import channel names for backup or migration to a new Home Assistant installation.' }}
+                            {{ t.config.channelNamesBackupDesc }}
                         </p>
                         <div class="button-group">
-                            <button class="btn btn-info" @click="$emit('export-names')" :title="t.tooltips?.btnExportNames || 'Download channel names as JSON file'">
-                                {{ t.buttons?.exportNames || 'Export Names' }}
+                            <button class="btn btn-info" @click="$emit('export-names')" :title="t.tooltips.btnExportNames">
+                                {{ t.buttons.exportNames }}
                             </button>
-                            <label class="btn btn-primary" style="margin: 0; cursor: pointer;" :title="t.tooltips?.btnImportNames || 'Import channel names from JSON file'">
-                                {{ t.buttons?.importNames || 'Import Names' }}
+                            <label class="btn btn-primary" style="margin: 0; cursor: pointer;" :title="t.tooltips.btnImportNames">
+                                {{ t.buttons.importNames }}
                                 <input type="file" accept=".json" @change="handleImportFile" style="display: none;" />
                             </label>
                         </div>
@@ -523,11 +523,11 @@ Vue.component('config-tab', {
 
                 <!-- Action Buttons -->
                 <div class="button-group">
-                    <button class="btn btn-success" @click="$emit('apply-changes')" :disabled="!hasPendingChanges || !emontxConnected || applyProgress" :title="t.tooltips?.btnApplyChanges || 'Send pending changes to device'">
-                        {{ t.buttons?.applyChanges || 'Apply Changes' }} <span v-if="pendingChangesCount > 0">({{ pendingChangesCount }})</span>
+                    <button class="btn btn-success" @click="$emit('apply-changes')" :disabled="!hasPendingChanges || !emontxConnected || applyProgress" :title="t.tooltips.btnApplyChanges">
+                        {{ t.buttons.applyChanges }} <span v-if="pendingChangesCount > 0">({{ pendingChangesCount }})</span>
                     </button>
-                    <button class="btn" @click="$emit('discard-changes')" :disabled="!hasPendingChanges || applyProgress" style="background: #ccc;" :title="t.tooltips?.btnDiscardChanges || 'Discard pending changes'">
-                        {{ t.buttons?.discardChanges || 'Discard' }}
+                    <button class="btn" @click="$emit('discard-changes')" :disabled="!hasPendingChanges || applyProgress" style="background: #ccc;" :title="t.tooltips.btnDiscardChanges">
+                        {{ t.buttons.discardChanges }}
                     </button>
                     <button class="btn btn-warning" @click="$emit('save-config')" :disabled="!changes || !emontxConnected" :title="t.tooltips.btnSave">{{ t.buttons.save }}</button>
                     <button class="btn btn-info" @click="$emit('zero-energy')" :disabled="!emontxConnected" :title="t.tooltips.btnZeroEnergy">{{ t.buttons.zeroEnergy }}</button>

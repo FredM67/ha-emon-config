@@ -189,6 +189,8 @@
         "btnZeroPulse": "Reimposta questo contatore impulsi a zero",
         "btnZeroAll": "Reimposta tutti gli accumulatori energia e impulsi a zero",
         "btnExportNames": "Scarica i nomi dei canali come file JSON",
-        "btnImportNames": "Importa i nomi dei canali da file JSON"
+        "btnImportNames": "Importa i nomi dei canali da file JSON",
+        "btnApplyChanges": "Invia le modifiche in sospeso al dispositivo",
+        "btnDiscardChanges": "Annulla le modifiche in sospeso"
     }
 }

@@ -189,6 +189,8 @@
         "btnZeroPulse": "Reset this pulse counter to zero",
         "btnZeroAll": "Reset all energy and pulse accumulators to zero",
         "btnExportNames": "Download channel names as JSON file",
-        "btnImportNames": "Import channel names from JSON file"
+        "btnImportNames": "Import channel names from JSON file",
+        "btnApplyChanges": "Send pending changes to device",
+        "btnDiscardChanges": "Discard pending changes"
     }
 }

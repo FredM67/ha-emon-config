@@ -189,6 +189,8 @@
         "btnZeroPulse": "Réinitialiser ce compteur d'impulsions à zéro",
         "btnZeroAll": "Réinitialiser tous les accumulateurs à zéro",
         "btnExportNames": "Télécharger les noms en fichier JSON",
-        "btnImportNames": "Importer les noms depuis un fichier JSON"
+        "btnImportNames": "Importer les noms depuis un fichier JSON",
+        "btnApplyChanges": "Envoyer les modifications en attente à l'appareil",
+        "btnDiscardChanges": "Annuler les modifications en attente"
     }
 }
