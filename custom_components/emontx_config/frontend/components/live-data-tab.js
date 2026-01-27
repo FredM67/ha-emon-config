@@ -105,7 +105,7 @@ Vue.component('live-data-tab', {
             };
 
             if (units[group]) {
-                return label + ' in ' + units[group];
+                return label + ' (' + units[group] + ')';
             }
 
             return label;
