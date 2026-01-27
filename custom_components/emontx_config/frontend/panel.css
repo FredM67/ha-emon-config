@@ -161,10 +161,13 @@ body {
 .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
 .btn-warning { background: #ff9800; color: white; }
 .btn-warning:hover { background: #f57c00; }
+.btn-warning:disabled { background: #ccc; cursor: not-allowed; }
 .btn-danger { background: #f44336; color: white; }
 .btn-danger:hover { background: #d32f2f; }
+.btn-danger:disabled { background: #ccc; cursor: not-allowed; }
 .btn-info { background: #2196F3; color: white; }
 .btn-info:hover { background: #1976D2; }
+.btn-info:disabled { background: #ccc; cursor: not-allowed; }
 
 .tabs {
     display: flex;
