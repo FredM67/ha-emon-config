@@ -169,7 +169,7 @@
         var app = new Vue({
             el: '#app',
             data: {
-                integrationVersion: '1.1.0-beta.6',
+                integrationVersion: '1.1.0-beta.7',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -982,8 +982,7 @@
                         if (this.generateYamlAfterApply) {
                             this.generateYamlAfterApply = false;
                             if (failedChanges.length > 0) {
-                                const msg = this.t.yamlModal?.fixErrorsFirst || 'Some changes failed to apply. Please fix the errors before generating YAML.';
-                                alert(msg);
+                                alert(this.t.yamlModal.fixErrorsFirst);
                             } else {
                                 this.generateYaml();
                             }
@@ -1377,8 +1376,7 @@
                 generateYaml() {
                     // Check if there are pending changes that need to be applied first
                     if (this.hasPendingChanges) {
-                        const msg = this.t.yamlModal?.applyFirst || 'You have pending changes. Apply them before generating YAML?';
-                        if (confirm(msg)) {
+                        if (confirm(this.t.yamlModal.applyFirst)) {
                             this.generateYamlAfterApply = true;
                             this.applyAllChanges();
                         }
