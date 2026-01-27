@@ -24,7 +24,9 @@
         "reloadConfig": "Recharger Config",
         "generateYaml": "Générer YAML",
         "applyChanges": "Appliquer",
-        "discardChanges": "Annuler"
+        "discardChanges": "Annuler",
+        "exportNames": "Exporter Noms",
+        "importNames": "Importer Noms"
     },
     "pendingChanges": {
         "title": "Modifications en attente",
@@ -98,7 +100,9 @@
         "noTempSensors": "Aucun capteur de température trouvé. Cliquez sur \"Rechercher\" pour détecter les capteurs DS18B20 connectés.",
         "documentation": "Documentation",
         "name": "Nom",
-        "namePlaceholder": "Optionnel"
+        "namePlaceholder": "Optionnel",
+        "channelNamesBackup": "Sauvegarde des Noms",
+        "channelNamesBackupDesc": "Exporter ou importer les noms de canaux pour sauvegarde ou migration vers une nouvelle installation Home Assistant."
     },
     "terminal": {
         "title": "Moniteur Série",
@@ -181,6 +185,8 @@
         "btnSaveMapping": "Enregistrer les adresses des capteurs de température",
         "btnZeroIndividual": "Réinitialiser cet accumulateur d'énergie à zéro",
         "btnZeroPulse": "Réinitialiser ce compteur d'impulsions à zéro",
-        "btnZeroAll": "Réinitialiser tous les accumulateurs à zéro"
+        "btnZeroAll": "Réinitialiser tous les accumulateurs à zéro",
+        "btnExportNames": "Télécharger les noms en fichier JSON",
+        "btnImportNames": "Importer les noms depuis un fichier JSON"
     }
 }

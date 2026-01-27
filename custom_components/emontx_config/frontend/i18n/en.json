@@ -24,7 +24,9 @@
         "reloadConfig": "Reload Config",
         "generateYaml": "Generate YAML",
         "applyChanges": "Apply Changes",
-        "discardChanges": "Discard"
+        "discardChanges": "Discard",
+        "exportNames": "Export Names",
+        "importNames": "Import Names"
     },
     "pendingChanges": {
         "title": "Pending Changes",
@@ -98,7 +100,9 @@
         "noTempSensors": "No temperature sensors found. Click \"Scan Sensors\" to search for connected DS18B20 sensors.",
         "documentation": "Documentation",
         "name": "Name",
-        "namePlaceholder": "Optional"
+        "namePlaceholder": "Optional",
+        "channelNamesBackup": "Channel Names Backup",
+        "channelNamesBackupDesc": "Export or import channel names for backup or migration to a new Home Assistant installation."
     },
     "terminal": {
         "title": "Serial Monitor",
@@ -181,6 +185,8 @@
         "btnSaveMapping": "Save temperature sensor addresses to device",
         "btnZeroIndividual": "Reset this energy accumulator to zero",
         "btnZeroPulse": "Reset this pulse counter to zero",
-        "btnZeroAll": "Reset all energy and pulse accumulators to zero"
+        "btnZeroAll": "Reset all energy and pulse accumulators to zero",
+        "btnExportNames": "Download channel names as JSON file",
+        "btnImportNames": "Import channel names from JSON file"
     }
 }

@@ -148,6 +148,13 @@ Vue.component('config-tab', {
         },
         onNameChange(type, key, event) {
             this.$emit('update-channel-name', type, key, event.target.value);
+        },
+        handleImportFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                this.$emit('import-names', file);
+                event.target.value = '';  // Reset input so same file can be selected again
+            }
         }
     },
     computed: {
@@ -493,6 +500,25 @@ Vue.component('config-tab', {
                         </div>
                     </div>
                 </div>
+                <!-- Channel Names Backup -->
+                <div class="card">
+                    <div class="card-header">{{ t.config?.channelNamesBackup || 'Channel Names Backup' }}</div>
+                    <div class="card-body">
+                        <p style="font-size: 13px; color: #666; margin-bottom: 15px;">
+                            {{ t.config?.channelNamesBackupDesc || 'Export or import channel names for backup or migration to a new Home Assistant installation.' }}
+                        </p>
+                        <div class="button-group">
+                            <button class="btn btn-info" @click="$emit('export-names')" :title="t.tooltips?.btnExportNames || 'Download channel names as JSON file'">
+                                {{ t.buttons?.exportNames || 'Export Names' }}
+                            </button>
+                            <label class="btn btn-primary" style="margin: 0; cursor: pointer;" :title="t.tooltips?.btnImportNames || 'Import channel names from JSON file'">
+                                {{ t.buttons?.importNames || 'Import Names' }}
+                                <input type="file" accept=".json" @change="handleImportFile" style="display: none;" />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
                 </div><!-- END MISC SUB-TAB -->
 
                 <!-- Action Buttons -->
