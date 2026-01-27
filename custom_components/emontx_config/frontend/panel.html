@@ -142,6 +142,7 @@
             :show="showYamlModal"
             :t="t"
             :yaml="generatedYaml"
+            :device-name="selectedDevice"
             @close="showYamlModal = false"
         ></yaml-modal>
 
@@ -177,7 +178,7 @@
             el: '#app',
             mixins: [ConnectionMixin, DataParserMixin, ConfigCommandsMixin, YamlGeneratorMixin, ChannelNamesMixin],
             data: {
-                integrationVersion: '1.2.1',
+                integrationVersion: '1.2.2',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,

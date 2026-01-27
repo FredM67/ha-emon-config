@@ -295,25 +295,31 @@ Vue.component('yaml-modal', {
     props: {
         show: Boolean,
         t: Object,
-        yaml: String
+        yaml: String,
+        deviceName: String
     },
     methods: {
         copyYaml(event) {
-            navigator.clipboard.writeText(this.yaml).then(() => {
+            const textarea = this.$refs.yamlTextarea;
+            textarea.select();
+            textarea.setSelectionRange(0, 99999); // For mobile
+            try {
+                document.execCommand('copy');
                 const btn = event.target;
                 const originalText = btn.textContent;
                 btn.textContent = this.t.yamlModal.copied;
                 setTimeout(() => { btn.textContent = originalText; }, 1500);
-            }).catch(err => {
+            } catch (err) {
                 console.error('Failed to copy YAML:', err);
-            });
+            }
+            window.getSelection().removeAllRanges();
         },
         saveYaml() {
             const blob = new Blob([this.yaml], { type: 'text/yaml' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'emontx-sensors.yaml';
+            a.download = (this.deviceName || 'emontx') + '-sensors.yaml';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -325,7 +331,7 @@ Vue.component('yaml-modal', {
             <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); max-width: 600px; width: 90%; max-height: 80vh; display: flex; flex-direction: column;">
                 <h3 style="margin-top: 0; color: #9c27b0;">{{ t.yamlModal.title }}</h3>
                 <p style="font-size: 14px; color: #666;">{{ t.yamlModal.description }}</p>
-                <textarea readonly style="flex: 1; min-height: 300px; font-family: monospace; font-size: 12px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; background: #f5f5f5; resize: none;">{{ yaml }}</textarea>
+                <textarea ref="yamlTextarea" readonly style="flex: 1; min-height: 300px; font-family: monospace; font-size: 12px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; background: #f5f5f5; resize: none;">{{ yaml }}</textarea>
                 <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
                     <button class="btn btn-primary" @click="copyYaml($event)" style="padding: 12px 30px; font-size: 16px; background: #9c27b0;">{{ t.yamlModal.copy }}</button>
                     <button class="btn btn-info" @click="saveYaml" style="padding: 12px 30px; font-size: 16px;">{{ t.yamlModal.save || 'Save' }}</button>
