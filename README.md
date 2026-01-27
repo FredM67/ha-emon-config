@@ -40,7 +40,7 @@ A Home Assistant integration that provides a web-based configuration interface f
 ## Requirements
 
 - Home Assistant 2023.1.0 or newer
-- An ESP32 running ESPHome with the [emonTx component](https://github.com/FredM67/esphome) configured
+- An ESP32 running ESPHome with the [emonTx component](https://github.com/esphome/esphome/pull/9027) configured
 - An emonTx device connected to the ESP32 via UART
 
 ## Installation
@@ -64,7 +64,7 @@ A Home Assistant integration that provides a web-based configuration interface f
 
 ### ESPHome Setup
 
-Your ESP32 needs to be configured with the emonTx component from the FredM67 fork. Add this to your ESPHome configuration:
+Your ESP32 needs to be configured with the emonTx component from [PR #9027](https://github.com/esphome/esphome/pull/9027). Add this to your ESPHome configuration:
 
 ```yaml
 external_components:
