@@ -529,7 +529,7 @@ Vue.component('config-tab', {
                     <button class="btn" @click="$emit('discard-changes')" :disabled="!hasPendingChanges || applyProgress" style="background: #ccc;" :title="t.tooltips.btnDiscardChanges">
                         {{ t.buttons.discardChanges }}
                     </button>
-                    <button class="btn btn-warning" @click="$emit('save-config')" :disabled="!changes || !emontxConnected" :title="t.tooltips.btnSave">{{ t.buttons.save }}</button>
+                    <button class="btn btn-warning" @click="$emit('save-config')" :disabled="!hasUnsavedChanges || !emontxConnected" :title="t.tooltips.btnSave">{{ t.buttons.save }}</button>
                     <button class="btn btn-info" @click="$emit('zero-energy')" :disabled="!emontxConnected" :title="t.tooltips.btnZeroEnergy">{{ t.buttons.zeroEnergy }}</button>
                     <button class="btn btn-danger" @click="$emit('reset-defaults')" :disabled="!emontxConnected" :title="t.tooltips.btnResetDefaults">{{ t.buttons.resetDefaults }}</button>
                     <button class="btn btn-primary" @click="$emit('load-config')" :disabled="!emontxConnected" :title="t.tooltips.btnReloadConfig">{{ t.buttons.reloadConfig }}</button>
