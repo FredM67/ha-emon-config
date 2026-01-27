@@ -96,7 +96,9 @@
         "address": "Adresse",
         "temperature": "Temperatur",
         "noTempSensors": "Keine Temperatursensoren gefunden. Klicken Sie auf \"Sensoren Suchen\" um angeschlossene DS18B20 Sensoren zu finden.",
-        "documentation": "Dokumentation"
+        "documentation": "Dokumentation",
+        "name": "Name",
+        "namePlaceholder": "Optional"
     },
     "terminal": {
         "title": "Serieller Monitor",

@@ -9,14 +9,18 @@ import logging
 import os
 from typing import Any
 
-from homeassistant.components import frontend
+from homeassistant.components import frontend, websocket_api
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant, ServiceCall, callback
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.typing import ConfigType
+import voluptuous as vol
 
 from .const import DOMAIN, EVENT_EMONTX_RAW, CONF_ESPHOME_DEVICE
+
+# Key for storing channel names in config entry options
+CONF_CHANNEL_NAMES = "channel_names"
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -26,6 +30,11 @@ PLATFORMS: list[Platform] = []
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Set up the emonPi/Tx Configuration component."""
     hass.data.setdefault(DOMAIN, {})
+
+    # Register WebSocket commands
+    websocket_api.async_register_command(hass, websocket_get_channel_names)
+    websocket_api.async_register_command(hass, websocket_save_channel_names)
+
     return True
 
 
@@ -116,3 +125,60 @@ async def _async_register_panel(hass: HomeAssistant, entry: ConfigEntry) -> None
     )
 
     _LOGGER.info("emonPi/Tx Configuration panel registered")
+
+
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "emontx_config/get_channel_names",
+    }
+)
+@callback
+def websocket_get_channel_names(
+    hass: HomeAssistant,
+    connection: websocket_api.ActiveConnection,
+    msg: dict[str, Any],
+) -> None:
+    """Get channel names from config entry options."""
+    # Find the config entry
+    entries = hass.config_entries.async_entries(DOMAIN)
+    if not entries:
+        connection.send_error(msg["id"], "not_found", "No config entry found")
+        return
+
+    entry = entries[0]
+    channel_names = entry.options.get(CONF_CHANNEL_NAMES, {})
+
+    connection.send_result(msg["id"], {"channel_names": channel_names})
+
+
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "emontx_config/save_channel_names",
+        vol.Required("channel_names"): dict,
+    }
+)
+@websocket_api.async_response
+async def websocket_save_channel_names(
+    hass: HomeAssistant,
+    connection: websocket_api.ActiveConnection,
+    msg: dict[str, Any],
+) -> None:
+    """Save channel names to config entry options."""
+    # Find the config entry
+    entries = hass.config_entries.async_entries(DOMAIN)
+    if not entries:
+        connection.send_error(msg["id"], "not_found", "No config entry found")
+        return
+
+    entry = entries[0]
+    channel_names = msg["channel_names"]
+
+    # Merge with existing options
+    new_options = dict(entry.options)
+    new_options[CONF_CHANNEL_NAMES] = channel_names
+
+    # Update the config entry options
+    hass.config_entries.async_update_entry(entry, options=new_options)
+
+    _LOGGER.debug("Saved channel names: %s", channel_names)
+    connection.send_result(msg["id"], {"success": True})

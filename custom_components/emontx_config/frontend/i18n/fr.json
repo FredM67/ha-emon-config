@@ -96,7 +96,9 @@
         "address": "Adresse",
         "temperature": "Température",
         "noTempSensors": "Aucun capteur de température trouvé. Cliquez sur \"Rechercher\" pour détecter les capteurs DS18B20 connectés.",
-        "documentation": "Documentation"
+        "documentation": "Documentation",
+        "name": "Nom",
+        "namePlaceholder": "Optionnel"
     },
     "terminal": {
         "title": "Moniteur Série",

@@ -70,6 +70,7 @@
             :failed-ct-indices="failedCtIndices"
             :failed-ct-fields="failedCtFields"
             :failed-vcal-indices="failedVcalIndices"
+            :channel-names="channelNames"
             @load-config="loadConfig"
             @save-config="saveConfig"
             @apply-changes="applyAllChanges"
@@ -81,6 +82,7 @@
             @reset-defaults="resetDefaults"
             @generate-yaml="generateYaml"
             @open-bulk-ct="openBulkCtModal"
+            @update-channel-name="updateChannelName"
         ></config-tab>
 
         <!-- Serial Terminal Tab -->
@@ -165,7 +167,7 @@
         var app = new Vue({
             el: '#app',
             data: {
-                integrationVersion: '1.0.25',
+                integrationVersion: '1.1.0',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -241,7 +243,17 @@
                 ws: null,
                 wsMessageId: 1,
                 deviceName: '',
-                servicesRequestId: null
+                servicesRequestId: null,
+                // Channel names per device (stored in HA config entry)
+                // Structure: { "device_name": { ct: {}, voltage: {}, opa: {}, temp: {} }, ... }
+                allChannelNames: {},
+                // Computed channel names for current device
+                channelNames: {
+                    ct: {},
+                    voltage: {},
+                    opa: {},
+                    temp: {}
+                }
             },
             watch: {
                 activeTab(newTab) {
@@ -420,6 +432,7 @@
                     this.emontxConnected = false;
                     this.liveData = {};
                     this.hasUnsavedChanges = false;
+                    this.updateChannelNamesForDevice();
                     this.log(`Switched to device: ${this.selectedDevice}`, 'info');
                     this.getDeviceInfo();
                 },
@@ -437,6 +450,7 @@
                                 this.wsConnected = true;
                                 this.subscribeToEvents();
                                 this.getDeviceInfo();
+                                this.loadChannelNames();
                                 return;
                             }
                         }
@@ -1354,9 +1368,11 @@
                         if (this.device.hardware === 'emonPi3' && this.device.vchannels[i] && !this.device.vchannels[i].active) {
                             continue;
                         }
+                        const vName = this.channelNames.voltage[String(i + 1)];
+                        const defaultVName = numVoltages > 1 ? `Voltage L${i + 1}` : 'Voltage';
                         yaml += `  - platform: emontx\n`;
                         yaml += `    tag_name: "V${i + 1}"\n`;
-                        yaml += `    name: "Voltage${numVoltages > 1 ? ' L' + (i + 1) : ''}"\n`;
+                        yaml += `    name: "${vName || defaultVName}"\n`;
                     }
 
                     for (let i = 0; i < this.device.ichannels.length; i++) {
@@ -1364,18 +1380,78 @@
                         if (this.device.hardware === 'emonPi3' && channel.active === false) {
                             continue;
                         }
+                        const ctName = this.channelNames.ct[String(i + 1)];
+                        const powerName = ctName ? `${ctName} Power` : `Power ${i + 1}`;
+                        const energyName = ctName ? `${ctName} Energy` : `Energy ${i + 1}`;
 
                         yaml += `  - platform: emontx\n`;
                         yaml += `    tag_name: "P${i + 1}"\n`;
-                        yaml += `    name: "Power ${i + 1}"\n`;
+                        yaml += `    name: "${powerName}"\n`;
 
                         yaml += `  - platform: emontx\n`;
                         yaml += `    tag_name: "E${i + 1}"\n`;
-                        yaml += `    name: "Energy ${i + 1}"\n`;
+                        yaml += `    name: "${energyName}"\n`;
                     }
 
                     this.generatedYaml = yaml;
                     this.showYamlModal = true;
+                },
+
+                // Channel names management (per device)
+                async loadChannelNames() {
+                    try {
+                        if (this.hass && this.hass.callWS) {
+                            const result = await this.hass.callWS({ type: 'emontx_config/get_channel_names' });
+                            if (result && result.channel_names) {
+                                this.allChannelNames = result.channel_names;
+                                this.updateChannelNamesForDevice();
+                                console.log('Loaded channel names:', this.allChannelNames);
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Failed to load channel names:', e);
+                    }
+                },
+
+                updateChannelNamesForDevice() {
+                    // Set channelNames for current selected device
+                    const deviceNames = this.allChannelNames[this.selectedDevice] || {};
+                    this.channelNames = {
+                        ct: deviceNames.ct || {},
+                        voltage: deviceNames.voltage || {},
+                        opa: deviceNames.opa || {},
+                        temp: deviceNames.temp || {}
+                    };
+                },
+
+                async saveChannelNames() {
+                    try {
+                        if (this.hass && this.hass.callWS) {
+                            // Update allChannelNames with current device's names
+                            this.$set(this.allChannelNames, this.selectedDevice, JSON.parse(JSON.stringify(this.channelNames)));
+                            await this.hass.callWS({
+                                type: 'emontx_config/save_channel_names',
+                                channel_names: this.allChannelNames
+                            });
+                            console.log('Saved channel names:', this.allChannelNames);
+                        }
+                    } catch (e) {
+                        console.error('Failed to save channel names:', e);
+                    }
+                },
+
+                updateChannelName(type, key, name) {
+                    // Update a single channel name and save
+                    if (!this.channelNames[type]) {
+                        this.$set(this.channelNames, type, {});
+                    }
+                    if (name && name.trim()) {
+                        this.$set(this.channelNames[type], key, name.trim());
+                    } else {
+                        // Remove empty names
+                        this.$delete(this.channelNames[type], key);
+                    }
+                    this.saveChannelNames();
                 },
 
                 // Logging
