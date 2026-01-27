@@ -165,7 +165,7 @@ Vue.component('config-tab', {
     },
     template: `
         <form autocomplete="off" @submit.prevent>
-        <div class="tab-content active">
+        <div class="tab-content active" :style="{ paddingBottom: (hasPendingChanges || applyProgress) ? '80px' : '0' }">
             <!-- Unsaved Changes Warning Banner (for flash save) -->
             <div v-if="hasUnsavedChanges" class="alert alert-danger" style="display: flex; align-items: center; justify-content: space-between;">
                 <span><strong>{{ t.unsavedChanges.title }}</strong> {{ t.unsavedChanges.message }}</span>
