@@ -94,7 +94,8 @@
         "sensor": "Sensor",
         "address": "Address",
         "temperature": "Temperature",
-        "noTempSensors": "No temperature sensors found. Click \"Scan Sensors\" to search for connected DS18B20 sensors."
+        "noTempSensors": "No temperature sensors found. Click \"Scan Sensors\" to search for connected DS18B20 sensors.",
+        "documentation": "Documentation"
     },
     "terminal": {
         "title": "Serial Monitor",

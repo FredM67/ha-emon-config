@@ -222,6 +222,23 @@ body {
 .sub-tab:hover { color: #1976D2; background: rgba(33, 150, 243, 0.1); }
 .sub-tab.active { color: white; background: #2196F3; }
 
+.sub-tab-link {
+    margin-left: auto;
+    padding: 8px 12px;
+    color: #1976D2;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.sub-tab-link:hover {
+    color: #1565C0;
+    background: rgba(33, 150, 243, 0.1);
+    text-decoration: none;
+}
+
 @media (max-width: 600px) {
     .sub-tabs {
         flex-wrap: wrap;

@@ -211,6 +211,9 @@ Vue.component('config-tab', {
                     <div :class="['sub-tab', configSubTab === 'misc' ? 'active' : '']" @click="configSubTab = 'misc'" :title="t.tooltips.subMisc">
                         {{ t.configTabs.misc }}
                     </div>
+                    <a href="https://docs.openenergymonitor.org/" target="_blank" class="sub-tab-link" :title="t.config?.documentation || 'Documentation'">
+                        {{ t.config?.documentation || 'Documentation' }} ↗
+                    </a>
                 </div>
 
                 <!-- CALIBRATION SUB-TAB -->
