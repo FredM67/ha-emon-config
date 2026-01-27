@@ -167,7 +167,7 @@
         var app = new Vue({
             el: '#app',
             data: {
-                integrationVersion: '1.1.0-beta.1',
+                integrationVersion: '1.1.0-beta.2',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -1441,7 +1441,7 @@
                 },
 
                 updateChannelName(type, key, name) {
-                    // Update a single channel name and save
+                    // Update a single channel name immediately (to prevent field clearing on re-render)
                     if (!this.channelNames[type]) {
                         this.$set(this.channelNames, type, {});
                     }
@@ -1451,7 +1451,17 @@
                         // Remove empty names
                         this.$delete(this.channelNames[type], key);
                     }
-                    this.saveChannelNames();
+                    // Debounce the save to avoid excessive API calls while typing
+                    this.debouncedSaveChannelNames();
+                },
+
+                debouncedSaveChannelNames() {
+                    if (this._saveTimeout) {
+                        clearTimeout(this._saveTimeout);
+                    }
+                    this._saveTimeout = setTimeout(() => {
+                        this.saveChannelNames();
+                    }, 500);
                 },
 
                 // Logging

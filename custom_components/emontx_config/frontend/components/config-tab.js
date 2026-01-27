@@ -255,7 +255,7 @@ Vue.component('config-tab', {
                                 <tr v-for="(vchannel, index) in device.vchannels" :key="'v'+index" :class="{ 'row-changed': isFieldChanged('vchannel', index), 'row-error': isVcalFailed(index) }">
                                     <td><input type="checkbox" v-model="vchannel.active" :disabled="!emontxConnected" /></td>
                                     <td>V{{ index + 1 }}</td>
-                                    <td><input type="text" :value="getChannelName('voltage', String(index + 1))" @change="onNameChange('voltage', String(index + 1), $event)" :placeholder="t.config?.namePlaceholder || 'e.g. Main'" style="width: 100px;" /></td>
+                                    <td><input type="text" :value="getChannelName('voltage', String(index + 1))" @input="onNameChange('voltage', String(index + 1), $event)" :placeholder="t.config?.namePlaceholder || 'e.g. Main'" style="width: 100px;" /></td>
                                     <td>
                                         <input type="number" step="0.01" v-model="vchannel.vcal" :disabled="!emontxConnected" :class="{ 'input-error': isVcalFieldError(index, 'vcal') }" />
                                         <span class="unit">%</span>
@@ -299,7 +299,7 @@ Vue.component('config-tab', {
                                         <input type="checkbox" v-model="channel.active" :disabled="!emontxConnected" />
                                     </td>
                                     <td>CT {{ index + 1 }}</td>
-                                    <td><input type="text" :value="getChannelName('ct', String(index + 1))" @change="onNameChange('ct', String(index + 1), $event)" :placeholder="t.config?.namePlaceholder || 'e.g. Solar'" style="width: 100px;" /></td>
+                                    <td><input type="text" :value="getChannelName('ct', String(index + 1))" @input="onNameChange('ct', String(index + 1), $event)" :placeholder="t.config?.namePlaceholder || 'e.g. Solar'" style="width: 100px;" /></td>
                                     <td style="display: flex; align-items: center; gap: 5px;">
                                         <select :value="getCtSelectValue(index)" @change="handleCtTypeChange(index, $event)" :disabled="!emontxConnected" :class="{ 'input-error': isFieldError(index, 'ical') }">
                                             <option v-for="rating in ctsAvailable" :value="rating" :key="rating">{{ rating }}A</option>
@@ -353,7 +353,7 @@ Vue.component('config-tab', {
                                 </tr>
                                 <tr v-for="(opa, idx) in device.opa" :key="'opa'+idx" :class="{ 'row-changed': isFieldChanged('opa', idx) }">
                                     <td>OPA{{ idx + 1 }}</td>
-                                    <td><input type="text" :value="getChannelName('opa', String(idx + 1))" @change="onNameChange('opa', String(idx + 1), $event)" :placeholder="t.config?.namePlaceholder || 'e.g. Gas'" style="width: 80px;" /></td>
+                                    <td><input type="text" :value="getChannelName('opa', String(idx + 1))" @input="onNameChange('opa', String(idx + 1), $event)" :placeholder="t.config?.namePlaceholder || 'e.g. Gas'" style="width: 80px;" /></td>
                                     <td><input type="checkbox" v-model="opa.active" :disabled="!emontxConnected" /></td>
                                     <td>
                                         <select v-model="opa.func" @change="handleOpaFuncChange(idx, $event)" :disabled="!emontxConnected">
@@ -404,7 +404,7 @@ Vue.component('config-tab', {
                                 </tr>
                                 <tr v-for="(sensor, idx) in device.tempSensors" :key="'temp'+idx">
                                     <td>T{{ idx + 1 }}</td>
-                                    <td><input type="text" :value="getChannelName('temp', sensor.addr)" @change="onNameChange('temp', sensor.addr, $event)" :placeholder="t.config?.namePlaceholder || 'e.g. Kitchen'" style="width: 80px;" /></td>
+                                    <td><input type="text" :value="getChannelName('temp', sensor.addr)" @input="onNameChange('temp', sensor.addr, $event)" :placeholder="t.config?.namePlaceholder || 'e.g. Kitchen'" style="width: 80px;" /></td>
                                     <td style="font-family: monospace; font-size: 12px;">{{ sensor.addr }}</td>
                                     <td>{{ liveData['T' + (idx + 1)] || '-' }}</td>
                                 </tr>
