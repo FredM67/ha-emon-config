@@ -169,7 +169,7 @@
         var app = new Vue({
             el: '#app',
             data: {
-                integrationVersion: '1.1.0-beta.5',
+                integrationVersion: '1.1.0-beta.6',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -190,6 +190,7 @@
                 // YAML generator
                 showYamlModal: false,
                 generatedYaml: '',
+                generateYamlAfterApply: false,
                 // Bulk CT settings
                 showBulkCtModal: false,
                 bulkProgress: null,  // { current, total, currentCt, error }
@@ -976,6 +977,17 @@
 
                     setTimeout(() => {
                         this.applyProgress = null;
+
+                        // Check if YAML generation was requested before apply
+                        if (this.generateYamlAfterApply) {
+                            this.generateYamlAfterApply = false;
+                            if (failedChanges.length > 0) {
+                                const msg = this.t.yamlModal?.fixErrorsFirst || 'Some changes failed to apply. Please fix the errors before generating YAML.';
+                                alert(msg);
+                            } else {
+                                this.generateYaml();
+                            }
+                        }
                     }, failedChanges.length > 0 ? 2000 : 500);
                 },
                 markChangeAsApplied(change) {
@@ -1363,6 +1375,16 @@
 
                 // YAML Generator
                 generateYaml() {
+                    // Check if there are pending changes that need to be applied first
+                    if (this.hasPendingChanges) {
+                        const msg = this.t.yamlModal?.applyFirst || 'You have pending changes. Apply them before generating YAML?';
+                        if (confirm(msg)) {
+                            this.generateYamlAfterApply = true;
+                            this.applyAllChanges();
+                        }
+                        return;
+                    }
+
                     let yaml = 'sensor:\n';
 
                     const numVoltages = this.voltageChannelCount;

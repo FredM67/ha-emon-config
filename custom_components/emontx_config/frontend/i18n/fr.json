@@ -38,7 +38,9 @@
         "description": "Copiez ce YAML dans votre configuration ESPHome pour ajouter des capteurs pour les canaux actifs :",
         "copy": "Copier",
         "close": "Fermer",
-        "copied": "Copié !"
+        "copied": "Copié !",
+        "applyFirst": "Vous avez des modifications en attente. Les appliquer avant de générer le YAML ?",
+        "fixErrorsFirst": "Certaines modifications n'ont pas pu être appliquées. Veuillez corriger les erreurs avant de générer le YAML."
     },
     "config": {
         "waiting": "En attente des données de configuration...",

@@ -38,7 +38,9 @@
         "description": "Copy this YAML into your ESPHome configuration to add sensors for active channels:",
         "copy": "Copy to Clipboard",
         "close": "Close",
-        "copied": "Copied!"
+        "copied": "Copied!",
+        "applyFirst": "You have pending changes. Apply them before generating YAML?",
+        "fixErrorsFirst": "Some changes failed to apply. Please fix the errors before generating YAML."
     },
     "config": {
         "waiting": "Waiting for configuration data...",
