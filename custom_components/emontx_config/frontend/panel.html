@@ -167,7 +167,7 @@
         var app = new Vue({
             el: '#app',
             data: {
-                integrationVersion: '1.1.0-beta.3',
+                integrationVersion: '1.1.0-beta.4',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -1394,6 +1394,34 @@
                         yaml += `  - platform: emontx\n`;
                         yaml += `    tag_name: "E${i + 1}"\n`;
                         yaml += `    name: "${energyName}"\n`;
+                    }
+
+                    // OPA channels (pulse sensors)
+                    const pulseLabel = this.t.liveData?.groups?.pulse || 'Pulse';
+                    for (let i = 0; i < this.device.opa.length; i++) {
+                        const opa = this.device.opa[i];
+                        // Only generate for active pulse channels (not OneWire)
+                        if (!opa.active || opa.func === 'o') {
+                            continue;
+                        }
+                        const opaName = this.channelNames.opa[String(i + 1)];
+                        const sensorName = opaName || `${pulseLabel} ${i + 1}`;
+
+                        yaml += `  - platform: emontx\n`;
+                        yaml += `    tag_name: "pulse${i + 1}"\n`;
+                        yaml += `    name: "${sensorName}"\n`;
+                    }
+
+                    // Temperature sensors
+                    const tempLabel = this.t.liveData?.groups?.T || 'Temperature';
+                    for (let i = 0; i < this.device.tempSensors.length; i++) {
+                        const sensor = this.device.tempSensors[i];
+                        const tempName = this.channelNames.temp[sensor.addr];
+                        const sensorName = tempName || `${tempLabel} ${i + 1}`;
+
+                        yaml += `  - platform: emontx\n`;
+                        yaml += `    tag_name: "T${i + 1}"\n`;
+                        yaml += `    name: "${sensorName}"\n`;
                     }
 
                     this.generatedYaml = yaml;

@@ -353,7 +353,10 @@ Vue.component('config-tab', {
                                 </tr>
                                 <tr v-for="(opa, idx) in device.opa" :key="'opa'+idx" :class="{ 'row-changed': isFieldChanged('opa', idx) }">
                                     <td>OPA{{ idx + 1 }}</td>
-                                    <td><input type="text" :value="getChannelName('opa', String(idx + 1))" @input="onNameChange('opa', String(idx + 1), $event)" :placeholder="t.config?.namePlaceholder || 'e.g. Gas'" style="width: 120px;" /></td>
+                                    <td>
+                                        <input v-if="opa.func !== 'o'" type="text" :value="getChannelName('opa', String(idx + 1))" @input="onNameChange('opa', String(idx + 1), $event)" :placeholder="t.config?.namePlaceholder || 'e.g. Gas'" style="width: 120px;" />
+                                        <span v-else style="color: #999; font-size: 12px;">-</span>
+                                    </td>
                                     <td><input type="checkbox" v-model="opa.active" :disabled="!emontxConnected" /></td>
                                     <td>
                                         <select v-model="opa.func" @change="handleOpaFuncChange(idx, $event)" :disabled="!emontxConnected">
