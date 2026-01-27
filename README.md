@@ -16,7 +16,11 @@ A Home Assistant integration that provides a web-based configuration interface f
 ## Features
 
 - **Device Configuration**: Full configuration interface for CT calibration, voltage calibration, radio settings, and more
+- **Friendly Channel Names**: Add custom names to CT, Voltage, OPA, and Temperature channels for easier identification
+  - Names are stored per-device in Home Assistant
+  - Export/Import names as JSON for backup or migration
 - **Multi-device Support**: Switch between multiple emonPi/Tx devices from a dropdown selector
+- **Batch Configuration**: Edit multiple settings and apply them all at once with the floating Apply/Discard bar
 - **Serial Terminal**: Send commands and receive responses from your emonTx device
   - Autoscroll toggle, copy to clipboard, download log, clear terminal
   - Resizable terminal window
@@ -24,9 +28,12 @@ A Home Assistant integration that provides a web-based configuration interface f
 - **Live Data Display**: View real-time power and energy readings from all channels
   - Data grouped by type (Voltage, Power, Energy, Temperature, Pulse)
   - Inactive channels shown with strikethrough indicator
+- **Accumulators Tab**: View and reset individual energy and pulse counters
 - **Zero Energy**: Reset energy counters with confirmation countdown (matching firmware behavior)
 - **Unsaved Changes Warning**: Banner alerts you when device has unsaved changes
 - **YAML Generator**: Generate ESPHome sensor configuration for active channels
+  - Uses friendly names when configured
+  - Supports OPA pulse channels and temperature sensors
 - **Multi-phase Support**: Full support for emonPi3 with 3-phase voltage monitoring
 - **Multi-language**: Supports English, French, German, and Italian
 
@@ -100,22 +107,38 @@ After installation, a new panel called "emonPi/Tx Config" will appear in the Hom
 
 ### Device Config Tab
 
-The main configuration interface with:
+The main configuration interface with three sub-tabs:
 
-- **CT Channels**: Configure calibration (CT Type), phase lead for each current channel
-- **Voltage Channels**: Enable/disable and calibrate voltage inputs (for 3-phase systems)
-- **Radio Settings**: Configure RF module (node ID, group, band, format)
-- **Other Settings**: Pulse input, data logging interval, JSON output format
+#### Energy Sensors
+- **CT Channels**: Configure calibration (CT Type), phase lead, and friendly name for each current channel
+- **Voltage Channels**: Enable/disable, calibrate, and name voltage inputs (for 3-phase systems)
+- **Bulk Configuration**: Apply the same CT type and settings to multiple channels at once
+
+#### Other Sensors
+- **OPA Channels**: Configure OneWire or Pulse input modes with optional pull-up and debounce period
+- **Temperature Sensors**: Scan, list, and save DS18B20 sensor mappings
+- **Channel Names Backup**: Export/Import friendly names as JSON for backup or migration
+
+#### Other Settings
+- **Radio Settings**: Configure RF module (node ID, group, band, power, format)
+- **Datalog Interval**: Set the reporting interval
+- **JSON Output**: Enable/disable JSON serial format
 
 **Buttons:**
-- **Load Config**: Read current configuration from the emonPi/Tx (sends `l` command)
-- **Save**: Save configuration to EEPROM (sends `s` command)
-- **Zero Energy Values**: Reset all energy counters (with 20-second confirmation countdown)
-- **Generate YAML**: Generate ESPHome sensor configuration for active channels
+- **Apply**: Send pending configuration changes to the device
+- **Discard**: Revert to the last applied configuration
+- **Save to Flash**: Save configuration to EEPROM (sends `s` command)
+- **Zero Energy**: Reset all energy counters
+- **Reset Defaults**: Restore factory settings
+- **Reload Config**: Read current configuration from the device
+- **Generate YAML**: Generate ESPHome sensor configuration using friendly names
+
+**Pending Changes Bar:**
+When you modify settings, a floating bar appears at the bottom showing the number of pending changes. Click "Apply" to send them to the device or "Discard" to revert.
 
 **Other features:**
 - **Device selector**: Switch between multiple emonPi/Tx devices (dropdown in status bar)
-- **Unsaved changes warning**: Banner appears when configuration changes haven't been saved
+- **Unsaved changes warning**: Banner appears when configuration changes haven't been saved to flash
 
 ### Serial Terminal Tab
 
@@ -135,6 +158,14 @@ Real-time display of all sensor values received from the emonPi/Tx, grouped by t
 - **Other sensors**: temperature, pulse, message counter (MSG)
 
 Inactive channels are displayed with a strikethrough indicator.
+
+### Accumulators Tab
+
+View and manage energy and pulse accumulators stored on the device:
+- **Energy Accumulators**: View current Wh values for each CT channel
+- **Pulse Accumulators**: View pulse counts for OPA channels configured as pulse inputs
+- **Individual Reset**: Zero individual accumulators with confirmation
+- **Zero All**: Reset all accumulators at once
 
 ## Documentation
 
