@@ -445,10 +445,11 @@ Vue.component('config-tab', {
                                     <td :class="{ 'field-changed': isFieldChanged('rfNode') }"><input type="number" v-model="device.rfNode" :disabled="!emontxConnected" style="width:60px" /></td>
                                     <td :class="{ 'field-changed': isFieldChanged('rfGroup') }"><input type="number" v-model="device.rfGroup" :disabled="!emontxConnected" style="width:60px" /></td>
                                     <td>
-                                        <span>{{ device.rfBand }}</span>
+                                        <span v-if="!device.rfBand || !device.rfBand.includes('433')">{{ device.rfBand }}</span>
+                                        <span v-else>433 MHz</span>
                                         <label v-if="device.rfBand && device.rfBand.includes('433')" style="margin-left: 10px; font-size: 12px;" :class="{ 'field-changed': isFieldChanged('rf433Toggle') }">
                                             <input type="checkbox" v-model="device.rf433High" :disabled="!emontxConnected" style="margin-right: 4px;" />
-                                            433.92
+                                            {{ t.config?.compatMode || 'Compat. (433.00 MHz)' }}
                                         </label>
                                     </td>
                                     <td :class="{ 'field-changed': isFieldChanged('rfPower') }"><input type="number" min="0" max="31" v-model="device.rfPower" :disabled="!emontxConnected" style="width:60px" /></td>

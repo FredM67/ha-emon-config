@@ -68,6 +68,7 @@
         "nodeId": "ID Nodo",
         "group": "Gruppo",
         "frequency": "Frequenza",
+        "compatMode": "Compat. (433.00 MHz)",
         "rfPower": "Potenza",
         "format": "Formato",
         "otherSettings": "Altre Impostazioni",

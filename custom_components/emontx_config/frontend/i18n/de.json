@@ -68,6 +68,7 @@
         "nodeId": "Knoten-ID",
         "group": "Gruppe",
         "frequency": "Frequenz",
+        "compatMode": "Compat. (433.00 MHz)",
         "rfPower": "Leistung",
         "format": "Format",
         "otherSettings": "Weitere Einstellungen",

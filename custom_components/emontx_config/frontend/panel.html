@@ -165,7 +165,7 @@
         var app = new Vue({
             el: '#app',
             data: {
-                integrationVersion: '1.0.25-beta.1',
+                integrationVersion: '1.0.25-beta.2',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -816,10 +816,11 @@
                             else if (key === 'rfBand') {
                                 this.device.rfBand = val;
                                 // Set rf433High based on which 433 MHz variant
-                                if (val.includes('433.92')) {
-                                    this.device.rf433High = true;
-                                } else if (val.includes('433')) {
-                                    this.device.rf433High = false;
+                                // rf433High=false means 433.92 MHz (x0), rf433High=true means 433.00 MHz (x1)
+                                if (val.includes('433.00') || val.includes('433 MHz')) {
+                                    this.device.rf433High = true;  // 433.00 MHz
+                                } else if (val.includes('433.92')) {
+                                    this.device.rf433High = false;  // 433.92 MHz
                                 }
                             }
                             else if (key === 'rfPower') {
@@ -1235,7 +1236,7 @@
                     this.hasUnsavedChanges = true;
                 },
                 setRf433Toggle() {
-                    // x command toggles between 433.06 (x0) and 433.92 (x1) MHz
+                    // x command: x0 = 433.92 MHz, x1 = 433.00 MHz
                     this.writeToStream('x' + (this.device.rf433High ? '1' : '0'));
                     this.changes = true;
                     this.hasUnsavedChanges = true;
