@@ -155,6 +155,7 @@ body {
     font-weight: 500;
     transition: all 0.2s;
 }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .btn-primary { background: #4CAF50; color: white; }
 .btn-primary:hover { background: #45a049; }
