@@ -167,7 +167,7 @@
         var app = new Vue({
             el: '#app',
             data: {
-                integrationVersion: '1.1.0-beta.2',
+                integrationVersion: '1.1.0-beta.3',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -1364,12 +1364,13 @@
                     let yaml = 'sensor:\n';
 
                     const numVoltages = this.voltageChannelCount;
+                    const voltageLabel = this.t.liveData?.groups?.V || 'Voltage';
                     for (let i = 0; i < numVoltages; i++) {
                         if (this.device.hardware === 'emonPi3' && this.device.vchannels[i] && !this.device.vchannels[i].active) {
                             continue;
                         }
                         const vName = this.channelNames.voltage[String(i + 1)];
-                        const defaultVName = numVoltages > 1 ? `Voltage L${i + 1}` : 'Voltage';
+                        const defaultVName = numVoltages > 1 ? `${voltageLabel} L${i + 1}` : voltageLabel;
                         yaml += `  - platform: emontx\n`;
                         yaml += `    tag_name: "V${i + 1}"\n`;
                         yaml += `    name: "${vName || defaultVName}"\n`;
@@ -1381,8 +1382,10 @@
                             continue;
                         }
                         const ctName = this.channelNames.ct[String(i + 1)];
-                        const powerName = ctName ? `${ctName} Power` : `Power ${i + 1}`;
-                        const energyName = ctName ? `${ctName} Energy` : `Energy ${i + 1}`;
+                        const powerLabel = this.t.config?.power || 'Power';
+                        const energyLabel = this.t.config?.energy || 'Energy';
+                        const powerName = ctName ? `${ctName} ${powerLabel}` : `${powerLabel} ${i + 1}`;
+                        const energyName = ctName ? `${ctName} ${energyLabel}` : `${energyLabel} ${i + 1}`;
 
                         yaml += `  - platform: emontx\n`;
                         yaml += `    tag_name: "P${i + 1}"\n`;
