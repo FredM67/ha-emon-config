@@ -318,7 +318,7 @@ Vue.component('config-tab', {
                                                style="width: 60px;" />
                                         <span v-if="getCtSelectValue(index) === 'custom'">A</span>
                                     </td>
-                                    <td><input type="number" step="0.01" v-model.number="channel.ilead" style="width:70px" :disabled="!emontxConnected" :class="{ 'input-error': isFieldError(index, 'ilead') }" class="no-spinner" /></td>
+                                    <td><input type="number" step="0.01" v-model.number="channel.ilead" style="width:70px" :disabled="!emontxConnected" :class="{ 'input-error': isFieldError(index, 'ilead') }" class="no-spinner" /><span class="unit">&deg;</span></td>
                                     <td v-if="device.hardware === 'emonPi3'">
                                         <select v-model="channel.vchan1" :disabled="!emontxConnected" :class="{ 'input-error': isFieldError(index, 'vchan1') }">
                                             <option v-for="v in [1,2,3]" :value="v" :key="v">{{ v }}</option>

@@ -58,7 +58,7 @@ const YamlGeneratorMixin = {
                     continue;
                 }
                 const opaName = this.channelNames.opa[String(i + 1)];
-                const sensorName = opaName || `${pulseLabel} ${i + 1}`;
+                const sensorName = opaName ? `${opaName} ${pulseLabel}` : `${pulseLabel} ${i + 1}`;
 
                 yaml += `  - platform: emontx\n`;
                 yaml += `    tag_name: "pulse${i + 1}"\n`;
