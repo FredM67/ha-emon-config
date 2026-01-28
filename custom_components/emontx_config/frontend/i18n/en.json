@@ -101,7 +101,7 @@
         "address": "Address",
         "temperature": "Temperature",
         "noTempSensors": "No temperature sensors found. Click \"Scan Sensors\" to search for connected DS18B20 sensors.",
-        "documentation": "Documentation",
+        "documentation": "Configuration Documentation",
         "name": "Name",
         "namePlaceholder": "Optional",
         "channelNamesBackup": "Channel Names Backup",
