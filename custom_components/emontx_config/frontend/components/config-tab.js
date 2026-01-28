@@ -298,8 +298,6 @@ Vue.component('config-tab', {
                                     <th>{{ t.config.phase }}</th>
                                     <th v-if="device.hardware === 'emonPi3'">{{ t.config.vChan1 }}</th>
                                     <th v-if="device.hardware === 'emonPi3'">{{ t.config.vChan2 }}</th>
-                                    <th>{{ t.config.power }}</th>
-                                    <th>{{ t.config.energy }}</th>
                                 </tr>
                                 <tr v-for="(channel, index) in device.ichannels" :key="'i'+index" :class="{ 'row-changed': isFieldChanged('ichannel', index), 'row-error': isCtFailed(index) }">
                                     <td v-if="device.hardware === 'emonPi3'">
@@ -331,8 +329,6 @@ Vue.component('config-tab', {
                                             <option v-for="v in [1,2,3]" :value="v" :key="v">{{ v }}</option>
                                         </select>
                                     </td>
-                                    <td>{{ channel.power }}</td>
-                                    <td>{{ channel.energy }}</td>
                                 </tr>
                             </table>
                         </div>
@@ -530,7 +526,6 @@ Vue.component('config-tab', {
                         {{ t.buttons.discardChanges }}
                     </button>
                     <button class="btn btn-warning" @click="$emit('save-config')" :disabled="!hasUnsavedChanges || !emontxConnected" :title="t.tooltips.btnSave">{{ t.buttons.save }}</button>
-                    <button class="btn btn-info" @click="$emit('zero-energy')" :disabled="!emontxConnected" :title="t.tooltips.btnZeroEnergy">{{ t.buttons.zeroEnergy }}</button>
                     <button class="btn btn-danger" @click="$emit('reset-defaults')" :disabled="!emontxConnected" :title="t.tooltips.btnResetDefaults">{{ t.buttons.resetDefaults }}</button>
                     <button class="btn btn-primary" @click="$emit('load-config')" :disabled="!emontxConnected" :title="t.tooltips.btnReloadConfig">{{ t.buttons.reloadConfig }}</button>
                     <button class="btn btn-primary" @click="$emit('generate-yaml')" :disabled="!configReceived" style="background: #9c27b0;" :title="t.tooltips.btnGenerateYaml">{{ t.buttons.generateYaml }}</button>

@@ -9,7 +9,7 @@
         "config": "Configuration",
         "terminal": "Terminal Série",
         "liveData": "Données en Direct",
-        "accumulators": "Accumulateurs"
+        "accumulators": "RAZ Accumulateurs"
     },
     "configTabs": {
         "calibration": "Capteurs d'Énergie",
@@ -90,7 +90,7 @@
         "pulseBoth": "Impulsion - Les deux",
         "pullUp": "Pull-up",
         "period": "Période (ms)",
-        "preset": "Préréglage",
+        "preset": "Choisir un préréglage",
         "oemPulseSensor": "Capteur impulsion OEM",
         "tempSensors": "Capteurs de Température",
         "tempSensorsDesc": "Capteurs de température DS18B20 OneWire connectés aux canaux OPA configurés en OneWire.",

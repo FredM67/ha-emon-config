@@ -434,6 +434,11 @@ input[type="number"].no-spinner {
     color: #999;
 }
 
+.config-item .friendly-name {
+    font-weight: 500;
+    color: #4CAF50;
+}
+
 .inactive-row {
     background-color: #ffebee;
 }

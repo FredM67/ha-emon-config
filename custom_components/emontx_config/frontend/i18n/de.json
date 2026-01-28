@@ -9,7 +9,7 @@
         "config": "Gerätekonfiguration",
         "terminal": "Serielles Terminal",
         "liveData": "Live-Daten",
-        "accumulators": "Akkumulatoren"
+        "accumulators": "Akkumulatoren Nullen"
     },
     "configTabs": {
         "calibration": "Energiesensoren",
@@ -90,7 +90,7 @@
         "pulseBoth": "Impuls - Beide",
         "pullUp": "Pull-up",
         "period": "Periode (ms)",
-        "preset": "Voreinstellung",
+        "preset": "Voreinstellung wählen",
         "oemPulseSensor": "OEM-Impulssensor",
         "tempSensors": "Temperatursensoren",
         "tempSensorsDesc": "DS18B20 OneWire Temperatursensoren, die an OPA-Kanäle angeschlossen sind, die als OneWire konfiguriert sind.",

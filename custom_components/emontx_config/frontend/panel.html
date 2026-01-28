@@ -106,6 +106,7 @@
             :live-data="liveData"
             :has-unsaved-changes="hasUnsavedChanges"
             :config-received="configReceived"
+            :channel-names="channelNames"
             @save-config="saveConfig"
         ></live-data-tab>
 
@@ -117,6 +118,7 @@
             :live-data="liveData"
             :emontx-connected="emontxConnected"
             :has-unsaved-changes="hasUnsavedChanges"
+            :channel-names="channelNames"
             @save-config="saveConfig"
             @zero-energy="zeroEnergy"
             @show-individual-zero="showIndividualZeroConfirm"

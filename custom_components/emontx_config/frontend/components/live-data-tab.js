@@ -8,7 +8,8 @@ Vue.component('live-data-tab', {
         device: Object,
         liveData: Object,
         hasUnsavedChanges: Boolean,
-        configReceived: Boolean
+        configReceived: Boolean,
+        channelNames: Object
     },
     computed: {
         groupedLiveData() {
@@ -154,6 +155,40 @@ Vue.component('live-data-tab', {
                 return num.toFixed(1) + ' °C';
             }
             return value;
+        },
+        getFriendlyName(key) {
+            // Get friendly name for a channel key
+            if (!this.channelNames) return null;
+
+            // Voltage channels: V1, V2, V3
+            const vMatch = key.match(/^V(\d+)$/);
+            if (vMatch) {
+                return this.channelNames.voltage && this.channelNames.voltage[vMatch[1]];
+            }
+
+            // Power/Energy channels: P1, E1, etc. -> use CT names
+            const peMatch = key.match(/^[PE](\d+)$/);
+            if (peMatch) {
+                return this.channelNames.ct && this.channelNames.ct[peMatch[1]];
+            }
+
+            // Temperature channels: T1, T2, etc.
+            const tMatch = key.match(/^T(\d+)$/);
+            if (tMatch && this.device.tempSensors) {
+                const idx = parseInt(tMatch[1]) - 1;
+                if (idx >= 0 && idx < this.device.tempSensors.length) {
+                    const addr = this.device.tempSensors[idx].addr;
+                    return this.channelNames.temp && this.channelNames.temp[addr];
+                }
+            }
+
+            // Pulse channels: pulse1, pulse2, etc.
+            const pulseMatch = key.match(/^pulse(\d+)$/);
+            if (pulseMatch) {
+                return this.channelNames.opa && this.channelNames.opa[pulseMatch[1]];
+            }
+
+            return null;
         }
     },
     template: `
@@ -175,7 +210,7 @@ Vue.component('live-data-tab', {
                             <h4 style="margin: 0 0 8px 0; color: #666; font-size: 14px;">{{ getGroupLabel(group) }}</h4>
                             <div class="config-grid">
                                 <div :class="['config-item', isChannelInactive(key) ? 'inactive' : '']" v-for="(value, key) in items" :key="key">
-                                    <label>{{ key }}</label>
+                                    <label>{{ key }}<span v-if="getFriendlyName(key)" class="friendly-name"> - {{ getFriendlyName(key) }}</span></label>
                                     <div class="value">{{ value }}</div>
                                 </div>
                             </div>
