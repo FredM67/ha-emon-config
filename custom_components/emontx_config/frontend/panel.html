@@ -194,13 +194,14 @@
     <script src="/emontx_config_static/mixins/config-commands.js"></script>
     <script src="/emontx_config_static/mixins/yaml-generator.js"></script>
     <script src="/emontx_config_static/mixins/channel-names.js"></script>
+    <script src="/emontx_config_static/mixins/firmware-update.js"></script>
 
     <script>
         var app = new Vue({
             el: '#app',
-            mixins: [ConnectionMixin, DataParserMixin, ConfigCommandsMixin, YamlGeneratorMixin, ChannelNamesMixin],
+            mixins: [ConnectionMixin, DataParserMixin, ConfigCommandsMixin, YamlGeneratorMixin, ChannelNamesMixin, FirmwareUpdateMixin],
             data: {
-                integrationVersion: '1.2.6',
+                integrationVersion: '1.2.7',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,

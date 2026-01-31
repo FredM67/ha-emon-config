@@ -108,10 +108,11 @@ Mixins extract reusable logic from the main Vue instance:
 | File | Description |
 |------|-------------|
 | `connection.js` | WebSocket connection to Home Assistant, event handling |
-| `data-parser.js` | Parsing device responses (config data, live data), firmware update checking |
+| `data-parser.js` | Parsing device responses (config data, live data) |
 | `config-commands.js` | Methods for sending configuration commands to device |
 | `yaml-generator.js` | ESPHome YAML configuration generation |
 | `channel-names.js` | Channel name management (load, save, export, import) |
+| `firmware-update.js` | Firmware update checking from GitHub releases |
 
 ### Internationalization (`i18n/`)
 
