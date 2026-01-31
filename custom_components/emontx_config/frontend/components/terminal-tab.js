@@ -5,6 +5,7 @@
 Vue.component('terminal-tab', {
     props: {
         t: Object,
+        lang: { type: String, default: 'en' },
         emontxConnected: Boolean,
         hasUnsavedChanges: Boolean
     },
@@ -109,7 +110,7 @@ Vue.component('terminal-tab', {
         log(message, type = '') {
             const terminal = document.getElementById('terminal');
             if (terminal) {
-                const time = new Date().toLocaleTimeString();
+                const time = new Date().toLocaleTimeString(this.lang || 'en');
                 const line = document.createElement('div');
                 line.className = type;
                 line.textContent = `[${time}] ${message}`;
