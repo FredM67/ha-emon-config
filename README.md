@@ -35,6 +35,10 @@ A Home Assistant integration that provides a web-based configuration interface f
   - Uses friendly names when configured
   - Supports OPA pulse channels and temperature sensors
 - **Multi-phase Support**: Full support for emonPi3 with 3-phase voltage monitoring
+- **Firmware Update Notification**: Checks for firmware updates from GitHub (emonPi3/emonTx6 only)
+  - Configurable check frequency (Never, Daily, Weekly, Monthly)
+  - Blinking badge when update is available
+- **RF Power Warning**: Safety warning when setting RF power to high levels (7 dBm+)
 - **Multi-language**: Supports English, French, German, and Italian
 
 ## Requirements
@@ -121,8 +125,10 @@ The main configuration interface with three sub-tabs:
 
 #### Other Settings
 - **Radio Settings**: Configure RF module (node ID, group, band, power, format)
+  - Warning displayed when setting RF power to high levels (7 dBm+)
 - **Datalog Interval**: Set the reporting interval
 - **JSON Output**: Enable/disable JSON serial format
+- **Firmware Update Check** (emonPi3 only): Configure automatic update checking frequency and manually check for updates
 
 **Buttons:**
 - **Apply**: Send pending configuration changes to the device

@@ -99,7 +99,7 @@ The frontend is a Vue.js 2.x application loaded in an iframe. It communicates wi
 | `terminal-tab.js` | Serial terminal for direct command input/output |
 | `live-data-tab.js` | Real-time display of sensor values |
 | `accumulators-tab.js` | Energy and pulse accumulator management |
-| `modals.js` | Modal dialogs (zero confirmation, bulk CT settings, YAML generator) |
+| `modals.js` | Modal dialogs (zero confirmation, RF power warning, bulk CT settings, YAML generator) |
 
 ### Mixins (`mixins/`)
 
@@ -108,7 +108,7 @@ Mixins extract reusable logic from the main Vue instance:
 | File | Description |
 |------|-------------|
 | `connection.js` | WebSocket connection to Home Assistant, event handling |
-| `data-parser.js` | Parsing device responses (config data, live data) |
+| `data-parser.js` | Parsing device responses (config data, live data), firmware update checking |
 | `config-commands.js` | Methods for sending configuration commands to device |
 | `yaml-generator.js` | ESPHome YAML configuration generation |
 | `channel-names.js` | Channel name management (load, save, export, import) |
