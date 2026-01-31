@@ -32,6 +32,13 @@ const ConfigCommandsMixin = {
             this.failedCtFields = [];
             this.failedVcalIndices = [];
             this.writeToStream('l');
+
+            // Update originalDevice after config is fully received to clear pending changes
+            setTimeout(() => {
+                if (this.configReceived) {
+                    this.originalDevice = JSON.parse(JSON.stringify(this.device));
+                }
+            }, 1000);
         },
 
         async applyAllChanges() {
