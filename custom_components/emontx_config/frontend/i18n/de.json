@@ -52,6 +52,7 @@
         "hardware": "Hardware",
         "hardwareRev": "Revision",
         "version": "Version",
+        "updateAvailable": "Update verfügbar!",
         "voltageLabel": "Spannung",
         "library": "Bibliothek",
         "voltageCalibration": "Spannungskalibrierung",
@@ -77,6 +78,15 @@
         "rfPower": "Leistung",
         "format": "Format",
         "otherSettings": "Weitere Einstellungen",
+        "firmwareUpdate": "Firmware-Update",
+        "updateCheckFrequency": "Prüfhäufigkeit",
+        "updateFreqNever": "Nie",
+        "updateFreqDaily": "Täglich",
+        "updateFreqWeekly": "Wöchentlich",
+        "updateFreqMonthly": "Monatlich",
+        "checkNow": "Jetzt prüfen",
+        "checking": "Prüfe...",
+        "upToDate": "Aktuell",
         "pulseSettings": "Impulseinstellungen",
         "pulseInput": "Impulseingang",
         "pulsePeriod": "Impulsperiode",
@@ -134,6 +144,14 @@
         "message": "Sind Sie sicher, dass Sie alle Energiezähler zurücksetzen möchten?",
         "warning": "Diese Aktion kann nicht rückgängig gemacht werden.",
         "confirm": "Ja, Nullstellen",
+        "cancel": "Abbrechen"
+    },
+    "rfPowerWarning": {
+        "title": "Warnung: Hohe RF-Leistung",
+        "message": "Sie stellen die RF-Leistung auf einen hohen Wert ein",
+        "antennaWarning": "Stellen Sie sicher, dass eine Antenne angeschlossen und für diese Leistungsstufe geeignet ist (7 dBm+).",
+        "damageWarning": "Der Betrieb mit hoher Leistung ohne geeignete Antenne kann das RF-Modul beschädigen!",
+        "confirm": "Fortfahren",
         "cancel": "Abbrechen"
     },
     "unsavedChanges": {

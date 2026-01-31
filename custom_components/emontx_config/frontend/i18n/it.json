@@ -52,6 +52,7 @@
         "hardware": "Hardware",
         "hardwareRev": "Revisione",
         "version": "Versione",
+        "updateAvailable": "Aggiornamento disponibile!",
         "voltageLabel": "Tensione",
         "library": "Libreria",
         "voltageCalibration": "Calibrazione Tensione",
@@ -77,6 +78,15 @@
         "rfPower": "Potenza",
         "format": "Formato",
         "otherSettings": "Altre Impostazioni",
+        "firmwareUpdate": "Aggiornamento Firmware",
+        "updateCheckFrequency": "Frequenza controllo",
+        "updateFreqNever": "Mai",
+        "updateFreqDaily": "Giornaliero",
+        "updateFreqWeekly": "Settimanale",
+        "updateFreqMonthly": "Mensile",
+        "checkNow": "Controlla ora",
+        "checking": "Controllo...",
+        "upToDate": "Aggiornato",
         "pulseSettings": "Impostazioni Impulsi",
         "pulseInput": "Ingresso Impulsi",
         "pulsePeriod": "Periodo Impulsi",
@@ -134,6 +144,14 @@
         "message": "Sei sicuro di voler azzerare tutti i contatori di energia?",
         "warning": "Questa azione non può essere annullata.",
         "confirm": "Sì, Azzera Contatori",
+        "cancel": "Annulla"
+    },
+    "rfPowerWarning": {
+        "title": "Avviso Potenza RF Elevata",
+        "message": "Stai impostando la potenza RF a un livello elevato",
+        "antennaWarning": "Assicurati che sia collegata un'antenna adatta a questo livello di potenza (7 dBm+).",
+        "damageWarning": "Operare ad alta potenza senza un'antenna adeguata può danneggiare il modulo RF!",
+        "confirm": "Continua",
         "cancel": "Annulla"
     },
     "unsavedChanges": {

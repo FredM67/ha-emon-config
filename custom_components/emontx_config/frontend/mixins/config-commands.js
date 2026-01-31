@@ -38,6 +38,16 @@ const ConfigCommandsMixin = {
             const changes = this.pendingChangesList;
             if (changes.length === 0) return;
 
+            // Check for high RF power setting (>= 25 = 7dBm+)
+            const hasHighRfPower = changes.some(c => c.type === 'rfPower') && this.device.rfPower >= 25;
+            if (hasHighRfPower && !this.rfPowerWarningConfirmed) {
+                this.showRfPowerWarning = true;
+                return;
+            }
+
+            // Clear the confirmation flag for next time
+            this.rfPowerWarningConfirmed = false;
+
             // Clear previous error highlighting
             this.failedCtIndices = [];
             this.failedCtFields = [];
@@ -508,6 +518,16 @@ const ConfigCommandsMixin = {
 
         cancelZero() {
             this.showZeroConfirm = false;
+        },
+
+        confirmRfPower() {
+            this.showRfPowerWarning = false;
+            this.rfPowerWarningConfirmed = true;
+            this.applyAllChanges();
+        },
+
+        cancelRfPower() {
+            this.showRfPowerWarning = false;
         },
 
         showIndividualZeroConfirm(type, channel) {

@@ -620,3 +620,34 @@ input.input-error.no-spinner {
         justify-content: center;
     }
 }
+
+/* Firmware update badge */
+.firmware-update-badge {
+    margin-left: 12px;
+    padding: 3px 10px;
+    background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 12px;
+    text-decoration: none;
+    animation: pulse-update 1.5s ease-in-out infinite;
+    box-shadow: 0 2px 6px rgba(76, 175, 80, 0.4);
+}
+
+.firmware-update-badge:hover {
+    background: linear-gradient(135deg, #66BB6A 0%, #388E3C 100%);
+    text-decoration: none;
+    color: white;
+}
+
+@keyframes pulse-update {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+}

@@ -52,6 +52,7 @@
         "hardware": "Hardware",
         "hardwareRev": "Revision",
         "version": "Version",
+        "updateAvailable": "Update available!",
         "voltageLabel": "Voltage",
         "library": "Library",
         "voltageCalibration": "Voltage Calibration",
@@ -77,6 +78,15 @@
         "rfPower": "Power",
         "format": "Format",
         "otherSettings": "Other Settings",
+        "firmwareUpdate": "Firmware Update",
+        "updateCheckFrequency": "Check frequency",
+        "updateFreqNever": "Never",
+        "updateFreqDaily": "Daily",
+        "updateFreqWeekly": "Weekly",
+        "updateFreqMonthly": "Monthly",
+        "checkNow": "Check now",
+        "checking": "Checking...",
+        "upToDate": "Up to date",
         "pulseSettings": "Pulse Settings",
         "pulseInput": "Pulse Input",
         "pulsePeriod": "Pulse Period",
@@ -134,6 +144,14 @@
         "message": "Are you sure you want to zero all energy counters?",
         "warning": "This action cannot be undone.",
         "confirm": "Yes, Zero Counters",
+        "cancel": "Cancel"
+    },
+    "rfPowerWarning": {
+        "title": "High RF Power Warning",
+        "message": "You are setting RF power to a high level",
+        "antennaWarning": "Ensure that an antenna is connected and suitable for this power level (7 dBm+).",
+        "damageWarning": "Operating at high power without a proper antenna may damage the RF module!",
+        "confirm": "Continue",
         "cancel": "Cancel"
     },
     "unsavedChanges": {

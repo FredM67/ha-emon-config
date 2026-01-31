@@ -21,7 +21,11 @@ Vue.component('config-tab', {
         failedCtIndices: { type: Array, default: () => [] },
         failedCtFields: { type: Array, default: () => [] },
         failedVcalIndices: { type: Array, default: () => [] },
-        channelNames: { type: Object, default: () => ({ ct: {}, voltage: {}, opa: {}, temp: {} }) }
+        channelNames: { type: Object, default: () => ({ ct: {}, voltage: {}, opa: {}, temp: {} }) },
+        firmwareCheckFrequency: { type: String, default: 'weekly' },
+        firmwareUpdateAvailable: { type: Boolean, default: false },
+        latestFirmwareVersion: { type: String, default: null },
+        checkingFirmware: { type: Boolean, default: false }
     },
     data() {
         return {
@@ -493,6 +497,32 @@ Vue.component('config-tab', {
                         <div class="form-group" :class="{ 'field-changed': isFieldChanged('json') }">
                             <label>{{ t.config.jsonSerialFormat }}</label>
                             <input type="checkbox" v-model="device.json" :true-value="1" :false-value="0" :disabled="!emontxConnected" />
+                        </div>
+                    </div>
+                </div>
+                <!-- Firmware Update Check (only for emonPi3) -->
+                <div class="card" v-if="device.hardware === 'emonPi3'">
+                    <div class="card-header">{{ t.config.firmwareUpdate }}</div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>{{ t.config.updateCheckFrequency }}</label>
+                            <select v-model="firmwareCheckFrequency" @change="$emit('update-firmware-frequency', firmwareCheckFrequency)" style="width: 120px;">
+                                <option value="never">{{ t.config.updateFreqNever }}</option>
+                                <option value="daily">{{ t.config.updateFreqDaily }}</option>
+                                <option value="weekly">{{ t.config.updateFreqWeekly }}</option>
+                                <option value="monthly">{{ t.config.updateFreqMonthly }}</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="display: flex; align-items: center; gap: 15px;">
+                            <button class="btn btn-info" @click="$emit('check-firmware-now')" :disabled="checkingFirmware">
+                                {{ checkingFirmware ? t.config.checking : t.config.checkNow }}
+                            </button>
+                            <span v-if="firmwareUpdateAvailable" style="color: #4CAF50; font-weight: bold;">
+                                {{ t.config.updateAvailable }} ({{ latestFirmwareVersion }})
+                            </span>
+                            <span v-else-if="latestFirmwareVersion" style="color: #666;">
+                                {{ t.config.upToDate }}
+                            </span>
                         </div>
                     </div>
                 </div>

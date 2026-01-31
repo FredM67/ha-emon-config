@@ -34,6 +34,12 @@
             <div class="status-item" v-if="configReceived" style="font-size: 13px;">
                 <span>{{ t.config.hardware }}: <strong>{{ device.hardware || '-' }}</strong></span>
                 <span style="margin-left: 12px;">{{ t.config.version }}: <strong>{{ device.firmware_version || '-' }}</strong></span>
+                <a v-if="firmwareUpdateAvailable"
+                   href="https://github.com/openenergymonitor/emon32-fw/releases"
+                   target="_blank"
+                   class="firmware-update-badge">
+                    {{ t.config.updateAvailable }}
+                </a>
                 <span style="margin-left: 12px;" v-if="device.voltage">{{ t.config.voltageLabel }}: <strong>{{ device.voltage }}</strong></span>
             </div>
             <div class="status-item" style="margin-left: auto;">
@@ -71,11 +77,17 @@
             :failed-ct-fields="failedCtFields"
             :failed-vcal-indices="failedVcalIndices"
             :channel-names="channelNames"
+            :firmware-check-frequency="firmwareCheckFrequency"
+            :firmware-update-available="firmwareUpdateAvailable"
+            :latest-firmware-version="latestFirmwareVersion"
+            :checking-firmware="checkingFirmware"
             @load-config="loadConfig"
             @save-config="saveConfig"
             @apply-changes="applyAllChanges"
             @discard-changes="discardChanges"
             @scan-temp-sensors="scanTempSensors"
+            @update-firmware-frequency="updateFirmwareFrequency"
+            @check-firmware-now="checkFirmwareNow"
             @list-temp-sensors="listTempSensors"
             @save-temp-mapping="saveTempMapping"
             @zero-energy="zeroEnergy"
@@ -140,6 +152,14 @@
             @cancel="cancelZero"
         ></zero-confirm-modal>
 
+        <rf-power-warning-modal
+            :show="showRfPowerWarning"
+            :t="t"
+            :power="device.rfPower"
+            @confirm="confirmRfPower"
+            @cancel="cancelRfPower"
+        ></rf-power-warning-modal>
+
         <yaml-modal
             :show="showYamlModal"
             :t="t"
@@ -180,7 +200,7 @@
             el: '#app',
             mixins: [ConnectionMixin, DataParserMixin, ConfigCommandsMixin, YamlGeneratorMixin, ChannelNamesMixin],
             data: {
-                integrationVersion: '1.2.3',
+                integrationVersion: '1.2.4-beta.1',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -195,6 +215,9 @@
                 availableDevices: [],
                 // Zero energy confirmation
                 showZeroConfirm: false,
+                // RF power warning
+                showRfPowerWarning: false,
+                rfPowerWarningConfirmed: false,
                 // Individual zero confirmation
                 showIndividualZeroModal: false,
                 individualZeroTarget: { type: '', channel: 0 },
@@ -215,6 +238,11 @@
                 // Batch apply mode
                 originalDevice: null,
                 applyProgress: null,  // { current, total, currentItem }
+                // Firmware update check
+                latestFirmwareVersion: null,
+                firmwareUpdateAvailable: false,
+                firmwareCheckFrequency: 'weekly',
+                checkingFirmware: false,
                 // i18n
                 lang: 'en',
                 translations: {},
@@ -358,6 +386,7 @@
                 this.populateChannels(6);
                 this.discoverDevices();
                 this.initHassConnection();
+                this.loadFirmwareCheckFrequency();
             },
             methods: {
                 // Language detection and translation loading

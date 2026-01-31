@@ -57,6 +57,29 @@ Vue.component('zero-confirm-modal', {
     `
 });
 
+// RF Power Warning Modal
+Vue.component('rf-power-warning-modal', {
+    props: {
+        show: Boolean,
+        t: Object,
+        power: Number
+    },
+    template: `
+        <div v-if="show" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+            <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); max-width: 450px; text-align: center;">
+                <h3 style="margin-top: 0; color: #ff9800;">⚠️ {{ t.rfPowerWarning.title }}</h3>
+                <p style="font-size: 16px; margin: 20px 0;">{{ t.rfPowerWarning.message }} ({{ power }}).</p>
+                <p style="font-size: 14px; color: #666; margin-bottom: 10px;">{{ t.rfPowerWarning.antennaWarning }}</p>
+                <p style="font-size: 14px; color: #d32f2f; font-weight: bold; margin-bottom: 20px;">{{ t.rfPowerWarning.damageWarning }}</p>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button class="btn btn-warning" @click="$emit('confirm')" style="padding: 12px 30px; font-size: 16px;">{{ t.rfPowerWarning.confirm }}</button>
+                    <button class="btn" @click="$emit('cancel')" style="padding: 12px 30px; font-size: 16px; background: #ccc;">{{ t.rfPowerWarning.cancel }}</button>
+                </div>
+            </div>
+        </div>
+    `
+});
+
 // Bulk CT Settings Modal
 Vue.component('bulk-ct-modal', {
     props: {
