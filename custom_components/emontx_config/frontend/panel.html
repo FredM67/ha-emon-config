@@ -33,6 +33,7 @@
             </div>
             <div class="status-item" v-if="configReceived" style="font-size: 13px;">
                 <span>{{ t.config.hardware }}: <strong>{{ device.hardware || '-' }}</strong></span>
+                <span style="margin-left: 12px;">{{ t.config.hardwareRev }}: <strong>{{ device.hardware_rev || '-' }}</strong></span>
                 <span style="margin-left: 12px;">{{ t.config.version }}: <strong>{{ device.firmware_version || '-' }}</strong></span>
                 <a v-if="firmwareUpdateAvailable"
                    href="https://github.com/openenergymonitor/emon32-fw/releases"
@@ -202,7 +203,7 @@
             el: '#app',
             mixins: [ConnectionMixin, DataParserMixin, ConfigCommandsMixin, YamlGeneratorMixin, ChannelNamesMixin, FirmwareUpdateMixin],
             data: {
-                integrationVersion: '1.2.8',
+                integrationVersion: '1.2.9',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
