@@ -34,7 +34,7 @@
             <div class="status-item" v-if="configReceived" style="font-size: 13px;">
                 <span>{{ t.config.hardware }}: <strong>{{ device.hardware || '-' }}</strong></span>
                 <span style="margin-left: 12px;">{{ t.config.hardwareRev }}: <strong>{{ device.hardware_rev || '-' }}</strong></span>
-                <span style="margin-left: 12px;">{{ t.config.version }}: <strong>{{ device.firmware_version || '-' }}</strong></span>
+                <span style="margin-left: 12px;">{{ t.config.version }}: <strong>{{ device.firmware_version || '-' }}<template v-if="device.firmware_commit"> ({{ device.firmware_commit }})</template></strong></span>
                 <a v-if="firmwareUpdateAvailable"
                    href="https://github.com/openenergymonitor/emon32-fw/releases"
                    target="_blank"
@@ -254,6 +254,7 @@
                 device: {
                     firmware: '',
                     firmware_version: '',
+                    firmware_commit: '',
                     hardware: '',
                     hardware_rev: '',
                     voltage: '',

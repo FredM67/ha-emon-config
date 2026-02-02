@@ -6,8 +6,13 @@ const DataParserMixin = {
     methods: {
         // Data handling
         handleEmontxData(data) {
-            if (data.device_id && data.device_id !== this.selectedDevice) {
-                return;
+            // Normalize device IDs: ESPHome uses hyphens in device_id but underscores in service names
+            if (data.device_id) {
+                const normalizedEventDevice = data.device_id.replace(/_/g, '-');
+                const normalizedSelectedDevice = this.selectedDevice.replace(/_/g, '-');
+                if (normalizedEventDevice !== normalizedSelectedDevice) {
+                    return;
+                }
             }
 
             let line = '';
@@ -241,6 +246,9 @@ const DataParserMixin = {
                         if (this.device.hardware === 'emonPi3') {
                             this.checkFirmwareUpdate();
                         }
+                    }
+                    else if (key === 'commit') {
+                        this.device.firmware_commit = val;
                     }
                     else if (key === 'voltage') {
                         this.device.voltage = val;
