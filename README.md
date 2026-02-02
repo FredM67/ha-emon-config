@@ -44,7 +44,9 @@ A Home Assistant integration that provides a web-based configuration interface f
 ## Requirements
 
 - Home Assistant 2023.1.0 or newer
-- An ESP32 running ESPHome with the [emonTx component](https://github.com/esphome/esphome/pull/9027) configured
+- **ESPHome Integration** installed in Home Assistant (Settings > Devices & Services > Add Integration > ESPHome)
+- An ESP32 device added to the ESPHome integration and showing as "Online"
+- ESPHome firmware on the ESP32 with the [emonTx component](https://github.com/esphome/esphome/pull/9027) configured
 - An emonTx device connected to the ESP32 via UART
 
 ## Installation
@@ -99,10 +101,12 @@ emontx:
 
 ### Home Assistant Setup
 
+**Prerequisites:** Ensure the ESPHome integration is installed and your ESP32 device is added and showing as "Online" in Settings > Devices & Services > ESPHome.
+
 1. Go to Settings > Devices & Services
 2. Click "Add Integration"
 3. Search for "emonPi/Tx Configuration"
-4. Select your ESPHome device from the dropdown
+4. Select your ESPHome device from the dropdown (only devices with `config_panel: true` will appear)
 5. Click "Submit"
 
 ## Usage
@@ -198,15 +202,19 @@ Refer to the [emonTx documentation](https://docs.openenergymonitor.org/) for a c
 
 ### No device found
 
-- Ensure the ESPHome device is online and connected to Home Assistant
-- Verify the API encryption key matches in ESPHome and Home Assistant
-- Check that `config_panel: true` is set in your emontx configuration (this registers the required service)
+- **First**, ensure the ESPHome integration is installed in Home Assistant
+- Verify your ESP32 device is added to the ESPHome integration and shows as "Online"
+- Check that the API encryption key matches between ESPHome firmware and Home Assistant
+- Verify that `config_panel: true` is set in your emontx configuration (this registers the required `_send_command` service)
+- The device dropdown only shows ESPHome devices that have the `_send_command` service registered
 
 ### No data received
 
 - Check the UART connections between ESP32 and emonTx
 - Verify the baud rate is correct (115200 by default)
 - **Important**: Make sure you have `config_panel: true` set in your ESPHome emontx configuration
+- If you recently renamed your ESPHome device, hard refresh the browser (Ctrl+Shift+R) to reload the frontend
+- Check Developer Tools > Events and listen for `esphome.emontx_raw` events to verify data is being received
 - Look at the ESPHome logs for any errors
 
 ### Config not loading / Commands not working
