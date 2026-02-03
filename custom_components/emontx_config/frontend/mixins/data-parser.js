@@ -25,7 +25,6 @@ const DataParserMixin = {
             }
 
             this.log('RX: ' + line);
-            console.log('DEBUG ALL: raw line=', JSON.stringify(line));
 
             if (line.includes('unsaved changes') || line.includes('Unsaved changes')) {
                 this.hasUnsavedChanges = true;
@@ -182,14 +181,8 @@ const DataParserMixin = {
             // Format: [0] 28 c0 c0 03 00 00 00 2b
             //         [1] 00 00 00 00 00 00 00 00
             // Slot index is 0-7, empty slots have all zeros
-            const trimmedLine = line.trim();
-            // Debug: show all lines that contain '[' to see the actual format
-            if (trimmedLine.includes('[')) {
-                console.log('DEBUG on: line=', JSON.stringify(trimmedLine), 'startsWith[=', trimmedLine.startsWith('['));
-            }
-            const savedTempMatch = trimmedLine.match(/^\[(\d)\]\s+([0-9a-fA-F]{2}(?:\s+[0-9a-fA-F]{2}){7})$/);
+            const savedTempMatch = line.trim().match(/^\[(\d)\]\s+([0-9a-fA-F]{2}(?:\s+[0-9a-fA-F]{2}){7})$/);
             if (savedTempMatch) {
-                console.log('DEBUG on: MATCHED! slot=', savedTempMatch[1], 'addr=', savedTempMatch[2]);
                 const slotIdx = parseInt(savedTempMatch[1]);
                 const addrBytes = savedTempMatch[2].trim();
                 const slot = slotIdx + 1;  // Convert 0-based to 1-based slot number
