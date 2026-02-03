@@ -178,10 +178,11 @@ const DataParserMixin = {
             }
 
             // Parse saved temperature sensor list from 'on' command
-            // Format: on[0] 28 c0 c0 03 00 00 00 2b  (first line has 'on' prefix)
-            //         [1] 00 00 00 00 00 00 00 00   (subsequent lines)
+            // Format: [0] 28 c0 c0 03 00 00 00 2b
+            //         [1] 00 00 00 00 00 00 00 00
             // Slot index is 0-7, empty slots have all zeros
-            const savedTempMatch = line.match(/^(?:on)?\[(\d+)\]\s+(.+)$/);
+            // Only match lines starting with [digit] (not containing '->' which is 'ol' format)
+            const savedTempMatch = line.match(/^\[(\d)\]\s+([0-9a-fA-F]{2}(?:\s+[0-9a-fA-F]{2}){7})\s*$/);
             if (savedTempMatch) {
                 const slotIdx = parseInt(savedTempMatch[1]);
                 const addrBytes = savedTempMatch[2].trim();
