@@ -182,11 +182,11 @@ const DataParserMixin = {
             //         [1] 00 00 00 00 00 00 00 00
             // Slot index is 0-7, empty slots have all zeros
             const trimmedLine = line.trim();
-            if (trimmedLine.startsWith('[') && !trimmedLine.includes('->')) {
-                console.log('DEBUG on: trimmedLine=', JSON.stringify(trimmedLine));
+            // Debug: show all lines that contain '[' to see the actual format
+            if (trimmedLine.includes('[')) {
+                console.log('DEBUG on: line=', JSON.stringify(trimmedLine), 'startsWith[=', trimmedLine.startsWith('['));
             }
             const savedTempMatch = trimmedLine.match(/^\[(\d)\]\s+([0-9a-fA-F]{2}(?:\s+[0-9a-fA-F]{2}){7})$/);
-            console.log('DEBUG on: match=', savedTempMatch);
             if (savedTempMatch) {
                 console.log('DEBUG on: MATCHED! slot=', savedTempMatch[1], 'addr=', savedTempMatch[2]);
                 const slotIdx = parseInt(savedTempMatch[1]);
