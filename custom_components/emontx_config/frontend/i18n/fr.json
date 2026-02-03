@@ -113,7 +113,7 @@
         "address": "Adresse",
         "temperature": "Température",
         "noTempSensors": "Aucun capteur de température trouvé. Cliquez sur \"Rechercher\" pour détecter les capteurs DS18B20 connectés.",
-        "tempSlots": "Slots",
+        "tempSlots": "Emplacements",
         "emptySlot": "Vide",
         "dropHint": "Déposez ici",
         "tempSlotsHelp": "Glissez les capteurs pour les réorganiser ou utilisez le menu déroulant. Cliquez \"Enregistrer\" pour sauvegarder.",
