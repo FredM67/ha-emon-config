@@ -156,7 +156,7 @@ const DataParserMixin = {
                 }
             }
 
-            // Parse temperature sensor list
+            // Parse temperature sensor list from 'ol' command
             // Format: <bus_index> [-> <slot>] <address>
             // bus_index = order found on OneWire bus
             // slot = assigned T slot (1-8), determines JSON key (T1-T8)
@@ -175,6 +175,33 @@ const DataParserMixin = {
                     this.device.tempSensors.push(sensorData);
                 }
                 // Keep sensors in bus index order (order found on bus)
+            }
+
+            // Parse saved temperature sensor list from 'on' command
+            // Format: on[0] 28 c0 c0 03 00 00 00 2b  (first line has 'on' prefix)
+            //         [1] 00 00 00 00 00 00 00 00   (subsequent lines)
+            // Slot index is 0-7, empty slots have all zeros
+            const savedTempMatch = line.match(/^(?:on)?\[(\d+)\]\s+(.+)$/);
+            if (savedTempMatch) {
+                const slotIdx = parseInt(savedTempMatch[1]);
+                const addrBytes = savedTempMatch[2].trim();
+                const slot = slotIdx + 1;  // Convert 0-based to 1-based slot number
+
+                // Check if slot is empty (all zeros)
+                const isEmptySlot = addrBytes.replace(/\s+/g, '') === '0000000000000000';
+
+                if (!isEmptySlot) {
+                    // Convert space-separated bytes to colon-separated format
+                    const addr = addrBytes.replace(/\s+/g, ':').toUpperCase();
+                    // Find existing entry with same slot or add new one
+                    const existingIdx = this.device.tempSensors.findIndex(s => s.slot === slot);
+                    const sensorData = { busIndex: slotIdx, slot: slot, addr: addr, saved: true };
+                    if (existingIdx >= 0) {
+                        this.$set(this.device.tempSensors, existingIdx, sensorData);
+                    } else {
+                        this.device.tempSensors.push(sensorData);
+                    }
+                }
             }
 
             // Parse accumulator values

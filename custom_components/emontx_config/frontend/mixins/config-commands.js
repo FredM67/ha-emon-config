@@ -493,6 +493,7 @@ const ConfigCommandsMixin = {
         },
 
         listSavedTempSensors() {
+            this.device.tempSensors = [];
             this.writeToStream('on');
         },
 
