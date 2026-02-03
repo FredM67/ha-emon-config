@@ -158,6 +158,8 @@ const DataParserMixin = {
 
             // Parse temperature sensor list
             // Format: <bus_index> [-> <slot>] <address>
+            // bus_index = order found on OneWire bus
+            // slot = assigned T slot (1-8), determines JSON key (T1-T8)
             const tempMatch = line.match(/^(\d+)\s+\[->\s*(\d+)\s*\]\s+(.+)$/);
             if (tempMatch) {
                 const busIndex = parseInt(tempMatch[1]);
@@ -172,8 +174,7 @@ const DataParserMixin = {
                 } else {
                     this.device.tempSensors.push(sensorData);
                 }
-                // Sort by slot number for display
-                this.device.tempSensors.sort((a, b) => a.slot - b.slot);
+                // Keep sensors in bus index order (order found on bus)
             }
 
             // Parse accumulator values

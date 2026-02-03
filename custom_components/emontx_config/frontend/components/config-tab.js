@@ -407,17 +407,17 @@ Vue.component('config-tab', {
                         <div v-if="device.tempSensors.length > 0">
                             <table class="device-info-table">
                                 <tr>
-                                    <th>{{ t.config.sensor }}</th>
+                                    <th>#</th>
                                     <th>{{ t.config.slot }}</th>
                                     <th>{{ t.config.name }}</th>
                                     <th>{{ t.config.address }}</th>
                                     <th>{{ t.config.temperature }}</th>
                                 </tr>
                                 <tr v-for="(sensor, idx) in device.tempSensors" :key="'temp'+idx">
-                                    <td>T{{ sensor.busIndex || (idx + 1) }}</td>
+                                    <td>{{ sensor.busIndex || (idx + 1) }}</td>
                                     <td>
                                         <select :value="sensor.slot || (idx + 1)" @change="$emit('assign-temp-slot', sensor.busIndex || (idx + 1), parseInt($event.target.value), sensor.addr)" :disabled="!emontxConnected" style="width: 60px;">
-                                            <option v-for="n in 8" :key="n" :value="n">{{ n }}</option>
+                                            <option v-for="n in 8" :key="n" :value="n">T{{ n }}</option>
                                         </select>
                                     </td>
                                     <td><input type="text" :value="getChannelName('temp', sensor.addr)" @input="onNameChange('temp', sensor.addr, $event)" :placeholder="t.config.namePlaceholder" style="width: 120px;" /></td>
