@@ -25,6 +25,7 @@ const DataParserMixin = {
             }
 
             this.log('RX: ' + line);
+            console.log('DEBUG ALL: raw line=', JSON.stringify(line));
 
             if (line.includes('unsaved changes') || line.includes('Unsaved changes')) {
                 this.hasUnsavedChanges = true;
