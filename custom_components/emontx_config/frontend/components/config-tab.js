@@ -73,7 +73,19 @@ Vue.component('config-tab', {
             event.preventDefault();
             this.dragOverSlot = null;
             if (this.draggedSensor && this.draggedSensor.slot !== slot) {
+                const sourceSlot = this.draggedSensor.slot;
+                const targetSensor = this.getSlotSensor(slot);
+
+                // Assign dragged sensor to target slot
                 this.$emit('assign-temp-slot', this.draggedSensor.busIndex, slot, this.draggedSensor.addr);
+
+                // If target slot had a sensor, swap it to the source slot
+                if (targetSensor) {
+                    setTimeout(() => {
+                        this.$emit('assign-temp-slot', targetSensor.busIndex, sourceSlot, targetSensor.addr);
+                    }, 500);
+                }
+
                 this.draggedSensor = null;
             }
         },
