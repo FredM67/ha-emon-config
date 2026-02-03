@@ -77,12 +77,12 @@ Vue.component('config-tab', {
                 const targetSensor = this.getSlotSensor(slot);
 
                 // Assign dragged sensor to target slot
-                this.$emit('assign-temp-slot', this.draggedSensor.busIndex, slot, this.draggedSensor.addr);
+                this.$emit('assign-temp-slot', slot, this.draggedSensor.addr);
 
                 // If target slot had a sensor, swap it to the source slot
                 if (targetSensor) {
                     setTimeout(() => {
-                        this.$emit('assign-temp-slot', targetSensor.busIndex, sourceSlot, targetSensor.addr);
+                        this.$emit('assign-temp-slot', sourceSlot, targetSensor.addr);
                     }, 500);
                 }
 
@@ -91,7 +91,7 @@ Vue.component('config-tab', {
         },
         reassignSensor(sensor, newSlot) {
             if (newSlot && newSlot > 0 && newSlot !== sensor.slot) {
-                this.$emit('assign-temp-slot', sensor.busIndex, newSlot, sensor.addr);
+                this.$emit('assign-temp-slot', newSlot, sensor.addr);
             }
         },
         isCustomCt(ical) {

@@ -337,6 +337,9 @@ const ConfigCommandsMixin = {
                 this.bulkProgress = { current: i, total: total, currentCt: ctNum, error: false, failedChannels: failedChannels };
 
                 if (idx < this.device.ichannels.length) {
+                    if (changes.values.active !== undefined) {
+                        this.$set(this.device.ichannels[idx], 'active', changes.values.active);
+                    }
                     if (changes.values.ical !== undefined) {
                         this.$set(this.device.ichannels[idx], 'ical', changes.values.ical);
                     }
@@ -508,7 +511,7 @@ const ConfigCommandsMixin = {
             setTimeout(() => this.listTempSensors(), 1000);
         },
 
-        assignTempSensorToSlot(busIndex, slot, addr) {
+        assignTempSensorToSlot(slot, addr) {
             // Assign sensor to specified slot (1-8)
             // Command format: o<n> <b0> <b1> <b2> <b3> <b4> <b5> <b6> <b7>
             if (!addr) {
@@ -547,12 +550,25 @@ const ConfigCommandsMixin = {
         },
 
         rebootDevice() {
+            this.showRebootConfirm = true;
+        },
+
+        confirmReboot() {
+            this.showRebootConfirm = false;
             this.writeToStream('q');
             // Firmware requires 'y' confirmation
             setTimeout(() => {
                 this.writeToStream('y');
                 this.log('Rebooting device...', 'info');
+                // Reload config after reboot (give device time to restart)
+                setTimeout(() => {
+                    this.loadConfig();
+                }, 5000);
             }, 500);
+        },
+
+        cancelReboot() {
+            this.showRebootConfirm = false;
         },
 
         zeroEnergy() {

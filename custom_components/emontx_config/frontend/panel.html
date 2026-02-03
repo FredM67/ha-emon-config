@@ -158,6 +158,13 @@
             @cancel="cancelZero"
         ></zero-confirm-modal>
 
+        <reboot-confirm-modal
+            :show="showRebootConfirm"
+            :t="t"
+            @confirm="confirmReboot"
+            @cancel="cancelReboot"
+        ></reboot-confirm-modal>
+
         <rf-power-warning-modal
             :show="showRfPowerWarning"
             :t="t"
@@ -208,7 +215,7 @@
             el: '#app',
             mixins: [ConnectionMixin, DataParserMixin, ConfigCommandsMixin, YamlGeneratorMixin, ChannelNamesMixin, FirmwareUpdateMixin],
             data: {
-                integrationVersion: '1.3.1-beta.1',
+                integrationVersion: '1.3.1-beta.2',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -223,6 +230,8 @@
                 availableDevices: [],
                 // Zero energy confirmation
                 showZeroConfirm: false,
+                // Reboot confirmation
+                showRebootConfirm: false,
                 // RF power warning
                 showRfPowerWarning: false,
                 rfPowerWarningConfirmed: false,

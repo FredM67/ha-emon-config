@@ -154,6 +154,13 @@
         "confirm": "Sì, Azzera Contatori",
         "cancel": "Annulla"
     },
+    "rebootConfirm": {
+        "title": "Conferma Riavvio",
+        "message": "Sei sicuro di voler riavviare il dispositivo?",
+        "warning": "Il dispositivo sarà temporaneamente non disponibile.",
+        "confirm": "Sì, Riavvia",
+        "cancel": "Annulla"
+    },
     "rfPowerWarning": {
         "title": "Avviso Potenza RF Elevata",
         "message": "Stai impostando la potenza RF a un livello elevato",
@@ -194,7 +201,9 @@
         "apply": "Applica a",
         "selected": "selezionati",
         "cancel": "Annulla",
-        "applying": "Applicazione..."
+        "applying": "Applicazione...",
+        "active": "Attivo",
+        "inactive": "Inattivo"
     },
     "tooltips": {
         "tabConfig": "Configura sensori CT, calibrazione tensione e impostazioni dispositivo",

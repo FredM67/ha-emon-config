@@ -155,6 +155,13 @@
         "confirm": "Yes, Zero Counters",
         "cancel": "Cancel"
     },
+    "rebootConfirm": {
+        "title": "Confirm Reboot",
+        "message": "Are you sure you want to reboot the device?",
+        "warning": "The device will be temporarily unavailable.",
+        "confirm": "Yes, Reboot",
+        "cancel": "Cancel"
+    },
     "rfPowerWarning": {
         "title": "High RF Power Warning",
         "message": "You are setting RF power to a high level",
@@ -205,7 +212,9 @@
         "apply": "Apply to",
         "selected": "selected",
         "cancel": "Cancel",
-        "applying": "Applying..."
+        "applying": "Applying...",
+        "active": "Active",
+        "inactive": "Inactive"
     },
     "tooltips": {
         "tabConfig": "Configure CT sensors, voltage calibration, and device settings",

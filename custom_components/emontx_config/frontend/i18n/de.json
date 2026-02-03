@@ -154,6 +154,13 @@
         "confirm": "Ja, Nullstellen",
         "cancel": "Abbrechen"
     },
+    "rebootConfirm": {
+        "title": "Neustart Bestätigen",
+        "message": "Sind Sie sicher, dass Sie das Gerät neu starten möchten?",
+        "warning": "Das Gerät wird vorübergehend nicht verfügbar sein.",
+        "confirm": "Ja, Neu starten",
+        "cancel": "Abbrechen"
+    },
     "rfPowerWarning": {
         "title": "Warnung: Hohe RF-Leistung",
         "message": "Sie stellen die RF-Leistung auf einen hohen Wert ein",
@@ -194,7 +201,9 @@
         "apply": "Anwenden auf",
         "selected": "ausgewählt",
         "cancel": "Abbrechen",
-        "applying": "Anwenden..."
+        "applying": "Anwenden...",
+        "active": "Aktiv",
+        "inactive": "Inaktiv"
     },
     "tooltips": {
         "tabConfig": "CT-Sensoren, Spannungskalibrierung und Geräteeinstellungen konfigurieren",

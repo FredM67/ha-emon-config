@@ -57,6 +57,27 @@ Vue.component('zero-confirm-modal', {
     `
 });
 
+// Reboot Confirmation Modal
+Vue.component('reboot-confirm-modal', {
+    props: {
+        show: Boolean,
+        t: Object
+    },
+    template: `
+        <div v-if="show" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+            <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); max-width: 400px; text-align: center;">
+                <h3 style="margin-top: 0; color: #ff9800;">⚠️ {{ t.rebootConfirm?.title || 'Confirm Reboot' }}</h3>
+                <p style="font-size: 16px; margin: 20px 0;">{{ t.rebootConfirm?.message || 'Are you sure you want to reboot the device?' }}</p>
+                <p style="font-size: 14px; color: #666; margin-bottom: 20px;">{{ t.rebootConfirm?.warning || 'The device will be temporarily unavailable.' }}</p>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button class="btn btn-warning" @click="$emit('confirm')" style="padding: 12px 30px; font-size: 16px;">{{ t.rebootConfirm?.confirm || 'Yes, Reboot' }}</button>
+                    <button class="btn" @click="$emit('cancel')" style="padding: 12px 30px; font-size: 16px; background: #ccc;">{{ t.rebootConfirm?.cancel || 'Cancel' }}</button>
+                </div>
+            </div>
+        </div>
+    `
+});
+
 // RF Power Warning Modal
 Vue.component('rf-power-warning-modal', {
     props: {
@@ -92,10 +113,12 @@ Vue.component('bulk-ct-modal', {
     data() {
         return {
             selectedCts: [],
+            applyActive: false,
             applyCtType: false,
             applyPhase: false,
             applyVchan1: false,
             applyVchan2: false,
+            activeValue: true,
             ctTypeValue: 20,
             ctTypeCustom: false,
             ctTypeCustomValue: 100,
@@ -109,6 +132,7 @@ Vue.component('bulk-ct-modal', {
             if (newVal) {
                 // Reset selections when modal opens
                 this.selectedCts = [];
+                this.applyActive = false;
                 this.applyCtType = false;
                 this.applyPhase = false;
                 this.applyVchan1 = false;
@@ -118,10 +142,12 @@ Vue.component('bulk-ct-modal', {
         },
         // Reset progress when user changes any setting after completion (allows retry)
         selectedCts() { this.resetIfComplete(); },
+        applyActive() { this.resetIfComplete(); },
         applyCtType() { this.resetIfComplete(); },
         applyPhase() { this.resetIfComplete(); },
         applyVchan1() { this.resetIfComplete(); },
         applyVchan2() { this.resetIfComplete(); },
+        activeValue() { this.resetIfComplete(); },
         ctTypeValue() { this.resetIfComplete(); },
         ctTypeCustomValue() { this.resetIfComplete(); },
         phaseValue() { this.resetIfComplete(); },
@@ -186,6 +212,9 @@ Vue.component('bulk-ct-modal', {
                 values: {}
             };
 
+            if (this.applyActive) {
+                changes.values.active = this.activeValue;
+            }
             if (this.applyCtType) {
                 changes.values.ical = this.ctTypeCustom ? this.ctTypeCustomValue : this.ctTypeValue;
             }
@@ -230,6 +259,7 @@ Vue.component('bulk-ct-modal', {
                          }">
                         <input type="checkbox" :checked="selectedCts.includes(idx)" @click.stop="toggleCt(idx)" style="width: 16px; height: 16px;" />
                         <span style="font-weight: 500; min-width: 45px;">CT {{ idx + 1 }}</span>
+                        <span :style="{ color: ch.active ? '#4CAF50' : '#999', fontSize: '12px', minWidth: '50px' }">{{ ch.active ? '●' : '○' }}</span>
                         <span style="color: #666; font-size: 13px;">({{ ch.ical }}A, Phase: {{ ch.ilead }}, V1: {{ ch.vchan1 }}, V2: {{ ch.vchan2 }})</span>
                     </div>
                 </div>
@@ -237,6 +267,15 @@ Vue.component('bulk-ct-modal', {
                 <!-- Settings to apply -->
                 <div style="background: #f5f5f5; padding: 15px; border-radius: 4px; margin-bottom: 15px;">
                     <div style="font-weight: 500; margin-bottom: 10px;">{{ t.bulk.setValues }}</div>
+
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                        <input type="checkbox" v-model="applyActive" style="width: 16px; height: 16px;" />
+                        <label style="min-width: 80px;">{{ t.config.active }}:</label>
+                        <select v-model="activeValue" :disabled="!applyActive" style="padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option :value="true">{{ t.bulk.active || 'Active' }}</option>
+                            <option :value="false">{{ t.bulk.inactive || 'Inactive' }}</option>
+                        </select>
+                    </div>
 
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
                         <input type="checkbox" v-model="applyCtType" style="width: 16px; height: 16px;" />
@@ -300,7 +339,7 @@ Vue.component('bulk-ct-modal', {
                 <!-- Action buttons -->
                 <div style="display: flex; gap: 10px; justify-content: center;">
                     <button v-if="!isApplying" class="btn btn-primary" @click="apply"
-                            :disabled="selectedCts.length === 0 || (!applyCtType && !applyPhase && !applyVchan1 && !applyVchan2)"
+                            :disabled="selectedCts.length === 0 || (!applyActive && !applyCtType && !applyPhase && !applyVchan1 && !applyVchan2)"
                             style="padding: 12px 25px;">
                         {{ t.bulk.apply }} {{ selectedCts.length }} {{ t.bulk.selected }}
                     </button>
