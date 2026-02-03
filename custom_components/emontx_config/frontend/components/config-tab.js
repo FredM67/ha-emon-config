@@ -467,6 +467,9 @@ Vue.component('config-tab', {
                                 <span v-if="tempScanLoading" class="spinner"></span>
                                 {{ tempScanLoading ? (t.config.scanning || 'Scanning...') : t.config.scanSensors }}
                             </button>
+                            <button type="button" class="btn btn-info" @click="$emit('list-saved-temp-sensors')" :disabled="!emontxConnected" :title="t.tooltips.btnListSavedSensors">
+                                {{ t.config.listSavedSensors }}
+                            </button>
                             <button type="button" class="btn btn-warning" @click="$emit('save-temp-mapping')" :disabled="!emontxConnected || sensorsCount === 0" :title="t.tooltips.btnSaveMapping">
                                 {{ t.config.saveMapping }}
                             </button>

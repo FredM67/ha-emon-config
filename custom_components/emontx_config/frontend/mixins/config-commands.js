@@ -492,6 +492,10 @@ const ConfigCommandsMixin = {
             this.writeToStream('ol');
         },
 
+        listSavedTempSensors() {
+            this.writeToStream('on');
+        },
+
         saveTempMapping() {
             this.writeToStream('os');
             this.changes = true;
