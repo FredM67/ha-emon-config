@@ -539,6 +539,22 @@ const ConfigCommandsMixin = {
             }
         },
 
+        restoreSaved() {
+            this.writeToStream('rs');
+            this.log('Restoring saved settings from NVM...', 'info');
+            this.hasUnsavedChanges = false;
+            setTimeout(() => this.loadConfig(), 1000);
+        },
+
+        rebootDevice() {
+            this.writeToStream('q');
+            // Firmware requires 'y' confirmation
+            setTimeout(() => {
+                this.writeToStream('y');
+                this.log('Rebooting device...', 'info');
+            }, 500);
+        },
+
         zeroEnergy() {
             this.showZeroConfirm = true;
         },

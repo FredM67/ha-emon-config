@@ -670,8 +670,10 @@ Vue.component('config-tab', {
                         {{ t.buttons.discardChanges }}
                     </button>
                     <button type="button" class="btn btn-warning" @click="$emit('save-config')" :disabled="!hasUnsavedChanges || !emontxConnected" :title="t.tooltips.btnSave">{{ t.buttons.save }}</button>
+                    <button type="button" class="btn btn-info" @click="$emit('restore-saved')" :disabled="!emontxConnected" :title="t.tooltips.btnRestoreSaved">{{ t.buttons.restoreSaved }}</button>
                     <button type="button" class="btn btn-danger" @click="$emit('reset-defaults')" :disabled="!emontxConnected" :title="t.tooltips.btnResetDefaults">{{ t.buttons.resetDefaults }}</button>
                     <button type="button" class="btn btn-primary" @click="$emit('load-config')" :disabled="!emontxConnected" :title="t.tooltips.btnReloadConfig">{{ t.buttons.reloadConfig }}</button>
+                    <button type="button" class="btn" @click="$emit('reboot-device')" :disabled="!emontxConnected" style="background: #ff5722; color: white;" :title="t.tooltips.btnReboot">{{ t.buttons.reboot }}</button>
                     <button type="button" class="btn btn-primary" @click="$emit('generate-yaml')" :disabled="!configReceived" style="background: #9c27b0;" :title="t.tooltips.btnGenerateYaml">{{ t.buttons.generateYaml }}</button>
                 </div>
             </div>
