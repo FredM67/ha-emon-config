@@ -492,10 +492,17 @@ const ConfigCommandsMixin = {
             this.log('Temperature sensor mapping saved', 'info');
         },
 
-        assignTempSensorToSlot(busIndex, slot) {
-            // Assign sensor at bus position to specified slot (1-8)
-            this.writeToStream('o' + slot);
-            this.log(`Assigning sensor ${busIndex} to slot ${slot}...`, 'info');
+        assignTempSensorToSlot(busIndex, slot, addr) {
+            // Assign sensor to specified slot (1-8)
+            // Command format: o<n> <b0> <b1> <b2> <b3> <b4> <b5> <b6> <b7>
+            if (!addr) {
+                this.log('No sensor address provided', 'error');
+                return;
+            }
+            // Parse address bytes (format: "28:FF:00:01:02:03:04:05" or "28 FF 00 01 02 03 04 05")
+            const bytes = addr.replace(/:/g, ' ').trim();
+            this.writeToStream('o' + slot + ' ' + bytes);
+            this.log(`Assigning sensor to slot ${slot}...`, 'info');
             // Refresh the list after a short delay
             setTimeout(() => this.listTempSensors(), 1000);
         },

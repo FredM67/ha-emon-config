@@ -416,7 +416,7 @@ Vue.component('config-tab', {
                                 <tr v-for="(sensor, idx) in device.tempSensors" :key="'temp'+idx">
                                     <td>T{{ sensor.busIndex || (idx + 1) }}</td>
                                     <td>
-                                        <select :value="sensor.slot || (idx + 1)" @change="$emit('assign-temp-slot', sensor.busIndex || (idx + 1), parseInt($event.target.value))" :disabled="!emontxConnected" style="width: 60px;">
+                                        <select :value="sensor.slot || (idx + 1)" @change="$emit('assign-temp-slot', sensor.busIndex || (idx + 1), parseInt($event.target.value), sensor.addr)" :disabled="!emontxConnected" style="width: 60px;">
                                             <option v-for="n in 8" :key="n" :value="n">{{ n }}</option>
                                         </select>
                                     </td>
