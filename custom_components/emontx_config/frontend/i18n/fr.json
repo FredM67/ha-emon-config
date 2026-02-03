@@ -109,7 +109,7 @@
         "scanSensors": "Rechercher",
         "scanning": "Recherche...",
         "listSensors": "Lister",
-        "listSavedSensors": "Lister Sauvés",
+        "listSavedSensors": "Restaurer",
         "saveMapping": "Enregistrer",
         "sensor": "Capteur",
         "slot": "Emplacement",

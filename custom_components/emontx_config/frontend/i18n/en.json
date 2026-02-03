@@ -109,7 +109,7 @@
         "scanSensors": "Scan Sensors",
         "scanning": "Scanning...",
         "listSensors": "List Sensors",
-        "listSavedSensors": "List Saved",
+        "listSavedSensors": "Restore",
         "saveMapping": "Save Mapping",
         "sensor": "Sensor",
         "slot": "Slot",
