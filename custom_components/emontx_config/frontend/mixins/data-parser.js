@@ -157,14 +157,23 @@ const DataParserMixin = {
             }
 
             // Parse temperature sensor list
+            // Format: <bus_index> [-> <slot>] <address>
             const tempMatch = line.match(/^(\d+)\s+\[->\s*(\d+)\s*\]\s+(.+)$/);
             if (tempMatch) {
-                const idx = parseInt(tempMatch[2]) - 1;
+                const busIndex = parseInt(tempMatch[1]);
+                const slot = parseInt(tempMatch[2]);
                 const addr = tempMatch[3].trim();
-                while (this.device.tempSensors.length <= idx) {
-                    this.device.tempSensors.push({ addr: '' });
+                // Store sensor with bus index for slot reassignment
+                // Find existing entry with same bus index or add new one
+                const existingIdx = this.device.tempSensors.findIndex(s => s.busIndex === busIndex);
+                const sensorData = { busIndex: busIndex, slot: slot, addr: addr };
+                if (existingIdx >= 0) {
+                    this.$set(this.device.tempSensors, existingIdx, sensorData);
+                } else {
+                    this.device.tempSensors.push(sensorData);
                 }
-                this.$set(this.device.tempSensors, idx, { addr: addr });
+                // Sort by slot number for display
+                this.device.tempSensors.sort((a, b) => a.slot - b.slot);
             }
 
             // Parse accumulator values

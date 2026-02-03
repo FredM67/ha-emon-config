@@ -69,11 +69,12 @@ const YamlGeneratorMixin = {
             const tempLabel = this.t.liveData.groups.T;
             for (let i = 0; i < this.device.tempSensors.length; i++) {
                 const sensor = this.device.tempSensors[i];
+                const slot = sensor.slot || (i + 1);
                 const tempName = this.channelNames.temp[sensor.addr];
-                const sensorName = tempName || `${tempLabel} ${i + 1}`;
+                const sensorName = tempName || `${tempLabel} ${slot}`;
 
                 yaml += `  - platform: emontx\n`;
-                yaml += `    tag_name: "T${i + 1}"\n`;
+                yaml += `    tag_name: "T${slot}"\n`;
                 yaml += `    name: "${sensorName}"\n`;
             }
 

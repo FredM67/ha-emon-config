@@ -108,6 +108,7 @@
         "listSensors": "Elenca Sensori",
         "saveMapping": "Salva Mappatura",
         "sensor": "Sensore",
+        "slot": "Slot",
         "address": "Indirizzo",
         "temperature": "Temperatura",
         "noTempSensors": "Nessun sensore di temperatura trovato. Clicca \"Cerca Sensori\" per cercare i sensori DS18B20 collegati.",

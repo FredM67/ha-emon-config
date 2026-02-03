@@ -108,6 +108,7 @@
         "listSensors": "List Sensors",
         "saveMapping": "Save Mapping",
         "sensor": "Sensor",
+        "slot": "Slot",
         "address": "Address",
         "temperature": "Temperature",
         "noTempSensors": "No temperature sensors found. Click \"Scan Sensors\" to search for connected DS18B20 sensors.",

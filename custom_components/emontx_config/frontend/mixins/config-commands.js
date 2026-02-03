@@ -492,6 +492,14 @@ const ConfigCommandsMixin = {
             this.log('Temperature sensor mapping saved', 'info');
         },
 
+        assignTempSensorToSlot(busIndex, slot) {
+            // Assign sensor at bus position to specified slot (1-8)
+            this.writeToStream('o' + slot);
+            this.log(`Assigning sensor ${busIndex} to slot ${slot}...`, 'info');
+            // Refresh the list after a short delay
+            setTimeout(() => this.listTempSensors(), 1000);
+        },
+
         saveConfig() {
             this.writeToStream('s');
             this.changes = false;

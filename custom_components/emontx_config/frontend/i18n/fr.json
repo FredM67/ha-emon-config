@@ -108,6 +108,7 @@
         "listSensors": "Lister",
         "saveMapping": "Enregistrer",
         "sensor": "Capteur",
+        "slot": "Emplacement",
         "address": "Adresse",
         "temperature": "Température",
         "noTempSensors": "Aucun capteur de température trouvé. Cliquez sur \"Rechercher\" pour détecter les capteurs DS18B20 connectés.",

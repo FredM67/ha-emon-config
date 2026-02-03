@@ -90,6 +90,7 @@
             @update-firmware-frequency="updateFirmwareFrequency"
             @check-firmware-now="checkFirmwareNow"
             @list-temp-sensors="listTempSensors"
+            @assign-temp-slot="assignTempSensorToSlot"
             @save-temp-mapping="saveTempMapping"
             @zero-energy="zeroEnergy"
             @reset-defaults="resetDefaults"
@@ -203,7 +204,7 @@
             el: '#app',
             mixins: [ConnectionMixin, DataParserMixin, ConfigCommandsMixin, YamlGeneratorMixin, ChannelNamesMixin, FirmwareUpdateMixin],
             data: {
-                integrationVersion: '1.2.10',
+                integrationVersion: '1.3.0-beta.1',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,

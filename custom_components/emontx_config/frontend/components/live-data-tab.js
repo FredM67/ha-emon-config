@@ -175,10 +175,11 @@ Vue.component('live-data-tab', {
             // Temperature channels: T1, T2, etc.
             const tMatch = key.match(/^T(\d+)$/);
             if (tMatch && this.device.tempSensors) {
-                const idx = parseInt(tMatch[1]) - 1;
-                if (idx >= 0 && idx < this.device.tempSensors.length) {
-                    const addr = this.device.tempSensors[idx].addr;
-                    return this.channelNames.temp && this.channelNames.temp[addr];
+                const slot = parseInt(tMatch[1]);
+                // Find sensor by slot number
+                const sensor = this.device.tempSensors.find(s => (s.slot || 0) === slot);
+                if (sensor) {
+                    return this.channelNames.temp && this.channelNames.temp[sensor.addr];
                 }
             }
 
