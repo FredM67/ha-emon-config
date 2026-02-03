@@ -476,9 +476,13 @@ const ConfigCommandsMixin = {
 
         scanTempSensors() {
             this.device.tempSensors = [];
+            this.tempScanLoading = true;
             this.writeToStream('of');
             this.log('Scanning for temperature sensors...', 'info');
-            setTimeout(() => this.listTempSensors(), 2000);
+            setTimeout(() => {
+                this.listTempSensors();
+                this.tempScanLoading = false;
+            }, 2000);
         },
 
         listTempSensors() {
@@ -490,6 +494,18 @@ const ConfigCommandsMixin = {
             this.changes = true;
             this.hasUnsavedChanges = true;
             this.log('Temperature sensor mapping saved', 'info');
+        },
+
+        clearTempSlot(slot) {
+            this.writeToStream('oc' + slot);
+            this.log(`Clearing temperature slot T${slot}...`, 'info');
+            setTimeout(() => this.listTempSensors(), 1000);
+        },
+
+        clearAllTempSlots() {
+            this.writeToStream('oca');
+            this.log('Clearing all temperature slot assignments...', 'info');
+            setTimeout(() => this.listTempSensors(), 1000);
         },
 
         assignTempSensorToSlot(busIndex, slot, addr) {

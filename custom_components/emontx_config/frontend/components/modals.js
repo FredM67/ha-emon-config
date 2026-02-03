@@ -313,6 +313,48 @@ Vue.component('bulk-ct-modal', {
     `
 });
 
+// Temperature Slot Clear Confirmation Modal
+Vue.component('temp-slot-clear-modal', {
+    props: {
+        show: Boolean,
+        t: Object,
+        slot: Number,  // null or slot number (1-8)
+        clearAll: Boolean
+    },
+    computed: {
+        title() {
+            return this.clearAll
+                ? this.t.tempSensors?.clearAllTitle || 'Clear All Temperature Slots'
+                : this.t.tempSensors?.clearSlotTitle || 'Clear Temperature Slot';
+        },
+        message() {
+            if (this.clearAll) {
+                return this.t.tempSensors?.clearAllMessage || 'Are you sure you want to clear all temperature sensor slot assignments?';
+            }
+            const msg = this.t.tempSensors?.clearSlotMessage || 'Are you sure you want to clear temperature slot T{slot}?';
+            return msg.replace('{slot}', this.slot);
+        },
+        confirmText() {
+            return this.clearAll
+                ? this.t.tempSensors?.confirmClearAll || 'Clear All'
+                : this.t.tempSensors?.confirmClear || 'Clear Slot';
+        }
+    },
+    template: `
+        <div v-if="show" class="modal-overlay">
+            <div class="modal-content">
+                <h3 class="modal-title">{{ title }}</h3>
+                <p style="font-size: 16px; margin: 20px 0;">{{ message }}</p>
+                <p style="font-size: 14px; color: #666; margin-bottom: 20px;">{{ t.tempSensors?.clearWarning || 'The sensor will be moved to the unassigned pool.' }}</p>
+                <div class="modal-buttons">
+                    <button class="btn btn-danger" @click="$emit('confirm')" style="padding: 12px 30px; font-size: 16px;">{{ confirmText }}</button>
+                    <button class="btn" @click="$emit('cancel')" style="padding: 12px 30px; font-size: 16px; background: #ccc;">{{ t.tempSensors?.cancel || 'Cancel' }}</button>
+                </div>
+            </div>
+        </div>
+    `
+});
+
 // YAML Generator Modal
 Vue.component('yaml-modal', {
     props: {

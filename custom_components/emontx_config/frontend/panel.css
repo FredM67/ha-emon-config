@@ -651,3 +651,191 @@ input.input-error.no-spinner {
         transform: scale(1.05);
     }
 }
+
+/* Temperature Sensor Slot Grid */
+.temp-slots-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+    .temp-slots-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.temp-slot-card {
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 12px;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.2s ease;
+    background: #fafafa;
+}
+
+.temp-slot-card.filled {
+    border: 2px solid #4CAF50;
+    background: white;
+}
+
+.temp-slot-card.drag-over {
+    border-color: #2196F3;
+    background: #e3f2fd;
+    transform: scale(1.02);
+}
+
+.temp-slot-card .slot-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.temp-slot-card .slot-label {
+    font-weight: 600;
+    font-size: 16px;
+    color: #333;
+}
+
+.temp-slot-card .live-temp {
+    font-size: 14px;
+    color: #4CAF50;
+    font-weight: 500;
+}
+
+.temp-slot-card .slot-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.temp-slot-card .empty-hint {
+    color: #999;
+    font-size: 13px;
+    text-align: center;
+    margin: auto;
+}
+
+.temp-slot-card .sensor-info {
+    font-size: 12px;
+    color: #666;
+    font-family: monospace;
+    margin-bottom: 8px;
+    word-break: break-all;
+}
+
+.temp-slot-card .sensor-name-input {
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 13px;
+    margin-bottom: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.temp-slot-card .sensor-name-input:focus {
+    outline: none;
+    border-color: #4CAF50;
+}
+
+.temp-slot-card .btn-clear {
+    margin-top: auto;
+    padding: 4px 8px;
+    font-size: 11px;
+    background: #f44336;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    align-self: flex-end;
+}
+
+.temp-slot-card .btn-clear:hover {
+    background: #d32f2f;
+}
+
+/* Unassigned Sensors Pool */
+.unassigned-sensors-section {
+    margin-top: 20px;
+}
+
+.unassigned-sensors-section h4 {
+    margin: 0 0 12px 0;
+    color: #e65100;
+    font-size: 14px;
+}
+
+.unassigned-sensors-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.unassigned-sensor-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: #fff3e0;
+    border: 1px solid #ffb74d;
+    border-radius: 6px;
+    cursor: grab;
+    transition: all 0.2s ease;
+}
+
+.unassigned-sensor-item:hover {
+    background: #ffe0b2;
+    border-color: #ff9800;
+}
+
+.unassigned-sensor-item:active {
+    cursor: grabbing;
+}
+
+.unassigned-sensor-item.dragging {
+    opacity: 0.5;
+    transform: scale(0.98);
+}
+
+.unassigned-sensor-item .sensor-index {
+    font-weight: 600;
+    color: #e65100;
+    min-width: 30px;
+}
+
+.unassigned-sensor-item .sensor-addr {
+    font-family: monospace;
+    font-size: 12px;
+    color: #666;
+    flex: 1;
+}
+
+.unassigned-sensor-item .assign-dropdown {
+    padding: 4px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 12px;
+    background: white;
+}
+
+/* Spinner for loading state */
+.spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 0.8s linear infinite;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}

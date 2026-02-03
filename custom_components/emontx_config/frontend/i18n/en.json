@@ -105,6 +105,7 @@
         "tempSensors": "Temperature Sensors",
         "tempSensorsDesc": "DS18B20 OneWire temperature sensors connected to OPA channels configured as OneWire.",
         "scanSensors": "Scan Sensors",
+        "scanning": "Scanning...",
         "listSensors": "List Sensors",
         "saveMapping": "Save Mapping",
         "sensor": "Sensor",
@@ -112,6 +113,13 @@
         "address": "Address",
         "temperature": "Temperature",
         "noTempSensors": "No temperature sensors found. Click \"Scan Sensors\" to search for connected DS18B20 sensors.",
+        "tempSlots": "Temperature Slots",
+        "emptySlot": "Empty",
+        "dropHint": "Drag sensor here",
+        "clearSlot": "Clear",
+        "clearAllSlots": "Clear All",
+        "unassignedSensors": "Unassigned Sensors",
+        "assignToSlot": "Assign to...",
         "documentation": "Configuration Documentation",
         "name": "Name",
         "namePlaceholder": "Optional",
@@ -176,6 +184,16 @@
         "confirmWarning": "This action cannot be undone.",
         "confirmYes": "Yes, Zero It",
         "confirmNo": "Cancel"
+    },
+    "tempSensors": {
+        "clearSlotTitle": "Clear Temperature Slot",
+        "clearSlotMessage": "Are you sure you want to clear temperature slot T{slot}?",
+        "clearAllTitle": "Clear All Temperature Slots",
+        "clearAllMessage": "Are you sure you want to clear all temperature sensor slot assignments?",
+        "clearWarning": "The sensor will be moved to the unassigned pool.",
+        "confirmClear": "Clear Slot",
+        "confirmClearAll": "Clear All",
+        "cancel": "Cancel"
     },
     "bulk": {
         "button": "Bulk Settings",
