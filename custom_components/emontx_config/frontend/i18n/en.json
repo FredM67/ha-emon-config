@@ -113,7 +113,7 @@
         "address": "Address",
         "temperature": "Temperature",
         "noTempSensors": "No temperature sensors found. Click \"Scan Sensors\" to search for connected DS18B20 sensors.",
-        "tempSlots": "Temperature Slots",
+        "tempSlots": "Slots",
         "emptySlot": "Empty",
         "dropHint": "Drag sensor here",
         "clearSlot": "Clear",
