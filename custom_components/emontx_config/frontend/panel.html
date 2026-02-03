@@ -92,8 +92,6 @@
             @list-temp-sensors="listTempSensors"
             @assign-temp-slot="assignTempSensorToSlot"
             @save-temp-mapping="saveTempMapping"
-            @clear-temp-slot="showClearSlotConfirm"
-            @clear-all-temp-slots="showClearAllSlotsConfirm"
             :temp-scan-loading="tempScanLoading"
             @zero-energy="zeroEnergy"
             @reset-defaults="resetDefaults"
@@ -185,14 +183,6 @@
             @reset-progress="bulkProgress = null"
         ></bulk-ct-modal>
 
-        <temp-slot-clear-modal
-            :show="showClearSlotModal"
-            :t="t"
-            :slot="clearSlotTarget ? clearSlotTarget.slot : null"
-            :clear-all="clearSlotTarget ? clearSlotTarget.clearAll : false"
-            @confirm="confirmClearSlot"
-            @cancel="cancelClearSlot"
-        ></temp-slot-clear-modal>
         </template>
     </div>
 
@@ -247,10 +237,8 @@
                 failedCtIndices: [],  // Indices of CTs that failed to apply
                 failedCtFields: [],   // Fields that were being applied when failure occurred
                 failedVcalIndices: [], // Indices of voltage channels that failed to apply
-                // Temperature sensor scan and clear
+                // Temperature sensor scan
                 tempScanLoading: false,
-                showClearSlotModal: false,
-                clearSlotTarget: null,  // { slot: number, clearAll: boolean }
                 // Pending response for sequential commands
                 pendingResponse: null,
                 // Unsaved changes warning (for flash save)
@@ -520,34 +508,6 @@
                             terminal.scrollTop = terminal.scrollHeight;
                         }
                     }
-                },
-
-                // Temperature slot clear confirmation
-                showClearSlotConfirm(slot) {
-                    this.clearSlotTarget = { slot: slot, clearAll: false };
-                    this.showClearSlotModal = true;
-                },
-
-                showClearAllSlotsConfirm() {
-                    this.clearSlotTarget = { slot: null, clearAll: true };
-                    this.showClearSlotModal = true;
-                },
-
-                confirmClearSlot() {
-                    if (this.clearSlotTarget) {
-                        if (this.clearSlotTarget.clearAll) {
-                            this.clearAllTempSlots();
-                        } else {
-                            this.clearTempSlot(this.clearSlotTarget.slot);
-                        }
-                    }
-                    this.showClearSlotModal = false;
-                    this.clearSlotTarget = null;
-                },
-
-                cancelClearSlot() {
-                    this.showClearSlotModal = false;
-                    this.clearSlotTarget = null;
                 }
             }
         });

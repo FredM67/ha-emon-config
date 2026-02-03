@@ -680,6 +680,11 @@ input.input-error.no-spinner {
 .temp-slot-card.filled {
     border: 2px solid #4CAF50;
     background: white;
+    cursor: grab;
+}
+
+.temp-slot-card.filled:active {
+    cursor: grabbing;
 }
 
 .temp-slot-card.drag-over {
@@ -757,6 +762,26 @@ input.input-error.no-spinner {
 
 .temp-slot-card .btn-clear:hover {
     background: #d32f2f;
+}
+
+.temp-slot-card .slot-actions {
+    margin-top: auto;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.temp-slot-card .reassign-dropdown {
+    padding: 4px 8px;
+    font-size: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+}
+
+.temp-slot-card .reassign-dropdown:focus {
+    outline: none;
+    border-color: #4CAF50;
 }
 
 /* Unassigned Sensors Pool */

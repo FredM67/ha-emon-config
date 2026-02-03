@@ -56,9 +56,12 @@ Vue.component('config-tab', {
             event.target.classList.remove('dragging');
         },
         handleDragOver(slot, event) {
-            event.preventDefault();
-            event.dataTransfer.dropEffect = 'move';
-            this.dragOverSlot = slot;
+            // Allow drop on any slot (empty or filled, but not the source slot)
+            if (this.draggedSensor && this.draggedSensor.slot !== slot) {
+                event.preventDefault();
+                event.dataTransfer.dropEffect = 'move';
+                this.dragOverSlot = slot;
+            }
         },
         handleDragLeave(slot, event) {
             // Only clear if leaving the slot card itself, not its children
@@ -69,14 +72,14 @@ Vue.component('config-tab', {
         handleDrop(slot, event) {
             event.preventDefault();
             this.dragOverSlot = null;
-            if (this.draggedSensor) {
+            if (this.draggedSensor && this.draggedSensor.slot !== slot) {
                 this.$emit('assign-temp-slot', this.draggedSensor.busIndex, slot, this.draggedSensor.addr);
                 this.draggedSensor = null;
             }
         },
-        assignSensorToSlot(sensor, slot) {
-            if (slot && slot > 0) {
-                this.$emit('assign-temp-slot', sensor.busIndex, slot, sensor.addr);
+        reassignSensor(sensor, newSlot) {
+            if (newSlot && newSlot > 0 && newSlot !== sensor.slot) {
+                this.$emit('assign-temp-slot', sensor.busIndex, newSlot, sensor.addr);
             }
         },
         isCustomCt(ical) {
@@ -211,15 +214,12 @@ Vue.component('config-tab', {
             if (!this.applyProgress || this.applyProgress.total === 0) return 0;
             return Math.round((this.applyProgress.current / this.applyProgress.total) * 100);
         },
-        unassignedSensors() {
-            return this.device.tempSensors.filter(s => !s.slot || s.slot === 0);
+        sensorsCount() {
+            return this.device.tempSensors.length;
         },
-        assignedSensorsCount() {
-            return this.device.tempSensors.filter(s => s.slot && s.slot > 0).length;
-        },
-        availableSlots() {
-            const usedSlots = this.device.tempSensors.filter(s => s.slot && s.slot > 0).map(s => s.slot);
-            return [1, 2, 3, 4, 5, 6, 7, 8].filter(slot => !usedSlots.includes(slot));
+        otherSlots() {
+            // Returns slots 1-8 for the reassignment dropdown
+            return [1, 2, 3, 4, 5, 6, 7, 8];
         }
     },
     template: `
@@ -455,11 +455,8 @@ Vue.component('config-tab', {
                                 <span v-if="tempScanLoading" class="spinner"></span>
                                 {{ tempScanLoading ? (t.config.scanning || 'Scanning...') : t.config.scanSensors }}
                             </button>
-                            <button type="button" class="btn btn-warning" @click="$emit('save-temp-mapping')" :disabled="!emontxConnected || assignedSensorsCount === 0" :title="t.tooltips.btnSaveMapping">
+                            <button type="button" class="btn btn-warning" @click="$emit('save-temp-mapping')" :disabled="!emontxConnected || sensorsCount === 0" :title="t.tooltips.btnSaveMapping">
                                 {{ t.config.saveMapping }}
-                            </button>
-                            <button type="button" class="btn btn-danger" @click="$emit('clear-all-temp-slots')" :disabled="!emontxConnected || assignedSensorsCount === 0" :title="t.config.clearAllSlots || 'Clear all slot assignments'">
-                                {{ t.config.clearAllSlots || 'Clear All' }}
                             </button>
                         </div>
 
@@ -472,11 +469,14 @@ Vue.component('config-tab', {
                                  class="temp-slot-card"
                                  :class="{
                                      'filled': getSlotSensor(slot),
-                                     'drag-over': dragOverSlot === slot && !getSlotSensor(slot)
+                                     'drag-over': dragOverSlot === slot
                                  }"
-                                 @dragover="!getSlotSensor(slot) && handleDragOver(slot, $event)"
+                                 :draggable="getSlotSensor(slot) ? 'true' : 'false'"
+                                 @dragstart="getSlotSensor(slot) && handleDragStart(getSlotSensor(slot), $event)"
+                                 @dragend="handleDragEnd"
+                                 @dragover="handleDragOver(slot, $event)"
                                  @dragleave="handleDragLeave(slot, $event)"
-                                 @drop="!getSlotSensor(slot) && handleDrop(slot, $event)">
+                                 @drop="handleDrop(slot, $event)">
 
                                 <div class="slot-header">
                                     <span class="slot-label">T{{ slot }}</span>
@@ -498,36 +498,20 @@ Vue.component('config-tab', {
                                                class="sensor-name-input"
                                                :value="getChannelName('temp', getSlotSensor(slot).addr)"
                                                @input="onNameChange('temp', getSlotSensor(slot).addr, $event)"
-                                               :placeholder="t.config.namePlaceholder" />
+                                               :placeholder="t.config.namePlaceholder"
+                                               @mousedown.stop
+                                               draggable="false" />
                                         <div class="sensor-info">{{ getSlotSensor(slot).addr }}</div>
-                                        <button type="button" class="btn-clear"
-                                                @click="$emit('clear-temp-slot', slot)"
-                                                :disabled="!emontxConnected">
-                                            {{ t.config.clearSlot || 'Clear' }}
-                                        </button>
+                                        <div class="slot-actions">
+                                            <select class="reassign-dropdown"
+                                                    :value="slot"
+                                                    @change="reassignSensor(getSlotSensor(slot), parseInt($event.target.value))"
+                                                    @mousedown.stop
+                                                    :disabled="!emontxConnected">
+                                                <option v-for="s in otherSlots" :key="s" :value="s">T{{ s }}</option>
+                                            </select>
+                                        </div>
                                     </template>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Unassigned Sensors Pool -->
-                        <div v-if="unassignedSensors.length > 0" class="unassigned-sensors-section">
-                            <h4>{{ t.config.unassignedSensors || 'Unassigned Sensors' }}</h4>
-                            <div class="unassigned-sensors-list">
-                                <div v-for="sensor in unassignedSensors"
-                                     :key="sensor.addr"
-                                     class="unassigned-sensor-item"
-                                     draggable="true"
-                                     @dragstart="handleDragStart(sensor, $event)"
-                                     @dragend="handleDragEnd">
-                                    <span class="sensor-index">#{{ sensor.busIndex }}</span>
-                                    <span class="sensor-addr">{{ sensor.addr }}</span>
-                                    <select class="assign-dropdown"
-                                            @change="assignSensorToSlot(sensor, parseInt($event.target.value)); $event.target.value = ''"
-                                            :disabled="!emontxConnected">
-                                        <option value="">{{ t.config.assignToSlot || 'Assign to...' }}</option>
-                                        <option v-for="slot in availableSlots" :key="slot" :value="slot">T{{ slot }}</option>
-                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -536,6 +520,11 @@ Vue.component('config-tab', {
                         <div v-if="device.tempSensors.length === 0" class="alert alert-info" style="margin-top: 15px;">
                             {{ t.config.noTempSensors }}
                         </div>
+
+                        <!-- Help text -->
+                        <p v-if="device.tempSensors.length > 0" style="font-size: 12px; color: #888; margin-top: 15px;">
+                            {{ t.config.tempSlotsHelp || 'Drag sensors between slots or use the dropdown to reassign. Click "Save Mapping" to persist changes.' }}
+                        </p>
                     </div>
                 </div>
 
