@@ -72,8 +72,8 @@ const DataParserMixin = {
                         this.$set(this.device.ichannels[c], 'energy', sensorData[eKey] + ' Wh');
                     }
                 }
-            } else if (line.includes(' = ') || line.includes('> Error:') || line.match(/^\d+\s+\[->/)  ) {
-                // Process configuration lines, errors, and temperature sensor list
+            } else if (line.includes(' = ') || line.includes('> Error:') || line.match(/^\d+\s+\[->/) || line.match(/^\[\d\]/) ) {
+                // Process configuration lines, errors, temperature sensor list (ol), and saved sensors (on)
                 this.processLine(line);
             }
         },
