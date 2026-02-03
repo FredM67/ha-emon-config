@@ -228,7 +228,7 @@ Vue.component('config-tab', {
             <!-- Unsaved Changes Warning Banner (for flash save) -->
             <div v-if="hasUnsavedChanges" class="alert alert-danger" style="display: flex; align-items: center; justify-content: space-between;">
                 <span><strong>{{ t.unsavedChanges.title }}</strong> {{ t.unsavedChanges.message }}</span>
-                <button class="btn btn-warning" @click="$emit('save-config')" style="margin-left: 15px;">{{ t.buttons.save }}</button>
+                <button type="button" class="btn btn-warning" @click="$emit('save-config')" style="margin-left: 15px;">{{ t.buttons.save }}</button>
             </div>
 
             <!-- Floating Bottom Bar for Pending Changes / Apply Progress -->
@@ -240,8 +240,8 @@ Vue.component('config-tab', {
                         <span class="floating-bar-text">{{ t.pendingChanges.title }}</span>
                     </div>
                     <div class="floating-bar-buttons">
-                        <button class="btn btn-success" @click="$emit('apply-changes')" :disabled="!emontxConnected">{{ t.buttons.applyChanges }}</button>
-                        <button class="btn" @click="$emit('discard-changes')" style="background: #ccc;">{{ t.buttons.discardChanges }}</button>
+                        <button type="button" class="btn btn-success" @click="$emit('apply-changes')" :disabled="!emontxConnected">{{ t.buttons.applyChanges }}</button>
+                        <button type="button" class="btn" @click="$emit('discard-changes')" style="background: #ccc;">{{ t.buttons.discardChanges }}</button>
                     </div>
                 </template>
                 <!-- Apply Progress State -->
@@ -265,7 +265,7 @@ Vue.component('config-tab', {
 
             <div v-if="!configReceived" class="alert alert-info">
                 {{ t.config.waiting }} {{ t.config.clickLoad }}
-                <button class="btn btn-primary" style="margin-left: 15px;" @click="$emit('load-config')" :disabled="!emontxConnected">{{ t.buttons.loadConfig }}</button>
+                <button type="button" class="btn btn-primary" style="margin-left: 15px;" @click="$emit('load-config')" :disabled="!emontxConnected">{{ t.buttons.loadConfig }}</button>
             </div>
 
             <div v-if="upgradeRequired" class="alert alert-danger">
@@ -341,7 +341,7 @@ Vue.component('config-tab', {
                 <div class="card">
                     <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
                         <span>{{ t.config.ctChannels }}</span>
-                        <button v-if="device.hardware === 'emonPi3'" class="btn btn-sm btn-info" @click="$emit('open-bulk-ct')" :disabled="!emontxConnected" style="padding: 4px 12px; font-size: 12px;"
+                        <button v-if="device.hardware === 'emonPi3'" type="button" class="btn btn-sm btn-info" @click="$emit('open-bulk-ct')" :disabled="!emontxConnected" style="padding: 4px 12px; font-size: 12px;"
                             :title="t.bulk.tooltip">
                             {{ t.bulk.button }}
                         </button>
@@ -431,7 +431,7 @@ Vue.component('config-tab', {
                                     <td><input type="checkbox" v-model="opa.pullUp" :disabled="!emontxConnected || opa.func === 'o' || idx === 2" /></td>
                                     <td><input type="number" v-model="opa.period" :disabled="!emontxConnected || opa.func === 'o'" style="width:80px" /></td>
                                     <td>
-                                        <button class="btn btn-sm" @click="applyOpaPreset(idx, 'oem-pulse')" :disabled="!emontxConnected" style="padding: 4px 8px; font-size: 12px;">
+                                        <button type="button" class="btn btn-sm" @click="applyOpaPreset(idx, 'oem-pulse')" :disabled="!emontxConnected" style="padding: 4px 8px; font-size: 12px;">
                                             {{ t.config.oemPulseSensor }}
                                         </button>
                                     </td>
@@ -451,14 +451,14 @@ Vue.component('config-tab', {
 
                         <!-- Action Buttons -->
                         <div class="button-group" style="margin-bottom: 20px;">
-                            <button class="btn btn-primary" @click="$emit('scan-temp-sensors')" :disabled="!emontxConnected || tempScanLoading" :title="t.tooltips.btnScanSensors">
+                            <button type="button" class="btn btn-primary" @click="$emit('scan-temp-sensors')" :disabled="!emontxConnected || tempScanLoading" :title="t.tooltips.btnScanSensors">
                                 <span v-if="tempScanLoading" class="spinner"></span>
                                 {{ tempScanLoading ? (t.config.scanning || 'Scanning...') : t.config.scanSensors }}
                             </button>
-                            <button class="btn btn-warning" @click="$emit('save-temp-mapping')" :disabled="!emontxConnected || assignedSensorsCount === 0" :title="t.tooltips.btnSaveMapping">
+                            <button type="button" class="btn btn-warning" @click="$emit('save-temp-mapping')" :disabled="!emontxConnected || assignedSensorsCount === 0" :title="t.tooltips.btnSaveMapping">
                                 {{ t.config.saveMapping }}
                             </button>
-                            <button class="btn btn-danger" @click="$emit('clear-all-temp-slots')" :disabled="!emontxConnected || assignedSensorsCount === 0" :title="t.config.clearAllSlots || 'Clear all slot assignments'">
+                            <button type="button" class="btn btn-danger" @click="$emit('clear-all-temp-slots')" :disabled="!emontxConnected || assignedSensorsCount === 0" :title="t.config.clearAllSlots || 'Clear all slot assignments'">
                                 {{ t.config.clearAllSlots || 'Clear All' }}
                             </button>
                         </div>
@@ -500,7 +500,7 @@ Vue.component('config-tab', {
                                                @input="onNameChange('temp', getSlotSensor(slot).addr, $event)"
                                                :placeholder="t.config.namePlaceholder" />
                                         <div class="sensor-info">{{ getSlotSensor(slot).addr }}</div>
-                                        <button class="btn-clear"
+                                        <button type="button" class="btn-clear"
                                                 @click="$emit('clear-temp-slot', slot)"
                                                 :disabled="!emontxConnected">
                                             {{ t.config.clearSlot || 'Clear' }}
@@ -627,7 +627,7 @@ Vue.component('config-tab', {
                             </select>
                         </div>
                         <div class="form-group" style="display: flex; align-items: center; gap: 15px;">
-                            <button class="btn btn-info" @click="$emit('check-firmware-now')" :disabled="checkingFirmware">
+                            <button type="button" class="btn btn-info" @click="$emit('check-firmware-now')" :disabled="checkingFirmware">
                                 {{ checkingFirmware ? t.config.checking : t.config.checkNow }}
                             </button>
                             <span v-if="firmwareUpdateAvailable" style="color: #4CAF50; font-weight: bold;">
@@ -647,7 +647,7 @@ Vue.component('config-tab', {
                             {{ t.config.channelNamesBackupDesc }}
                         </p>
                         <div class="button-group">
-                            <button class="btn btn-info" @click="$emit('export-names')" :title="t.tooltips.btnExportNames">
+                            <button type="button" class="btn btn-info" @click="$emit('export-names')" :title="t.tooltips.btnExportNames">
                                 {{ t.buttons.exportNames }}
                             </button>
                             <label class="btn btn-primary" style="margin: 0; cursor: pointer;" :title="t.tooltips.btnImportNames">
@@ -662,16 +662,16 @@ Vue.component('config-tab', {
 
                 <!-- Action Buttons -->
                 <div class="button-group">
-                    <button class="btn btn-success" @click="$emit('apply-changes')" :disabled="!hasPendingChanges || !emontxConnected || applyProgress" :title="t.tooltips.btnApplyChanges">
+                    <button type="button" class="btn btn-success" @click="$emit('apply-changes')" :disabled="!hasPendingChanges || !emontxConnected || applyProgress" :title="t.tooltips.btnApplyChanges">
                         {{ t.buttons.applyChanges }} <span v-if="pendingChangesCount > 0">({{ pendingChangesCount }})</span>
                     </button>
-                    <button class="btn" @click="$emit('discard-changes')" :disabled="!hasPendingChanges || applyProgress" style="background: #ccc;" :title="t.tooltips.btnDiscardChanges">
+                    <button type="button" class="btn" @click="$emit('discard-changes')" :disabled="!hasPendingChanges || applyProgress" style="background: #ccc;" :title="t.tooltips.btnDiscardChanges">
                         {{ t.buttons.discardChanges }}
                     </button>
-                    <button class="btn btn-warning" @click="$emit('save-config')" :disabled="!hasUnsavedChanges || !emontxConnected" :title="t.tooltips.btnSave">{{ t.buttons.save }}</button>
-                    <button class="btn btn-danger" @click="$emit('reset-defaults')" :disabled="!emontxConnected" :title="t.tooltips.btnResetDefaults">{{ t.buttons.resetDefaults }}</button>
-                    <button class="btn btn-primary" @click="$emit('load-config')" :disabled="!emontxConnected" :title="t.tooltips.btnReloadConfig">{{ t.buttons.reloadConfig }}</button>
-                    <button class="btn btn-primary" @click="$emit('generate-yaml')" :disabled="!configReceived" style="background: #9c27b0;" :title="t.tooltips.btnGenerateYaml">{{ t.buttons.generateYaml }}</button>
+                    <button type="button" class="btn btn-warning" @click="$emit('save-config')" :disabled="!hasUnsavedChanges || !emontxConnected" :title="t.tooltips.btnSave">{{ t.buttons.save }}</button>
+                    <button type="button" class="btn btn-danger" @click="$emit('reset-defaults')" :disabled="!emontxConnected" :title="t.tooltips.btnResetDefaults">{{ t.buttons.resetDefaults }}</button>
+                    <button type="button" class="btn btn-primary" @click="$emit('load-config')" :disabled="!emontxConnected" :title="t.tooltips.btnReloadConfig">{{ t.buttons.reloadConfig }}</button>
+                    <button type="button" class="btn btn-primary" @click="$emit('generate-yaml')" :disabled="!configReceived" style="background: #9c27b0;" :title="t.tooltips.btnGenerateYaml">{{ t.buttons.generateYaml }}</button>
                 </div>
             </div>
         </div>
