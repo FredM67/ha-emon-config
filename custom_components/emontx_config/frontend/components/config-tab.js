@@ -473,6 +473,9 @@ Vue.component('config-tab', {
                             <button type="button" class="btn btn-warning" @click="$emit('save-temp-mapping')" :disabled="!emontxConnected || sensorsCount === 0" :title="t.tooltips.btnSaveMapping">
                                 {{ t.config.saveMapping }}
                             </button>
+                            <button type="button" class="btn btn-danger" @click="$emit('clear-all-temp-slots')" :disabled="!emontxConnected || sensorsCount === 0" :title="t.tooltips.btnClearAllSlots">
+                                {{ t.config.clearAllSlots || 'Clear All' }}
+                            </button>
                         </div>
 
                         <!-- Temperature Slots Section Header -->
@@ -526,6 +529,7 @@ Vue.component('config-tab', {
                                                     :disabled="!emontxConnected">
                                                 <option v-for="s in otherSlots" :key="s" :value="s">T{{ s }}</option>
                                             </select>
+                                            <button type="button" class="btn-clear-slot" @click.stop="$emit('clear-temp-slot', slot)" :disabled="!emontxConnected" :title="t.tooltips.btnClearSlot || 'Clear this slot'">✕</button>
                                         </div>
                                     </template>
                                 </div>

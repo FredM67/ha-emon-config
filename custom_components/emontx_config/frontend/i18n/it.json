@@ -111,6 +111,7 @@
         "listSensors": "Elenca Sensori",
         "listSavedSensors": "Ripristina",
         "saveMapping": "Salva Mappatura",
+        "clearAllSlots": "Cancella Tutto",
         "sensor": "Sensore",
         "slot": "Slot",
         "address": "Indirizzo",

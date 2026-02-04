@@ -111,6 +111,7 @@
         "listSensors": "Lister",
         "listSavedSensors": "Restaurer",
         "saveMapping": "Enregistrer",
+        "clearAllSlots": "Tout Effacer",
         "sensor": "Capteur",
         "slot": "Emplacement",
         "address": "Adresse",

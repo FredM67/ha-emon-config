@@ -791,6 +791,28 @@ input.input-error.no-spinner {
     border-color: #4CAF50;
 }
 
+.temp-slot-card .btn-clear-slot {
+    padding: 4px 8px;
+    font-size: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+    color: #d32f2f;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.temp-slot-card .btn-clear-slot:hover {
+    background: #d32f2f;
+    color: white;
+    border-color: #d32f2f;
+}
+
+.temp-slot-card .btn-clear-slot:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* Unassigned Sensors Pool */
 .unassigned-sensors-section {
     margin-top: 20px;

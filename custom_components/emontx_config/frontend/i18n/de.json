@@ -111,6 +111,7 @@
         "listSensors": "Sensoren Auflisten",
         "listSavedSensors": "Wiederherstellen",
         "saveMapping": "Zuordnung Speichern",
+        "clearAllSlots": "Alle Löschen",
         "sensor": "Sensor",
         "slot": "Slot",
         "address": "Adresse",
