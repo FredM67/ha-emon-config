@@ -38,6 +38,7 @@ const ChannelNamesMixin = {
         },
 
         async saveChannelNames() {
+            console.log('saveChannelNames called (should only happen on Apply or Import)');
             try {
                 if (this.hass && this.hass.callWS) {
                     // Update allChannelNames with current device's names
@@ -55,6 +56,7 @@ const ChannelNamesMixin = {
 
         updateChannelName(type, key, name) {
             // Update a single channel name (no auto-save, use Apply Changes button)
+            console.log('updateChannelName called:', type, key, name, '(no auto-save)');
             if (!this.channelNames[type]) {
                 this.$set(this.channelNames, type, {});
             }
@@ -76,6 +78,7 @@ const ChannelNamesMixin = {
                 const allKeys = new Set([...Object.keys(curr), ...Object.keys(orig)]);
                 for (const key of allKeys) {
                     if ((curr[key] || '') !== (orig[key] || '')) {
+                        console.log('Channel name change detected:', type, key, 'curr:', curr[key], 'orig:', orig[key]);
                         return true;
                     }
                 }
