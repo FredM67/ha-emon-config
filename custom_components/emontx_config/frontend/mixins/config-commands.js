@@ -177,6 +177,9 @@ const ConfigCommandsMixin = {
                 case 'json':
                     this.$set(this.originalDevice, 'json', this.device.json);
                     break;
+                case 'channelNames':
+                    this.markChannelNamesAsApplied();
+                    break;
             }
         },
 
@@ -241,6 +244,9 @@ const ConfigCommandsMixin = {
                 case 'json':
                     this.setJson();
                     break;
+                case 'channelNames':
+                    this.saveChannelNames();
+                    break;
             }
         },
 
@@ -256,6 +262,7 @@ const ConfigCommandsMixin = {
                 case 'rfPower': return 'RF Power';
                 case 'datalog': return 'Datalog';
                 case 'json': return 'JSON';
+                case 'channelNames': return 'Names';
                 default: return change.type;
             }
         },
@@ -267,6 +274,8 @@ const ConfigCommandsMixin = {
                 this.failedCtIndices = [];
                 this.failedCtFields = [];
                 this.failedVcalIndices = [];
+                // Also discard channel name changes
+                this.discardChannelNameChanges();
                 this.log('Changes discarded', 'info');
             }
         },

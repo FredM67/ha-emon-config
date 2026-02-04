@@ -23,10 +23,17 @@ const ChannelNamesMixin = {
             // Set channelNames for current selected device
             const deviceNames = this.allChannelNames[this.selectedDevice] || {};
             this.channelNames = {
-                ct: deviceNames.ct || {},
-                voltage: deviceNames.voltage || {},
-                opa: deviceNames.opa || {},
-                temp: deviceNames.temp || {}
+                ct: JSON.parse(JSON.stringify(deviceNames.ct || {})),
+                voltage: JSON.parse(JSON.stringify(deviceNames.voltage || {})),
+                opa: JSON.parse(JSON.stringify(deviceNames.opa || {})),
+                temp: JSON.parse(JSON.stringify(deviceNames.temp || {}))
+            };
+            // Store original for change detection
+            this.originalChannelNames = {
+                ct: JSON.parse(JSON.stringify(deviceNames.ct || {})),
+                voltage: JSON.parse(JSON.stringify(deviceNames.voltage || {})),
+                opa: JSON.parse(JSON.stringify(deviceNames.opa || {})),
+                temp: JSON.parse(JSON.stringify(deviceNames.temp || {}))
             };
         },
 
@@ -47,7 +54,7 @@ const ChannelNamesMixin = {
         },
 
         updateChannelName(type, key, name) {
-            // Update a single channel name immediately (to prevent field clearing on re-render)
+            // Update a single channel name (no auto-save, use Apply Changes button)
             if (!this.channelNames[type]) {
                 this.$set(this.channelNames, type, {});
             }
@@ -57,17 +64,33 @@ const ChannelNamesMixin = {
                 // Remove empty names
                 this.$delete(this.channelNames[type], key);
             }
-            // Debounce the save to avoid excessive API calls while typing
-            this.debouncedSaveChannelNames();
         },
 
-        debouncedSaveChannelNames() {
-            if (this._saveTimeout) {
-                clearTimeout(this._saveTimeout);
+        hasChannelNameChanges() {
+            // Compare current channelNames with originalChannelNames
+            const types = ['ct', 'voltage', 'opa', 'temp'];
+            for (const type of types) {
+                const curr = this.channelNames[type] || {};
+                const orig = this.originalChannelNames[type] || {};
+                // Check all keys in both objects
+                const allKeys = new Set([...Object.keys(curr), ...Object.keys(orig)]);
+                for (const key of allKeys) {
+                    if ((curr[key] || '') !== (orig[key] || '')) {
+                        return true;
+                    }
+                }
             }
-            this._saveTimeout = setTimeout(() => {
-                this.saveChannelNames();
-            }, 500);
+            return false;
+        },
+
+        markChannelNamesAsApplied() {
+            // Update originalChannelNames to match current (after successful save)
+            this.originalChannelNames = JSON.parse(JSON.stringify(this.channelNames));
+        },
+
+        discardChannelNameChanges() {
+            // Revert channelNames to original
+            this.channelNames = JSON.parse(JSON.stringify(this.originalChannelNames));
         },
 
         exportChannelNames() {

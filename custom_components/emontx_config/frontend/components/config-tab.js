@@ -509,6 +509,7 @@ Vue.component('config-tab', {
 
                                     <!-- Filled Slot -->
                                     <template v-else>
+                                        <div class="input-label">{{ t.config.name }}</div>
                                         <input type="text"
                                                class="sensor-name-input"
                                                :value="getChannelName('temp', getSlotSensor(slot).addr)"

@@ -216,7 +216,7 @@
             el: '#app',
             mixins: [ConnectionMixin, DataParserMixin, ConfigCommandsMixin, YamlGeneratorMixin, ChannelNamesMixin, FirmwareUpdateMixin],
             data: {
-                integrationVersion: '1.3.2',
+                integrationVersion: '1.3.3',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -316,6 +316,13 @@
                     voltage: {},
                     opa: {},
                     temp: {}
+                },
+                // Original channel names (for detecting pending changes)
+                originalChannelNames: {
+                    ct: {},
+                    voltage: {},
+                    opa: {},
+                    temp: {}
                 }
             },
             watch: {
@@ -398,6 +405,11 @@
                     // Check misc settings
                     if (curr.datalog !== orig.datalog) changes.push({ type: 'datalog' });
                     if (curr.json !== orig.json) changes.push({ type: 'json' });
+
+                    // Check channel names
+                    if (this.hasChannelNameChanges()) {
+                        changes.push({ type: 'channelNames' });
+                    }
 
                     return changes;
                 }
