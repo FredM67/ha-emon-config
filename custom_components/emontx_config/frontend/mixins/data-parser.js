@@ -179,14 +179,13 @@ const DataParserMixin = {
             }
 
             // Parse saved temperature sensor list from 'on' command
-            // Format: [0] 28 c0 c0 03 00 00 00 2b
-            //         [1] 00 00 00 00 00 00 00 00
-            // Slot index is 0-7, empty slots have all zeros
+            // Format: [1] 28 c0 c0 03 00 00 00 2b
+            //         [2] 00 00 00 00 00 00 00 00
+            // Slot index is 1-8, empty slots have all zeros
             const savedTempMatch = line.trim().match(/^\[(\d)\]\s+([0-9a-fA-F]{2}(?:\s+[0-9a-fA-F]{2}){7})$/);
             if (savedTempMatch) {
-                const slotIdx = parseInt(savedTempMatch[1]);
+                const slot = parseInt(savedTempMatch[1]);  // Already 1-based from firmware
                 const addrBytes = savedTempMatch[2].trim();
-                const slot = slotIdx + 1;  // Convert 0-based to 1-based slot number
 
                 // Check if slot is empty (all zeros)
                 const isEmptySlot = addrBytes.replace(/\s+/g, '') === '0000000000000000';
@@ -196,7 +195,7 @@ const DataParserMixin = {
                     const addr = addrBytes.replace(/\s+/g, ':').toUpperCase();
                     // Find existing entry with same slot or add new one
                     const existingIdx = this.device.tempSensors.findIndex(s => s.slot === slot);
-                    const sensorData = { busIndex: slotIdx, slot: slot, addr: addr, saved: true };
+                    const sensorData = { busIndex: slot, slot: slot, addr: addr, saved: true };
                     if (existingIdx >= 0) {
                         this.$set(this.device.tempSensors, existingIdx, sensorData);
                     } else {
