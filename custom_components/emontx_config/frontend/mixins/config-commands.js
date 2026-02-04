@@ -180,6 +180,15 @@ const ConfigCommandsMixin = {
                 case 'channelNames':
                     this.markChannelNamesAsApplied();
                     break;
+                case 'tempSlot':
+                    // Update originalDevice.tempSensors with the new slot
+                    if (this.originalDevice.tempSensors) {
+                        const origSensor = this.originalDevice.tempSensors.find(s => s.addr === change.addr);
+                        if (origSensor) {
+                            origSensor.slot = change.slot;
+                        }
+                    }
+                    break;
             }
         },
 
@@ -247,6 +256,9 @@ const ConfigCommandsMixin = {
                 case 'channelNames':
                     this.saveChannelNames();
                     break;
+                case 'tempSlot':
+                    this.applyTempSensorSlot(change.addr);
+                    break;
             }
         },
 
@@ -263,6 +275,7 @@ const ConfigCommandsMixin = {
                 case 'datalog': return 'Datalog';
                 case 'json': return 'JSON';
                 case 'channelNames': return 'Names';
+                case 'tempSlot': return `T${change.slot}`;
                 default: return change.type;
             }
         },
@@ -526,18 +539,24 @@ const ConfigCommandsMixin = {
         },
 
         assignTempSensorToSlot(slot, addr) {
-            // Assign sensor to specified slot (1-8)
-            // Command format: o<n> <b0> <b1> <b2> <b3> <b4> <b5> <b6> <b7>
+            // Update local state only - actual command sent on Apply
             if (!addr) {
                 this.log('No sensor address provided', 'error');
                 return;
             }
-            // Parse address bytes (format: "28:FF:00:01:02:03:04:05" or "28 FF 00 01 02 03 04 05")
+            // Find the sensor by address and update its slot
+            const sensorIdx = this.device.tempSensors.findIndex(s => s.addr === addr);
+            if (sensorIdx >= 0) {
+                this.$set(this.device.tempSensors[sensorIdx], 'slot', slot);
+            }
+        },
+
+        applyTempSensorSlot(addr) {
+            // Send the actual command to assign sensor to its current slot
+            const sensor = this.device.tempSensors.find(s => s.addr === addr);
+            if (!sensor) return;
             const bytes = addr.replace(/:/g, ' ').trim();
-            this.writeToStream('o' + slot + ' ' + bytes);
-            this.log(`Assigning sensor to slot ${slot}...`, 'info');
-            // Refresh the list after a short delay
-            setTimeout(() => this.listTempSensors(), 1000);
+            this.writeToStream('o' + sensor.slot + ' ' + bytes);
         },
 
         saveConfig() {
