@@ -519,16 +519,32 @@ const ConfigCommandsMixin = {
             this.log('Temperature sensor mapping saved', 'info');
         },
 
-        clearTempSlot(slot) {
+        async clearTempSlot(slot) {
+            const ackPattern = `Cleared saved 1-Wire address for channel ${slot}`;
+            const responsePromise = this.waitForResponse(ackPattern);
             this.writeToStream('oc' + slot);
             this.log(`Clearing temperature slot T${slot}...`, 'info');
-            setTimeout(() => this.listTempSensors(), 1000);
+            try {
+                await responsePromise;
+                this.log(`Cleared slot T${slot}`, 'info');
+            } catch (e) {
+                this.log(`Clear slot T${slot} timeout`, 'warning');
+            }
+            this.listTempSensors();
         },
 
-        clearAllTempSlots() {
+        async clearAllTempSlots() {
+            const ackPattern = 'Cleared all saved 1-Wire addresses';
+            const responsePromise = this.waitForResponse(ackPattern);
             this.writeToStream('oca');
             this.log('Clearing all temperature slot assignments...', 'info');
-            setTimeout(() => this.listTempSensors(), 1000);
+            try {
+                await responsePromise;
+                this.log('Cleared all slots', 'info');
+            } catch (e) {
+                this.log('Clear all slots timeout', 'warning');
+            }
+            this.listTempSensors();
         },
 
         syncOriginalTempSensors() {
