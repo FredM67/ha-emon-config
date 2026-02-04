@@ -174,7 +174,8 @@ const DataParserMixin = {
                 } else {
                     this.device.tempSensors.push(sensorData);
                 }
-                // Keep sensors in bus index order (order found on bus)
+                // Sync to originalDevice so slot changes can be detected as pending
+                this.syncOriginalTempSensors();
             }
 
             // Parse saved temperature sensor list from 'on' command
@@ -201,6 +202,8 @@ const DataParserMixin = {
                     } else {
                         this.device.tempSensors.push(sensorData);
                     }
+                    // Sync to originalDevice so slot changes can be detected as pending
+                    this.syncOriginalTempSensors();
                 }
             }
 

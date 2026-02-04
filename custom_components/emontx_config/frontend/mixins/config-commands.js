@@ -529,6 +529,14 @@ const ConfigCommandsMixin = {
             setTimeout(() => this.listTempSensors(), 1000);
         },
 
+        syncOriginalTempSensors() {
+            // Sync originalDevice.tempSensors with current device.tempSensors
+            // Called when sensors are parsed from device to establish baseline for change detection
+            if (this.originalDevice) {
+                this.originalDevice.tempSensors = JSON.parse(JSON.stringify(this.device.tempSensors));
+            }
+        },
+
         assignTempSensorToSlot(slot, addr) {
             // Update local state only - actual command sent on Apply
             if (!addr) {
