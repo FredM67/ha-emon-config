@@ -16,7 +16,7 @@ from homeassistant.core import HomeAssistant, ServiceCall, callback
 from homeassistant.helpers.typing import ConfigType
 import voluptuous as vol
 
-from .const import DOMAIN, EVENT_EMONTX_RAW, CONF_ESPHOME_DEVICE
+from .const import DOMAIN, EVENT_EMONTX_RAW
 
 # Key for storing channel names in config entry options
 CONF_CHANNEL_NAMES = "channel_names"
@@ -47,11 +47,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         websocket_api.async_register_command(hass, websocket_save_channel_names)
         hass.data[DOMAIN][WEBSOCKET_REGISTERED] = True
 
-    esphome_device = entry.data.get(CONF_ESPHOME_DEVICE, "")
-
-    # Store configuration
+    # Store entry data
     hass.data[DOMAIN][entry.entry_id] = {
-        "esphome_device": esphome_device,
         "last_data": None,
     }
 
@@ -75,17 +72,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         async def send_command(call: ServiceCall) -> None:
             """Send a command to the emonTx via ESPHome."""
             command = call.data.get("command", "")
-            # Get device from call or from first entry
             device = call.data.get("device", "")
-            if not device:
-                # Try to get from any active entry
-                for eid, data in hass.data[DOMAIN].items():
-                    if isinstance(data, dict) and "esphome_device" in data:
-                        device = data["esphome_device"]
-                        break
 
             if not device:
-                _LOGGER.error("No ESPHome device specified")
+                _LOGGER.error("No ESPHome device specified in service call")
                 return
 
             # Call the ESPHome service
