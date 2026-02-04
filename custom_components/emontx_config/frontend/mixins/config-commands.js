@@ -213,6 +213,8 @@ const ConfigCommandsMixin = {
                     return 'datalog =';
                 case 'json':
                     return 'json =';
+                case 'tempSlot':
+                    return `1W_addr${change.slot} =`;
                 default:
                     return null;
             }
