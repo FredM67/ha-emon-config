@@ -224,7 +224,14 @@ The main configuration interface with three sub-tabs:
 
 #### Other Sensors
 - **OPA Channels**: Configure OneWire or Pulse input modes with optional pull-up and debounce period
-- **Temperature Sensors**: Scan, list, and save DS18B20 sensor mappings
+- **Temperature Sensors**: DS18B20 sensor management with 8-slot grid layout
+  - Scan for connected sensors on the OneWire bus
+  - Drag-and-drop sensors between slots to reassign
+  - Dropdown selector for slot reassignment
+  - Clear individual slots or all slots at once
+  - Restore saved sensor mappings from device memory
+  - Save mappings to device memory
+  - Slot changes use the "Apply/Discard" workflow
 - **Channel Names Backup**: Export/Import friendly names as JSON for backup or migration
 
 #### Other Settings
