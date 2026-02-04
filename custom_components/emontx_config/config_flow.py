@@ -7,9 +7,8 @@ from typing import Any
 import voluptuous as vol
 
 from homeassistant import config_entries
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
-from homeassistant.helpers import selector
 
 from .const import DOMAIN, CONF_ESPHOME_DEVICE
 
@@ -25,43 +24,17 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
         """Handle the initial step."""
-        errors: dict[str, str] = {}
+        # Check if already configured
+        await self.async_set_unique_id(DOMAIN)
+        self._abort_if_unique_id_configured()
 
-        if user_input is not None:
-            # Check if already configured
-            await self.async_set_unique_id(DOMAIN)
-            self._abort_if_unique_id_configured()
-
-            return self.async_create_entry(
-                title="emonPi/Tx Configuration",
-                data=user_input,
-            )
-
-        # Get list of ESPHome devices for selection
+        # Auto-discover devices and use first one as default
         esphome_devices = await self._get_esphome_devices()
+        default_device = esphome_devices[0] if esphome_devices else ""
 
-        # Convert to SelectOptionDict format
-        options = [
-            selector.SelectOptionDict(value=device, label=device)
-            for device in esphome_devices
-        ]
-
-        data_schema = vol.Schema(
-            {
-                vol.Required(CONF_ESPHOME_DEVICE): selector.SelectSelector(
-                    selector.SelectSelectorConfig(
-                        options=options,
-                        mode=selector.SelectSelectorMode.DROPDOWN,
-                        custom_value=True,
-                    ),
-                ),
-            }
-        )
-
-        return self.async_show_form(
-            step_id="user",
-            data_schema=data_schema,
-            errors=errors,
+        return self.async_create_entry(
+            title="emonPi/Tx Configuration",
+            data={CONF_ESPHOME_DEVICE: default_device},
         )
 
     async def _get_esphome_devices(self) -> list[str]:
