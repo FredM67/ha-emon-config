@@ -527,6 +527,8 @@ const ConfigCommandsMixin = {
             try {
                 await responsePromise;
                 this.log(`Cleared slot T${slot}`, 'info');
+                this.changes = true;
+                this.hasUnsavedChanges = true;
             } catch (e) {
                 this.log(`Clear slot T${slot} timeout`, 'warning');
             }
@@ -541,6 +543,8 @@ const ConfigCommandsMixin = {
             try {
                 await responsePromise;
                 this.log('Cleared all slots', 'info');
+                this.changes = true;
+                this.hasUnsavedChanges = true;
             } catch (e) {
                 this.log('Clear all slots timeout', 'warning');
             }
@@ -574,6 +578,8 @@ const ConfigCommandsMixin = {
             if (!sensor) return;
             const bytes = addr.replace(/:/g, ' ').trim();
             this.writeToStream('o' + sensor.slot + ' ' + bytes);
+            this.changes = true;
+            this.hasUnsavedChanges = true;
         },
 
         saveConfig() {
