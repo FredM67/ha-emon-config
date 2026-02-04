@@ -177,9 +177,6 @@ const ConfigCommandsMixin = {
                 case 'json':
                     this.$set(this.originalDevice, 'json', this.device.json);
                     break;
-                case 'channelNames':
-                    this.markChannelNamesAsApplied();
-                    break;
                 case 'tempSlot':
                     // Update originalDevice.tempSensors with the new slot
                     if (this.originalDevice.tempSensors) {
@@ -253,9 +250,6 @@ const ConfigCommandsMixin = {
                 case 'json':
                     this.setJson();
                     break;
-                case 'channelNames':
-                    this.saveChannelNames();
-                    break;
                 case 'tempSlot':
                     this.applyTempSensorSlot(change.addr);
                     break;
@@ -274,7 +268,6 @@ const ConfigCommandsMixin = {
                 case 'rfPower': return 'RF Power';
                 case 'datalog': return 'Datalog';
                 case 'json': return 'JSON';
-                case 'channelNames': return 'Names';
                 case 'tempSlot': return `T${change.slot}`;
                 default: return change.type;
             }
@@ -287,8 +280,6 @@ const ConfigCommandsMixin = {
                 this.failedCtIndices = [];
                 this.failedCtFields = [];
                 this.failedVcalIndices = [];
-                // Also discard channel name changes
-                this.discardChannelNameChanges();
                 this.log('Changes discarded', 'info');
             }
         },
