@@ -45,9 +45,11 @@ A Home Assistant integration that provides a web-based configuration interface f
 
 - Home Assistant 2023.1.0 or newer
 - **ESPHome Integration** installed in Home Assistant (Settings > Devices & Services > Add Integration > ESPHome)
-- An ESP32 device added to the ESPHome integration and showing as "Online"
+- An ESP32 device added to the ESPHome integration and showing as "Online":
+  - **emonWifi** (ESP32-C3 Mini) - recommended for emonPi3/emonTx5
+  - Or any other ESP32 board connected via UART
 - ESPHome firmware on the ESP32 with the [emonTx component](https://github.com/esphome/esphome/pull/9027) configured
-- An emonTx device connected to the ESP32 via UART
+- An emonTx/emonPi device connected to the ESP32 via UART
 
 ## Installation
 
@@ -85,7 +87,9 @@ If you haven't used ESPHome before, follow these steps:
    - In the ESPHome dashboard, click "+ New Device"
    - Click "Continue" on the welcome screen
    - Enter a name for your device (e.g., `emontx-bridge`)
-   - Select your device type (e.g., "ESP32")
+   - Select your device type:
+     - For **emonWifi**: select "ESP32-C3"
+     - For other ESP32 boards: select "ESP32"
    - Click "Skip" when asked to install (we'll edit the config first)
 
 3. **Edit the Configuration**:
@@ -105,15 +109,22 @@ If you haven't used ESPHome before, follow these steps:
 
 #### Complete Example Configuration
 
-Here's a complete ESPHome configuration file for an ESP32 connected to an emonTx/emonPi:
+Here's a complete ESPHome configuration file. Choose the appropriate ESP32 variant for your board:
 
 ```yaml
 esphome:
   name: emontx-bridge
   friendly_name: emonTx Bridge
 
+# For emonWifi (ESP32-C3 Mini):
 esp32:
-  board: esp32dev
+  board: esp32-c3-devkitm-1
+  framework:
+    type: esp-idf
+
+# For other ESP32 boards, use instead:
+# esp32:
+#   board: esp32dev
 
 # Enable logging
 logger:
