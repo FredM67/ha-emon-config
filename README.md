@@ -70,7 +70,76 @@ A Home Assistant integration that provides a web-based configuration interface f
 
 ### ESPHome Setup
 
-Your ESP32 needs to be configured with the emonTx component from [PR #9027](https://github.com/esphome/esphome/pull/9027). Add this to your ESPHome configuration:
+Your ESP32 needs to be configured with the emonTx component from [PR #9027](https://github.com/esphome/esphome/pull/9027).
+
+#### Complete Example Configuration
+
+Here's a complete ESPHome configuration file for an ESP32 connected to an emonTx/emonPi:
+
+```yaml
+esphome:
+  name: emontx-bridge
+  friendly_name: emonTx Bridge
+
+esp32:
+  board: esp32dev
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API with encryption
+api:
+  encryption:
+    key: "your-32-byte-base64-key-here"  # See note below
+  # Required for the send_command service
+  custom_services: true
+
+# Enable Over-The-Air updates
+ota:
+  platform: esphome
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+# External component for emonTx support
+external_components:
+  - source: github://pr#9027
+    components: [emontx]
+    refresh: 0s
+
+# UART connection to emonTx/emonPi
+uart:
+  id: emontx_uart
+  rx_pin: GPIO20  # Adjust for your board
+  tx_pin: GPIO21  # Adjust for your board
+  baud_rate: 115200
+
+# emonTx component
+emontx:
+  # Enable config panel - registers send_command service
+  # and fires esphome.emontx_raw events for serial data
+  config_panel: true
+```
+
+#### API Encryption Key
+
+The `api.encryption.key` is required for secure communication between ESPHome and Home Assistant. You have two options:
+
+1. **Generate a new key**: When you create a new ESPHome device through the Home Assistant ESPHome add-on, it automatically generates an encryption key for you. You can find it in your device's YAML configuration.
+
+2. **Use secrets**: Store the key in your `secrets.yaml` file and reference it with `!secret api_encryption_key`:
+   ```yaml
+   api:
+     encryption:
+       key: !secret api_encryption_key
+   ```
+
+To generate a new key manually, you can use: `openssl rand -base64 32`
+
+#### Minimal Addition to Existing Config
+
+If you already have an ESPHome device configured, you only need to add these sections:
 
 ```yaml
 external_components:
@@ -84,16 +153,12 @@ uart:
   tx_pin: GPIO21
   baud_rate: 115200
 
-# Required: API for Home Assistant communication
+# Add custom_services to your existing api: section
 api:
-  encryption:
-    key: !secret api_encryption_key
-  # Required for auto-registered send_command service
+  # ... your existing config ...
   custom_services: true
 
 emontx:
-  # Enable config panel - automatically registers send_command service
-  # and fires esphome.emontx_raw events for all serial data
   config_panel: true
 ```
 
