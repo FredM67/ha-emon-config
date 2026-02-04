@@ -32,7 +32,8 @@ PLATFORMS: list[Platform] = []
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Set up the emonPi/Tx Configuration component."""
-    hass.data.setdefault(DOMAIN, {})
+    # Clear domain data on (re)load to ensure fresh registration of services/websocket
+    hass.data[DOMAIN] = {}
     return True
 
 
