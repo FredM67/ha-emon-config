@@ -72,6 +72,37 @@ A Home Assistant integration that provides a web-based configuration interface f
 
 Your ESP32 needs to be configured with the emonTx component from [PR #9027](https://github.com/esphome/esphome/pull/9027).
 
+#### New to ESPHome? Start Here
+
+If you haven't used ESPHome before, follow these steps:
+
+1. **Install the ESPHome Add-on** (if using Home Assistant OS):
+   - Go to Settings > Add-ons > Add-on Store
+   - Search for "ESPHome" and install it
+   - Start the add-on and click "Open Web UI"
+
+2. **Create a New Device**:
+   - In the ESPHome dashboard, click "+ New Device"
+   - Click "Continue" on the welcome screen
+   - Enter a name for your device (e.g., `emontx-bridge`)
+   - Select your device type (e.g., "ESP32")
+   - Click "Skip" when asked to install (we'll edit the config first)
+
+3. **Edit the Configuration**:
+   - Click "Edit" on your newly created device
+   - Replace or modify the generated YAML with the configuration below
+   - Adjust the GPIO pins for your specific board
+   - Click "Save" then "Install"
+
+4. **Install the Firmware**:
+   - For first-time installation, use "Plug into this computer" or "Manual download"
+   - For subsequent updates, use "Wirelessly" (OTA)
+
+5. **Add to Home Assistant**:
+   - Go to Settings > Devices & Services
+   - ESPHome devices are usually auto-discovered
+   - If not, click "Add Integration" > "ESPHome" and enter the device IP
+
 #### Complete Example Configuration
 
 Here's a complete ESPHome configuration file for an ESP32 connected to an emonTx/emonPi:
