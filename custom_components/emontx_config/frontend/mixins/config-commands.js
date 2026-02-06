@@ -82,6 +82,12 @@ const ConfigCommandsMixin = {
                     if (responsePromise) {
                         await responsePromise;
                     }
+
+                    // Add delay after tempSlot changes to let serial buffer clear
+                    if (change.type === 'tempSlot') {
+                        await new Promise(resolve => setTimeout(resolve, 300));
+                    }
+
                     this.log(`Applied: ${this.getChangeLabel(change)}`, 'info');
                     successfulChanges.push(change);
                 } catch (e) {
