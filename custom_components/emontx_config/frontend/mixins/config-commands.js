@@ -33,17 +33,20 @@ const ConfigCommandsMixin = {
             this.failedVcalIndices = [];
             this.writeToStream('l');
 
-            // Also load saved temperature sensors after config is received
+            // Load both found sensors (ol) and saved sensors (on) after config is received
             setTimeout(() => {
-                this.listSavedTempSensors();
+                this.listTempSensors();  // 'ol' - found sensors on bus
             }, 500);
+            setTimeout(() => {
+                this.listSavedTempSensors();  // 'on' - saved sensors in NVM
+            }, 1000);
 
             // Update originalDevice after config is fully received to clear pending changes
             setTimeout(() => {
                 if (this.configReceived) {
                     this.originalDevice = JSON.parse(JSON.stringify(this.device));
                 }
-            }, 1500);
+            }, 2000);
         },
 
         async applyAllChanges() {
@@ -528,8 +531,9 @@ const ConfigCommandsMixin = {
             this.changes = true;
             this.hasUnsavedChanges = true;
             this.log('Temperature sensor mapping saved', 'info');
-            // Refresh saved sensors list to update status
-            setTimeout(() => this.listSavedTempSensors(), 500);
+            // Refresh both found and saved sensors list to update status
+            setTimeout(() => this.listTempSensors(), 500);
+            setTimeout(() => this.listSavedTempSensors(), 1000);
         },
 
         async clearTempSlot(slot) {
