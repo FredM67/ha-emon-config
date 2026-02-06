@@ -34,20 +34,19 @@ const ConfigCommandsMixin = {
             this.writeToStream('l');
 
             // Load both found sensors (ol) and saved sensors (on) after config is received
-            // Need sufficient delay between commands to let serial output complete
             setTimeout(() => {
                 this.listTempSensors();  // 'ol' - found sensors on bus
             }, 500);
             setTimeout(() => {
                 this.listSavedTempSensors();  // 'on' - saved sensors in NVM
-            }, 2500);  // Wait longer for ol to complete (8 sensors @ ~200ms each)
+            }, 1000);
 
             // Update originalDevice after config is fully received to clear pending changes
             setTimeout(() => {
                 if (this.configReceived) {
                     this.originalDevice = JSON.parse(JSON.stringify(this.device));
                 }
-            }, 4000);
+            }, 1500);
         },
 
         async applyAllChanges() {
@@ -535,7 +534,7 @@ const ConfigCommandsMixin = {
             this.log('Temperature sensor mapping saved', 'info');
             // Refresh both found and saved sensors list to update status
             setTimeout(() => this.listTempSensors(), 500);
-            setTimeout(() => this.listSavedTempSensors(), 2500);
+            setTimeout(() => this.listSavedTempSensors(), 1000);
         },
 
         async clearTempSlot(slot) {
@@ -554,8 +553,8 @@ const ConfigCommandsMixin = {
             // Delay before next command to let serial buffer clear
             await new Promise(resolve => setTimeout(resolve, 300));
             this.listTempSensors();
-            // Also refresh saved sensors list (wait for ol to complete)
-            setTimeout(() => this.listSavedTempSensors(), 2000);
+            // Also refresh saved sensors list
+            setTimeout(() => this.listSavedTempSensors(), 500);
         },
 
         async clearAllTempSlots() {
@@ -574,8 +573,8 @@ const ConfigCommandsMixin = {
             // Delay before next command to let serial buffer clear
             await new Promise(resolve => setTimeout(resolve, 300));
             this.listTempSensors();
-            // Also refresh saved sensors list (wait for ol to complete)
-            setTimeout(() => this.listSavedTempSensors(), 2000);
+            // Also refresh saved sensors list
+            setTimeout(() => this.listSavedTempSensors(), 500);
         },
 
         syncOriginalTempSensors() {
