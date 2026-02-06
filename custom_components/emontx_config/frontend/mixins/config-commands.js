@@ -519,6 +519,7 @@ const ConfigCommandsMixin = {
         },
 
         listTempSensors() {
+            this.device.tempSensors = [];  // Clear before fetching new list
             this.writeToStream('ol');
         },
 
