@@ -33,12 +33,17 @@ const ConfigCommandsMixin = {
             this.failedVcalIndices = [];
             this.writeToStream('l');
 
+            // Also load saved temperature sensors after config is received
+            setTimeout(() => {
+                this.listSavedTempSensors();
+            }, 500);
+
             // Update originalDevice after config is fully received to clear pending changes
             setTimeout(() => {
                 if (this.configReceived) {
                     this.originalDevice = JSON.parse(JSON.stringify(this.device));
                 }
-            }, 1000);
+            }, 1500);
         },
 
         async applyAllChanges() {
@@ -259,7 +264,7 @@ const ConfigCommandsMixin = {
                     this.setJson();
                     break;
                 case 'tempSlot':
-                    this.applyTempSensorSlot(change.addr);
+                    this.applyTempSensorSlot(change.addr, change.slot);
                     break;
             }
         },
@@ -582,12 +587,10 @@ const ConfigCommandsMixin = {
             }
         },
 
-        applyTempSensorSlot(addr) {
-            // Send the actual command to assign sensor to its current slot
-            const sensor = this.device.tempSensors.find(s => s.addr === addr);
-            if (!sensor) return;
+        applyTempSensorSlot(addr, slot) {
+            // Send the actual command to assign sensor to the specified slot
             const bytes = addr.replace(/:/g, ' ').trim();
-            this.writeToStream('o' + sensor.slot + ' ' + bytes);
+            this.writeToStream('o' + slot + ' ' + bytes);
             this.changes = true;
             this.hasUnsavedChanges = true;
         },
