@@ -34,19 +34,20 @@ const ConfigCommandsMixin = {
             this.writeToStream('l');
 
             // Load both found sensors (ol) and saved sensors (on) after config is received
+            // Use longer delays to avoid commands being concatenated in serial buffer
             setTimeout(() => {
                 this.listTempSensors();  // 'ol' - found sensors on bus
-            }, 500);
+            }, 1000);
             setTimeout(() => {
                 this.listSavedTempSensors(true);  // 'on' - saved sensors in NVM, then reconcile
-            }, 1000);
+            }, 2000);
 
             // Update originalDevice after config is fully received to clear pending changes
             setTimeout(() => {
                 if (this.configReceived) {
                     this.originalDevice = JSON.parse(JSON.stringify(this.device));
                 }
-            }, 1500);
+            }, 2500);
         },
 
         async applyAllChanges() {
@@ -579,8 +580,9 @@ const ConfigCommandsMixin = {
             this.hasUnsavedChanges = true;
             this.log('Temperature sensor mapping saved', 'info');
             // Refresh both found and saved sensors list to update status
-            setTimeout(() => this.listTempSensors(), 500);
-            setTimeout(() => this.listSavedTempSensors(), 1000);
+            // Use longer delays to avoid commands being concatenated in serial buffer
+            setTimeout(() => this.listTempSensors(), 1000);
+            setTimeout(() => this.listSavedTempSensors(), 2000);
         },
 
         async clearTempSlot(slot) {
@@ -597,10 +599,10 @@ const ConfigCommandsMixin = {
                 this.log(`Clear slot T${slot} timeout`, 'warning');
             }
             // Delay before next command to let serial buffer clear
-            await new Promise(resolve => setTimeout(resolve, 300));
+            await new Promise(resolve => setTimeout(resolve, 500));
             this.listTempSensors();
-            // Also refresh saved sensors list
-            setTimeout(() => this.listSavedTempSensors(), 500);
+            // Also refresh saved sensors list with longer delay to avoid concatenation
+            setTimeout(() => this.listSavedTempSensors(), 1000);
         },
 
         async clearAllTempSlots() {
@@ -617,10 +619,10 @@ const ConfigCommandsMixin = {
                 this.log('Clear all slots timeout', 'warning');
             }
             // Delay before next command to let serial buffer clear
-            await new Promise(resolve => setTimeout(resolve, 300));
+            await new Promise(resolve => setTimeout(resolve, 500));
             this.listTempSensors();
-            // Also refresh saved sensors list
-            setTimeout(() => this.listSavedTempSensors(), 500);
+            // Also refresh saved sensors list with longer delay to avoid concatenation
+            setTimeout(() => this.listSavedTempSensors(), 1000);
         },
 
         syncOriginalTempSensors() {
@@ -659,8 +661,9 @@ const ConfigCommandsMixin = {
             this.log('Configuration saved!', 'info');
             // Refresh both found and saved sensors lists to update status indicators
             // After save, NVM matches runtime so no reconciliation needed
-            setTimeout(() => this.listTempSensors(), 500);
-            setTimeout(() => this.listSavedTempSensors(), 1000);
+            // Use longer delays to avoid commands being concatenated in serial buffer
+            setTimeout(() => this.listTempSensors(), 1000);
+            setTimeout(() => this.listSavedTempSensors(), 2000);
         },
 
         resetDefaults() {
