@@ -132,6 +132,8 @@
         "modifiedHint": "Slot modificato - salva per mantenere",
         "unsavedMappingTitle": "Modifiche non salvate!",
         "unsavedMappingWarning": "Clicca \"Salva Mappatura\" per salvare le assegnazioni.",
+        "unassignedSensors": "Sensori non assegnati",
+        "assignToSlot": "Assegna a...",
         "savedSensor": "Salvato",
         "foundSensor": "Trovato",
         "newSensorsWarningTitle": "Nuovi sensori rilevati!",

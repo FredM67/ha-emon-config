@@ -132,6 +132,8 @@
         "modifiedHint": "Slot changed - save to persist",
         "unsavedMappingTitle": "Unsaved changes!",
         "unsavedMappingWarning": "Click \"Save Mapping\" to save sensor assignments to device memory.",
+        "unassignedSensors": "Unassigned Sensors",
+        "assignToSlot": "Assign to...",
         "savedSensor": "Saved",
         "foundSensor": "Found",
         "newSensorsWarningTitle": "New sensors detected!",

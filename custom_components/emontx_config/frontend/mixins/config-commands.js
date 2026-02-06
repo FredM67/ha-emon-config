@@ -525,6 +525,29 @@ const ConfigCommandsMixin = {
         listSavedTempSensors() {
             this.device.savedTempSensors = [];
             this.writeToStream('on');
+            // After receiving saved sensors, reconcile found sensors' slots
+            setTimeout(() => this.reconcileTempSensorSlots(), 500);
+        },
+
+        reconcileTempSensorSlots() {
+            // Set each found sensor's slot to match its saved slot (if saved)
+            // This ensures UI state matches saved state initially
+            const normalizeAddr = (addr) => addr.replace(/[:\s]+/g, '').toUpperCase();
+            const saved = this.device.savedTempSensors || [];
+            const found = this.device.tempSensors || [];
+
+            for (let i = 0; i < found.length; i++) {
+                const sensor = found[i];
+                const sensorAddr = normalizeAddr(sensor.addr);
+                const savedEntry = saved.find(s => normalizeAddr(s.addr) === sensorAddr);
+                if (savedEntry) {
+                    // Sensor is saved - use the saved slot
+                    this.$set(found[i], 'slot', savedEntry.slot);
+                } else {
+                    // Sensor not saved - mark as unassigned (slot 0)
+                    this.$set(found[i], 'slot', 0);
+                }
+            }
         },
 
         saveTempMapping() {

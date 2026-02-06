@@ -285,7 +285,9 @@ Vue.component('config-tab', {
             return result;
         },
         hasNewSensors() {
-            return Object.values(this.mergedSlotInfo).some(info => info.status === 'new');
+            // Check for new sensors in slots OR unassigned sensors
+            return Object.values(this.mergedSlotInfo).some(info => info.status === 'new') ||
+                   this.unassignedSensors.length > 0;
         },
         hasMissingSensors() {
             return Object.values(this.mergedSlotInfo).some(info => info.status === 'missing');
@@ -295,6 +297,10 @@ Vue.component('config-tab', {
         },
         hasUnsavedMapping() {
             return this.hasNewSensors || this.hasModifiedSensors;
+        },
+        unassignedSensors() {
+            // Sensors with slot=0 are not assigned to any slot
+            return (this.device.tempSensors || []).filter(s => s.slot === 0);
         }
     },
     template: `
@@ -662,6 +668,28 @@ Vue.component('config-tab', {
                         <div v-if="hasMissingSensors" class="alert alert-warning" style="margin-top: 15px;">
                             <strong>{{ t.config.missingSensorsWarningTitle || 'Some sensors not found!' }}</strong>
                             {{ t.config.missingSensorsWarning || 'Saved sensors are not detected on the bus. Check connections or clear the slots.' }}
+                        </div>
+
+                        <!-- Unassigned Sensors -->
+                        <div v-if="unassignedSensors.length > 0" class="unassigned-sensors-section">
+                            <h4>{{ t.config.unassignedSensors || 'Unassigned Sensors' }}</h4>
+                            <div class="unassigned-sensors-list">
+                                <div v-for="(sensor, idx) in unassignedSensors" :key="'unassigned-'+idx"
+                                     class="unassigned-sensor-item"
+                                     draggable="true"
+                                     @dragstart="handleDragStart(sensor, $event)"
+                                     @dragend="handleDragEnd">
+                                    <span class="sensor-index">#{{ idx + 1 }}</span>
+                                    <span class="sensor-addr">{{ sensor.addr }}</span>
+                                    <select class="assign-dropdown"
+                                            @change="reassignSensor(sensor, parseInt($event.target.value)); $event.target.value = ''"
+                                            @mousedown.stop
+                                            :disabled="!emontxConnected">
+                                        <option value="">{{ t.config.assignToSlot || 'Assign to...' }}</option>
+                                        <option v-for="s in otherSlots" :key="s" :value="s">T{{ s }}</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Help text -->

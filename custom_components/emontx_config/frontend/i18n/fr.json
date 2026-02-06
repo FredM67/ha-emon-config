@@ -132,6 +132,8 @@
         "modifiedHint": "Emplacement modifié - enregistrer pour conserver",
         "unsavedMappingTitle": "Modifications non enregistrées !",
         "unsavedMappingWarning": "Cliquez \"Enregistrer\" pour sauvegarder les affectations.",
+        "unassignedSensors": "Capteurs non assignés",
+        "assignToSlot": "Assigner à...",
         "savedSensor": "Enregistré",
         "foundSensor": "Détecté",
         "newSensorsWarningTitle": "Nouveaux capteurs détectés !",

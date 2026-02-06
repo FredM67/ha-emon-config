@@ -132,6 +132,8 @@
         "modifiedHint": "Slot geändert - speichern um zu behalten",
         "unsavedMappingTitle": "Nicht gespeicherte Änderungen!",
         "unsavedMappingWarning": "Klicken Sie \"Zuordnung Speichern\" um die Zuweisungen zu sichern.",
+        "unassignedSensors": "Nicht zugewiesene Sensoren",
+        "assignToSlot": "Zuweisen an...",
         "savedSensor": "Gespeichert",
         "foundSensor": "Gefunden",
         "newSensorsWarningTitle": "Neue Sensoren erkannt!",
