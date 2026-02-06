@@ -240,30 +240,37 @@ Vue.component('config-tab', {
             const saved = this.device.savedTempSensors || [];
             const found = this.device.tempSensors || [];
 
+            // Helper to normalize addresses for comparison
+            const normalizeAddr = (addr) => addr.replace(/[:\s]+/g, '').toUpperCase();
+
             // Process all 8 slots
             for (let slot = 1; slot <= 8; slot++) {
                 const savedSensor = saved.find(s => s.slot === slot);
-                const foundSensor = found.find(s => s.slot === slot);
 
-                if (savedSensor && foundSensor) {
-                    // Both saved and found - check if same address
-                    const savedAddr = savedSensor.addr.replace(/[:\s]+/g, '').toUpperCase();
-                    const foundAddr = foundSensor.addr.replace(/[:\s]+/g, '').toUpperCase();
-                    if (savedAddr === foundAddr) {
+                if (savedSensor) {
+                    // There's a saved sensor for this slot
+                    const savedAddr = normalizeAddr(savedSensor.addr);
+                    // Search for this address ANYWHERE in the found list (not by slot!)
+                    const foundSensor = found.find(s => normalizeAddr(s.addr) === savedAddr);
+
+                    if (foundSensor) {
+                        // Saved sensor is present on the bus - MATCHED
                         result[slot] = { status: 'matched', sensor: foundSensor, savedSensor: savedSensor };
                     } else {
-                        // Different sensors - saved one is missing, found one is new
-                        result[slot] = { status: 'conflict', sensor: foundSensor, savedSensor: savedSensor };
+                        // Saved sensor not found on the bus - MISSING
+                        result[slot] = { status: 'missing', sensor: null, savedSensor: savedSensor };
                     }
-                } else if (savedSensor && !foundSensor) {
-                    // Saved but not found - missing
-                    result[slot] = { status: 'missing', sensor: null, savedSensor: savedSensor };
-                } else if (!savedSensor && foundSensor) {
-                    // Found but not saved - new
-                    result[slot] = { status: 'new', sensor: foundSensor, savedSensor: null };
                 } else {
-                    // Empty slot
-                    result[slot] = { status: 'empty', sensor: null, savedSensor: null };
+                    // No saved sensor for this slot
+                    // Check if any found sensor is claiming this slot
+                    const foundInSlot = found.find(s => s.slot === slot);
+                    if (foundInSlot) {
+                        // A sensor is detected claiming this slot but not saved - NEW
+                        result[slot] = { status: 'new', sensor: foundInSlot, savedSensor: null };
+                    } else {
+                        // Empty slot
+                        result[slot] = { status: 'empty', sensor: null, savedSensor: null };
+                    }
                 }
             }
             return result;
