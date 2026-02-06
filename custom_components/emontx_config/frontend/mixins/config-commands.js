@@ -538,6 +538,8 @@ const ConfigCommandsMixin = {
             } catch (e) {
                 this.log(`Clear slot T${slot} timeout`, 'warning');
             }
+            // Delay before next command to let serial buffer clear
+            await new Promise(resolve => setTimeout(resolve, 300));
             this.listTempSensors();
         },
 
@@ -554,6 +556,8 @@ const ConfigCommandsMixin = {
             } catch (e) {
                 this.log('Clear all slots timeout', 'warning');
             }
+            // Delay before next command to let serial buffer clear
+            await new Promise(resolve => setTimeout(resolve, 300));
             this.listTempSensors();
         },
 
