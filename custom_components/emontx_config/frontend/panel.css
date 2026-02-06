@@ -893,3 +893,107 @@ input.input-error.no-spinner {
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
+
+/* Temperature Slot Status Styles */
+.temp-slot-card.status-matched {
+    border: 2px solid #4CAF50;
+    background: white;
+}
+
+.temp-slot-card.status-new {
+    border: 2px solid #2196F3;
+    background: #e3f2fd;
+}
+
+.temp-slot-card.status-missing {
+    border: 2px solid #ff9800;
+    background: #fff3e0;
+}
+
+.temp-slot-card.status-conflict {
+    border: 2px solid #f44336;
+    background: #ffebee;
+}
+
+.slot-status-badge {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 500;
+    margin-left: 6px;
+}
+
+.slot-status-badge.matched {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.slot-status-badge.new {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.slot-status-badge.missing {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+.slot-status-badge.conflict {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.temp-slot-card .saved-addr-info {
+    font-size: 11px;
+    color: #e65100;
+    background: #fff3e0;
+    padding: 4px 6px;
+    border-radius: 3px;
+    margin-bottom: 6px;
+    font-family: monospace;
+    word-break: break-all;
+}
+
+.temp-slot-card .conflict-info {
+    font-size: 11px;
+    color: #c62828;
+    background: #ffebee;
+    padding: 4px 6px;
+    border-radius: 3px;
+    margin-bottom: 6px;
+}
+
+.temp-slot-card .missing-hint {
+    font-size: 12px;
+    color: #e65100;
+    text-align: center;
+    margin: auto 0;
+    padding: 8px;
+}
+
+.temp-slot-card .new-hint {
+    font-size: 11px;
+    color: #1565c0;
+    margin-top: 4px;
+}
+
+.temp-slot-card .btn-clear-missing {
+    padding: 6px 12px;
+    font-size: 12px;
+    background: #ff9800;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 8px;
+    width: 100%;
+}
+
+.temp-slot-card .btn-clear-missing:hover {
+    background: #f57c00;
+}
+
+.temp-slot-card .btn-clear-missing:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

@@ -232,6 +232,47 @@ Vue.component('config-tab', {
         otherSlots() {
             // Returns slots 1-8 for the reassignment dropdown
             return [1, 2, 3, 4, 5, 6, 7, 8];
+        },
+        // Merge saved and found sensors with status
+        // Status: 'matched' (found & saved), 'missing' (saved not found), 'new' (found not saved)
+        mergedSlotInfo() {
+            const result = {};
+            const saved = this.device.savedTempSensors || [];
+            const found = this.device.tempSensors || [];
+
+            // Process all 8 slots
+            for (let slot = 1; slot <= 8; slot++) {
+                const savedSensor = saved.find(s => s.slot === slot);
+                const foundSensor = found.find(s => s.slot === slot);
+
+                if (savedSensor && foundSensor) {
+                    // Both saved and found - check if same address
+                    const savedAddr = savedSensor.addr.replace(/[:\s]+/g, '').toUpperCase();
+                    const foundAddr = foundSensor.addr.replace(/[:\s]+/g, '').toUpperCase();
+                    if (savedAddr === foundAddr) {
+                        result[slot] = { status: 'matched', sensor: foundSensor, savedSensor: savedSensor };
+                    } else {
+                        // Different sensors - saved one is missing, found one is new
+                        result[slot] = { status: 'conflict', sensor: foundSensor, savedSensor: savedSensor };
+                    }
+                } else if (savedSensor && !foundSensor) {
+                    // Saved but not found - missing
+                    result[slot] = { status: 'missing', sensor: null, savedSensor: savedSensor };
+                } else if (!savedSensor && foundSensor) {
+                    // Found but not saved - new
+                    result[slot] = { status: 'new', sensor: foundSensor, savedSensor: null };
+                } else {
+                    // Empty slot
+                    result[slot] = { status: 'empty', sensor: null, savedSensor: null };
+                }
+            }
+            return result;
+        },
+        hasNewSensors() {
+            return Object.values(this.mergedSlotInfo).some(info => info.status === 'new');
+        },
+        hasMissingSensors() {
+            return Object.values(this.mergedSlotInfo).some(info => info.status === 'missing');
         }
     },
     template: `
@@ -473,7 +514,7 @@ Vue.component('config-tab', {
                             <button type="button" class="btn btn-warning" @click="$emit('save-temp-mapping')" :disabled="!emontxConnected || sensorsCount === 0" :title="t.tooltips.btnSaveMapping">
                                 {{ t.config.saveMapping }}
                             </button>
-                            <button type="button" class="btn btn-danger" @click="$emit('clear-all-temp-slots')" :disabled="!emontxConnected || sensorsCount === 0" :title="t.tooltips.btnClearAllSlots">
+                            <button type="button" class="btn btn-danger" @click="$emit('clear-all-temp-slots')" :disabled="!emontxConnected || (sensorsCount === 0 && !hasMissingSensors)" :title="t.tooltips.btnClearAllSlots">
                                 {{ t.config.clearAllSlots || 'Clear All' }}
                             </button>
                         </div>
@@ -486,11 +527,15 @@ Vue.component('config-tab', {
                             <div v-for="slot in 8" :key="'slot'+slot"
                                  class="temp-slot-card"
                                  :class="{
-                                     'filled': getSlotSensor(slot),
-                                     'drag-over': dragOverSlot === slot
+                                     'filled': mergedSlotInfo[slot].sensor,
+                                     'drag-over': dragOverSlot === slot,
+                                     'status-matched': mergedSlotInfo[slot].status === 'matched',
+                                     'status-new': mergedSlotInfo[slot].status === 'new',
+                                     'status-missing': mergedSlotInfo[slot].status === 'missing',
+                                     'status-conflict': mergedSlotInfo[slot].status === 'conflict'
                                  }"
-                                 :draggable="getSlotSensor(slot) ? 'true' : 'false'"
-                                 @dragstart="getSlotSensor(slot) && handleDragStart(getSlotSensor(slot), $event)"
+                                 :draggable="mergedSlotInfo[slot].sensor ? 'true' : 'false'"
+                                 @dragstart="mergedSlotInfo[slot].sensor && handleDragStart(mergedSlotInfo[slot].sensor, $event)"
                                  @dragend="handleDragEnd"
                                  @dragover="handleDragOver(slot, $event)"
                                  @dragleave="handleDragLeave(slot, $event)"
@@ -498,33 +543,76 @@ Vue.component('config-tab', {
 
                                 <div class="slot-header">
                                     <span class="slot-label">T{{ slot }}</span>
-                                    <span v-if="getSlotSensor(slot)" class="live-temp">{{ liveData['T' + slot] || '-' }}</span>
+                                    <span v-if="mergedSlotInfo[slot].status === 'matched'" class="slot-status-badge matched">{{ t.config.statusMatched || '✓' }}</span>
+                                    <span v-else-if="mergedSlotInfo[slot].status === 'new'" class="slot-status-badge new">{{ t.config.statusNew || '★ New' }}</span>
+                                    <span v-else-if="mergedSlotInfo[slot].status === 'missing'" class="slot-status-badge missing">{{ t.config.statusMissing || '⚠ Missing' }}</span>
+                                    <span v-else-if="mergedSlotInfo[slot].status === 'conflict'" class="slot-status-badge conflict">{{ t.config.statusConflict || '⚠ Conflict' }}</span>
+                                    <span v-if="mergedSlotInfo[slot].sensor" class="live-temp" style="margin-left: auto;">{{ liveData['T' + slot] || '-' }}</span>
                                 </div>
 
                                 <div class="slot-content">
                                     <!-- Empty Slot -->
-                                    <template v-if="!getSlotSensor(slot)">
+                                    <template v-if="mergedSlotInfo[slot].status === 'empty'">
                                         <div class="empty-hint">
                                             <div>{{ t.config.emptySlot || 'Empty' }}</div>
                                             <div style="font-size: 11px; margin-top: 4px;">{{ t.config.dropHint || 'Drag sensor here' }}</div>
                                         </div>
                                     </template>
 
-                                    <!-- Filled Slot -->
+                                    <!-- Missing Sensor (saved but not found) -->
+                                    <template v-else-if="mergedSlotInfo[slot].status === 'missing'">
+                                        <div class="missing-hint">
+                                            <div style="font-weight: 500;">{{ t.config.sensorNotFound || 'Sensor not found' }}</div>
+                                            <div class="saved-addr-info" style="margin-top: 6px;">{{ mergedSlotInfo[slot].savedSensor.addr }}</div>
+                                            <div style="font-size: 11px; margin-top: 4px;">{{ t.config.missingHint || 'Sensor disconnected or failed' }}</div>
+                                        </div>
+                                        <button type="button" class="btn-clear-missing" @click.stop="$emit('clear-temp-slot', slot)" :disabled="!emontxConnected">
+                                            {{ t.config.clearSlot || 'Clear Slot' }}
+                                        </button>
+                                    </template>
+
+                                    <!-- Conflict (saved and found different sensors) -->
+                                    <template v-else-if="mergedSlotInfo[slot].status === 'conflict'">
+                                        <div class="conflict-info">
+                                            <div><strong>{{ t.config.savedSensor || 'Saved' }}:</strong> {{ mergedSlotInfo[slot].savedSensor.addr }}</div>
+                                            <div><strong>{{ t.config.foundSensor || 'Found' }}:</strong> {{ mergedSlotInfo[slot].sensor.addr }}</div>
+                                        </div>
+                                        <div class="input-label">{{ t.config.name }}</div>
+                                        <input type="text"
+                                               class="sensor-name-input"
+                                               :value="getChannelName('temp', mergedSlotInfo[slot].sensor.addr)"
+                                               @input="onNameChange('temp', mergedSlotInfo[slot].sensor.addr, $event)"
+                                               :placeholder="t.config.namePlaceholder"
+                                               @mousedown.stop
+                                               draggable="false" />
+                                        <div class="slot-actions">
+                                            <select class="reassign-dropdown"
+                                                    :value="slot"
+                                                    @change="reassignSensor(mergedSlotInfo[slot].sensor, parseInt($event.target.value))"
+                                                    @mousedown.stop
+                                                    :disabled="!emontxConnected">
+                                                <option v-for="s in otherSlots" :key="s" :value="s">T{{ s }}</option>
+                                            </select>
+                                            <button type="button" class="btn-clear-slot" @click.stop="$emit('clear-temp-slot', slot)" :disabled="!emontxConnected" :title="t.tooltips.btnClearSlot || 'Clear this slot'">✕</button>
+                                        </div>
+                                    </template>
+
+                                    <!-- Matched or New Sensor (has found sensor) -->
                                     <template v-else>
                                         <div class="input-label">{{ t.config.name }}</div>
                                         <input type="text"
                                                class="sensor-name-input"
-                                               :value="getChannelName('temp', getSlotSensor(slot).addr)"
-                                               @input="onNameChange('temp', getSlotSensor(slot).addr, $event)"
+                                               :value="getChannelName('temp', mergedSlotInfo[slot].sensor.addr)"
+                                               @input="onNameChange('temp', mergedSlotInfo[slot].sensor.addr, $event)"
                                                :placeholder="t.config.namePlaceholder"
                                                @mousedown.stop
                                                draggable="false" />
-                                        <div class="sensor-info">{{ getSlotSensor(slot).addr }}</div>
+                                        <div class="sensor-info">{{ mergedSlotInfo[slot].sensor.addr }}</div>
+                                        <div v-if="mergedSlotInfo[slot].status === 'new'" class="new-hint">{{ t.config.newSensorHint || 'Click "Save Mapping" to persist' }}</div>
                                         <div class="slot-actions">
                                             <select class="reassign-dropdown"
                                                     :value="slot"
-                                                    @change="reassignSensor(getSlotSensor(slot), parseInt($event.target.value))"
+                                                    @change="reassignSensor(mergedSlotInfo[slot].sensor, parseInt($event.target.value))"
                                                     @mousedown.stop
                                                     :disabled="!emontxConnected">
                                                 <option v-for="s in otherSlots" :key="s" :value="s">T{{ s }}</option>
@@ -537,12 +625,24 @@ Vue.component('config-tab', {
                         </div>
 
                         <!-- No Sensors Message -->
-                        <div v-if="device.tempSensors.length === 0" class="alert alert-info" style="margin-top: 15px;">
+                        <div v-if="device.tempSensors.length === 0 && !hasMissingSensors" class="alert alert-info" style="margin-top: 15px;">
                             {{ t.config.noTempSensors }}
                         </div>
 
+                        <!-- New Sensors Warning -->
+                        <div v-if="hasNewSensors" class="alert alert-info" style="margin-top: 15px;">
+                            <strong>{{ t.config.newSensorsWarningTitle || 'New sensors detected!' }}</strong>
+                            {{ t.config.newSensorsWarning || 'Click "Save Mapping" to save sensor assignments to device memory.' }}
+                        </div>
+
+                        <!-- Missing Sensors Warning -->
+                        <div v-if="hasMissingSensors" class="alert alert-warning" style="margin-top: 15px;">
+                            <strong>{{ t.config.missingSensorsWarningTitle || 'Some sensors not found!' }}</strong>
+                            {{ t.config.missingSensorsWarning || 'Saved sensors are not detected on the bus. Check connections or clear the slots.' }}
+                        </div>
+
                         <!-- Help text -->
-                        <p v-if="device.tempSensors.length > 0" style="font-size: 12px; color: #888; margin-top: 15px;">
+                        <p v-if="device.tempSensors.length > 0 || hasMissingSensors" style="font-size: 12px; color: #888; margin-top: 15px;">
                             {{ t.config.tempSlotsHelp || 'Drag sensors between slots or use the dropdown to reassign. Click "Save Mapping" to persist changes.' }}
                         </p>
                     </div>

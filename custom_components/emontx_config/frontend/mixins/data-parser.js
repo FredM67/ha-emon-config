@@ -192,17 +192,15 @@ const DataParserMixin = {
 
                 if (!isEmptySlot) {
                     // Convert space-separated bytes to colon-separated format
-                    const addr = addrBytes.replace(/\s+/g, ':').toUpperCase();
-                    // Find existing entry with same slot or add new one
-                    const existingIdx = this.device.tempSensors.findIndex(s => s.slot === slot);
-                    const sensorData = { busIndex: slot, slot: slot, addr: addr, saved: true };
+                    const addr = addrBytes;
+                    // Store in savedTempSensors array (separate from found sensors)
+                    const existingIdx = this.device.savedTempSensors.findIndex(s => s.slot === slot);
+                    const sensorData = { slot: slot, addr: addr };
                     if (existingIdx >= 0) {
-                        this.$set(this.device.tempSensors, existingIdx, sensorData);
+                        this.$set(this.device.savedTempSensors, existingIdx, sensorData);
                     } else {
-                        this.device.tempSensors.push(sensorData);
+                        this.device.savedTempSensors.push(sensorData);
                     }
-                    // Sync to originalDevice so slot changes can be detected as pending
-                    this.syncOriginalTempSensors();
                 }
             }
 

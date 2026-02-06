@@ -504,7 +504,7 @@ const ConfigCommandsMixin = {
         },
 
         scanTempSensors() {
-            this.device.tempSensors = [];
+            this.device.tempSensors = [];  // Clear found sensors
             this.tempScanLoading = true;
             this.writeToStream('of');
             this.log('Scanning for temperature sensors...', 'info');
@@ -519,7 +519,7 @@ const ConfigCommandsMixin = {
         },
 
         listSavedTempSensors() {
-            this.device.tempSensors = [];
+            this.device.savedTempSensors = [];
             this.writeToStream('on');
         },
 
@@ -528,6 +528,8 @@ const ConfigCommandsMixin = {
             this.changes = true;
             this.hasUnsavedChanges = true;
             this.log('Temperature sensor mapping saved', 'info');
+            // Refresh saved sensors list to update status
+            setTimeout(() => this.listSavedTempSensors(), 500);
         },
 
         async clearTempSlot(slot) {
@@ -546,6 +548,8 @@ const ConfigCommandsMixin = {
             // Delay before next command to let serial buffer clear
             await new Promise(resolve => setTimeout(resolve, 300));
             this.listTempSensors();
+            // Also refresh saved sensors list
+            setTimeout(() => this.listSavedTempSensors(), 500);
         },
 
         async clearAllTempSlots() {
@@ -564,6 +568,8 @@ const ConfigCommandsMixin = {
             // Delay before next command to let serial buffer clear
             await new Promise(resolve => setTimeout(resolve, 300));
             this.listTempSensors();
+            // Also refresh saved sensors list
+            setTimeout(() => this.listSavedTempSensors(), 500);
         },
 
         syncOriginalTempSensors() {
