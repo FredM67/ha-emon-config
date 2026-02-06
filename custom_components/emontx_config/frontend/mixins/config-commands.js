@@ -38,7 +38,7 @@ const ConfigCommandsMixin = {
                 this.listTempSensors();  // 'ol' - found sensors on bus
             }, 500);
             setTimeout(() => {
-                this.listSavedTempSensors();  // 'on' - saved sensors in NVM
+                this.listSavedTempSensors(true);  // 'on' - saved sensors in NVM, then reconcile
             }, 1000);
 
             // Update originalDevice after config is fully received to clear pending changes
@@ -522,11 +522,13 @@ const ConfigCommandsMixin = {
             this.writeToStream('ol');
         },
 
-        listSavedTempSensors() {
+        listSavedTempSensors(reconcileAfter = false) {
             this.device.savedTempSensors = [];
             this.writeToStream('on');
-            // After receiving saved sensors, reconcile found sensors' slots
-            setTimeout(() => this.reconcileTempSensorSlots(), 500);
+            // Only reconcile on initial load, not after every refresh
+            if (reconcileAfter) {
+                setTimeout(() => this.reconcileTempSensorSlots(), 500);
+            }
         },
 
         reconcileTempSensorSlots() {
@@ -634,6 +636,10 @@ const ConfigCommandsMixin = {
             this.changes = false;
             this.hasUnsavedChanges = false;
             this.log('Configuration saved!', 'info');
+            // Refresh both found and saved sensors lists to update status indicators
+            // After save, NVM matches runtime so no reconciliation needed
+            setTimeout(() => this.listTempSensors(), 500);
+            setTimeout(() => this.listSavedTempSensors(), 1000);
         },
 
         resetDefaults() {
