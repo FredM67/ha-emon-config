@@ -234,7 +234,7 @@ Vue.component('config-tab', {
             return [1, 2, 3, 4, 5, 6, 7, 8];
         },
         // Merge saved and found sensors with status
-        // Status: 'matched' (found & saved), 'missing' (saved not found), 'new' (found not saved)
+        // Status: 'matched' (same slot), 'modified' (slot changed), 'missing' (not found), 'new' (not saved)
         mergedSlotInfo() {
             const result = {};
             const saved = this.device.savedTempSensors || [];
@@ -246,27 +246,36 @@ Vue.component('config-tab', {
             // Process all 8 slots
             for (let slot = 1; slot <= 8; slot++) {
                 const savedSensor = saved.find(s => s.slot === slot);
+                const currentSensor = found.find(s => s.slot === slot);  // Sensor currently in this slot
 
                 if (savedSensor) {
-                    // There's a saved sensor for this slot
                     const savedAddr = normalizeAddr(savedSensor.addr);
-                    // Search for this address ANYWHERE in the found list (not by slot!)
-                    const foundSensor = found.find(s => normalizeAddr(s.addr) === savedAddr);
 
-                    if (foundSensor) {
-                        // Saved sensor is present on the bus - MATCHED
-                        result[slot] = { status: 'matched', sensor: foundSensor, savedSensor: savedSensor };
+                    if (currentSensor) {
+                        const currentAddr = normalizeAddr(currentSensor.addr);
+                        if (savedAddr === currentAddr) {
+                            // Same address in same slot - MATCHED
+                            result[slot] = { status: 'matched', sensor: currentSensor, savedSensor: savedSensor };
+                        } else {
+                            // Different sensor now in this slot - MODIFIED (needs save)
+                            result[slot] = { status: 'modified', sensor: currentSensor, savedSensor: savedSensor };
+                        }
                     } else {
-                        // Saved sensor not found on the bus - MISSING
-                        result[slot] = { status: 'missing', sensor: null, savedSensor: savedSensor };
+                        // No sensor currently in this slot - check if saved sensor exists elsewhere
+                        const foundElsewhere = found.find(s => normalizeAddr(s.addr) === savedAddr);
+                        if (foundElsewhere) {
+                            // Saved sensor moved to different slot - MODIFIED
+                            result[slot] = { status: 'modified', sensor: null, savedSensor: savedSensor, movedTo: foundElsewhere.slot };
+                        } else {
+                            // Saved sensor not found at all - MISSING
+                            result[slot] = { status: 'missing', sensor: null, savedSensor: savedSensor };
+                        }
                     }
                 } else {
                     // No saved sensor for this slot
-                    // Check if any found sensor is claiming this slot
-                    const foundInSlot = found.find(s => s.slot === slot);
-                    if (foundInSlot) {
-                        // A sensor is detected claiming this slot but not saved - NEW
-                        result[slot] = { status: 'new', sensor: foundInSlot, savedSensor: null };
+                    if (currentSensor) {
+                        // New sensor in this slot - NEW
+                        result[slot] = { status: 'new', sensor: currentSensor, savedSensor: null };
                     } else {
                         // Empty slot
                         result[slot] = { status: 'empty', sensor: null, savedSensor: null };
@@ -280,6 +289,12 @@ Vue.component('config-tab', {
         },
         hasMissingSensors() {
             return Object.values(this.mergedSlotInfo).some(info => info.status === 'missing');
+        },
+        hasModifiedSensors() {
+            return Object.values(this.mergedSlotInfo).some(info => info.status === 'modified');
+        },
+        hasUnsavedMapping() {
+            return this.hasNewSensors || this.hasModifiedSensors;
         }
     },
     template: `
@@ -539,7 +554,7 @@ Vue.component('config-tab', {
                                      'status-matched': mergedSlotInfo[slot].status === 'matched',
                                      'status-new': mergedSlotInfo[slot].status === 'new',
                                      'status-missing': mergedSlotInfo[slot].status === 'missing',
-                                     'status-conflict': mergedSlotInfo[slot].status === 'conflict'
+                                     'status-modified': mergedSlotInfo[slot].status === 'modified'
                                  }"
                                  :draggable="mergedSlotInfo[slot].sensor ? 'true' : 'false'"
                                  @dragstart="mergedSlotInfo[slot].sensor && handleDragStart(mergedSlotInfo[slot].sensor, $event)"
@@ -553,7 +568,7 @@ Vue.component('config-tab', {
                                     <span v-if="mergedSlotInfo[slot].status === 'matched'" class="slot-status-badge matched">{{ t.config.statusMatched || '✓' }}</span>
                                     <span v-else-if="mergedSlotInfo[slot].status === 'new'" class="slot-status-badge new">{{ t.config.statusNew || '★ New' }}</span>
                                     <span v-else-if="mergedSlotInfo[slot].status === 'missing'" class="slot-status-badge missing">{{ t.config.statusMissing || '⚠ Missing' }}</span>
-                                    <span v-else-if="mergedSlotInfo[slot].status === 'conflict'" class="slot-status-badge conflict">{{ t.config.statusConflict || '⚠ Conflict' }}</span>
+                                    <span v-else-if="mergedSlotInfo[slot].status === 'modified'" class="slot-status-badge modified">{{ t.config.statusModified || '✎ Modified' }}</span>
                                     <span v-if="mergedSlotInfo[slot].sensor" class="live-temp" style="margin-left: auto;">{{ liveData['T' + slot] || '-' }}</span>
                                 </div>
 
@@ -604,8 +619,8 @@ Vue.component('config-tab', {
                                         </div>
                                     </template>
 
-                                    <!-- Matched or New Sensor (has found sensor) -->
-                                    <template v-else>
+                                    <!-- Matched, Modified or New Sensor (has found sensor) -->
+                                    <template v-else-if="mergedSlotInfo[slot].sensor">
                                         <div class="input-label">{{ t.config.name }}</div>
                                         <input type="text"
                                                class="sensor-name-input"
@@ -616,6 +631,7 @@ Vue.component('config-tab', {
                                                draggable="false" />
                                         <div class="sensor-info">{{ mergedSlotInfo[slot].sensor.addr }}</div>
                                         <div v-if="mergedSlotInfo[slot].status === 'new'" class="new-hint">{{ t.config.newSensorHint || 'Click "Save Mapping" to persist' }}</div>
+                                        <div v-if="mergedSlotInfo[slot].status === 'modified'" class="modified-hint">{{ t.config.modifiedHint || 'Slot changed - save to persist' }}</div>
                                         <div class="slot-actions">
                                             <select class="reassign-dropdown"
                                                     :value="slot"
@@ -636,10 +652,10 @@ Vue.component('config-tab', {
                             {{ t.config.noTempSensors }}
                         </div>
 
-                        <!-- New Sensors Warning -->
-                        <div v-if="hasNewSensors" class="alert alert-info" style="margin-top: 15px;">
-                            <strong>{{ t.config.newSensorsWarningTitle || 'New sensors detected!' }}</strong>
-                            {{ t.config.newSensorsWarning || 'Click "Save Mapping" to save sensor assignments to device memory.' }}
+                        <!-- New/Modified Sensors Warning -->
+                        <div v-if="hasUnsavedMapping" class="alert alert-info" style="margin-top: 15px;">
+                            <strong>{{ t.config.unsavedMappingTitle || 'Unsaved changes!' }}</strong>
+                            {{ t.config.unsavedMappingWarning || 'Click "Save Mapping" to save sensor assignments to device memory.' }}
                         </div>
 
                         <!-- Missing Sensors Warning -->

@@ -910,9 +910,9 @@ input.input-error.no-spinner {
     background: #fff3e0;
 }
 
-.temp-slot-card.status-conflict {
-    border: 2px solid #f44336;
-    background: #ffebee;
+.temp-slot-card.status-modified {
+    border: 2px solid #ff9800;
+    background: #fff3e0;
 }
 
 .slot-status-badge {
@@ -938,9 +938,9 @@ input.input-error.no-spinner {
     color: #e65100;
 }
 
-.slot-status-badge.conflict {
-    background: #ffebee;
-    color: #c62828;
+.slot-status-badge.modified {
+    background: #fff3e0;
+    color: #e65100;
 }
 
 .temp-slot-card .saved-addr-info {
@@ -974,6 +974,12 @@ input.input-error.no-spinner {
 .temp-slot-card .new-hint {
     font-size: 11px;
     color: #1565c0;
+    margin-top: 4px;
+}
+
+.temp-slot-card .modified-hint {
+    font-size: 11px;
+    color: #e65100;
     margin-top: 4px;
 }
 
