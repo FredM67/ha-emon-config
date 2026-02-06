@@ -130,7 +130,7 @@
         "sensorNotFound": "Sensore non trovato",
         "missingHint": "Sensore disconnesso o guasto",
         "newSensorHint": "Clicca \"Salva Mappatura\" per salvare",
-        "modifiedHint": "Applicato - salva per mantenere",
+        "modifiedHint": "Applicato - Salva su Flash per mantenere",
         "pendingHint": "Clicca \"Applica\" per inviare al dispositivo",
         "unsavedMappingTitle": "Modifiche non salvate!",
         "unsavedMappingWarning": "Clicca \"Salva Mappatura\" per salvare le assegnazioni.",
@@ -213,6 +213,9 @@
         "confirmWarning": "Questa azione non può essere annullata.",
         "confirmYes": "Sì, Azzera",
         "confirmNo": "Annulla"
+    },
+    "tempSensors": {
+        "applyFirst": "Hai modifiche in attesa. Applicarle prima di salvare?"
     },
     "bulk": {
         "button": "Config. di Gruppo",

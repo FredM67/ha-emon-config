@@ -130,7 +130,7 @@
         "sensorNotFound": "Sensor nicht gefunden",
         "missingHint": "Sensor getrennt oder defekt",
         "newSensorHint": "Klicken Sie \"Zuordnung Speichern\"",
-        "modifiedHint": "Angewendet - speichern um zu behalten",
+        "modifiedHint": "Angewendet - In Flash speichern um zu behalten",
         "pendingHint": "Klicken Sie \"Anwenden\" um an Gerät zu senden",
         "unsavedMappingTitle": "Nicht gespeicherte Änderungen!",
         "unsavedMappingWarning": "Klicken Sie \"Zuordnung Speichern\" um die Zuweisungen zu sichern.",
@@ -213,6 +213,9 @@
         "confirmWarning": "Diese Aktion kann nicht rückgängig gemacht werden.",
         "confirmYes": "Ja, Nullstellen",
         "confirmNo": "Abbrechen"
+    },
+    "tempSensors": {
+        "applyFirst": "Sie haben ausstehende Änderungen. Vor dem Speichern anwenden?"
     },
     "bulk": {
         "button": "Sammeleinstellung",

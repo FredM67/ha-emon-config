@@ -218,7 +218,7 @@
             el: '#app',
             mixins: [ConnectionMixin, DataParserMixin, ConfigCommandsMixin, YamlGeneratorMixin, ChannelNamesMixin, FirmwareUpdateMixin],
             data: {
-                integrationVersion: '1.3.22-beta.12',
+                integrationVersion: '1.3.22-beta.13',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -245,6 +245,7 @@
                 showYamlModal: false,
                 generatedYaml: '',
                 generateYamlAfterApply: false,
+                saveTempMappingAfterApply: false,
                 // Bulk CT settings
                 showBulkCtModal: false,
                 bulkProgress: null,  // { current, total, currentCt, error }
@@ -350,6 +351,10 @@
                 hasPendingChanges() {
                     // Use pendingChangesList to determine if there are pending changes
                     return this.pendingChangesList.length > 0;
+                },
+                hasPendingTempSlotChanges() {
+                    // Check specifically for pending temperature slot changes
+                    return this.pendingChangesList.some(c => c.type === 'tempSlot');
                 },
                 pendingChangesList() {
                     // Returns list of what changed for display/apply

@@ -130,7 +130,7 @@
         "sensorNotFound": "Capteur introuvable",
         "missingHint": "Capteur déconnecté ou défaillant",
         "newSensorHint": "Cliquez \"Enregistrer\" pour sauvegarder",
-        "modifiedHint": "Appliqué - enregistrer pour conserver",
+        "modifiedHint": "Appliqué - Sauvegarder en Flash pour conserver",
         "pendingHint": "Cliquez \"Appliquer\" pour envoyer au dispositif",
         "unsavedMappingTitle": "Modifications non enregistrées !",
         "unsavedMappingWarning": "Cliquez \"Enregistrer\" pour sauvegarder les affectations.",
@@ -213,6 +213,9 @@
         "confirmWarning": "Cette action est irréversible.",
         "confirmYes": "Oui, Remettre à Zéro",
         "confirmNo": "Annuler"
+    },
+    "tempSensors": {
+        "applyFirst": "Vous avez des modifications en attente. Les appliquer avant de sauvegarder ?"
     },
     "bulk": {
         "button": "Config. Groupée",

@@ -130,7 +130,7 @@
         "sensorNotFound": "Sensor not found",
         "missingHint": "Sensor disconnected or failed",
         "newSensorHint": "Click \"Save Mapping\" to persist",
-        "modifiedHint": "Applied - save to persist",
+        "modifiedHint": "Applied - Save to Flash to persist",
         "pendingHint": "Click \"Apply\" to send to device",
         "unsavedMappingTitle": "Unsaved changes!",
         "unsavedMappingWarning": "Click \"Save Mapping\" to save sensor assignments to device memory.",
@@ -215,6 +215,7 @@
         "confirmNo": "Cancel"
     },
     "tempSensors": {
+        "applyFirst": "You have pending slot changes. Apply them before saving?",
         "clearSlotTitle": "Clear Temperature Slot",
         "clearSlotMessage": "Are you sure you want to clear temperature slot T{slot}?",
         "clearAllTitle": "Clear All Temperature Slots",

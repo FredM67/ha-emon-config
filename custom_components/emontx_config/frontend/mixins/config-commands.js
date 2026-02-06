@@ -146,6 +146,14 @@ const ConfigCommandsMixin = {
                         this.generateYaml();
                     }
                 }
+
+                // Check if temp mapping save was requested before apply
+                if (this.saveTempMappingAfterApply) {
+                    this.saveTempMappingAfterApply = false;
+                    if (failedChanges.length === 0) {
+                        this.doSaveTempMapping();
+                    }
+                }
             }, failedChanges.length > 0 ? 2000 : 500);
         },
 
@@ -553,6 +561,19 @@ const ConfigCommandsMixin = {
         },
 
         saveTempMapping() {
+            // Check if there are pending tempSlot changes that need to be applied first
+            if (this.hasPendingTempSlotChanges) {
+                if (confirm(this.t.tempSensors.applyFirst || 'You have pending slot changes. Apply them before saving?')) {
+                    this.saveTempMappingAfterApply = true;
+                    this.applyAllChanges();
+                    return;
+                }
+                // User chose not to apply - pending changes will be lost on refresh
+            }
+            this.doSaveTempMapping();
+        },
+
+        doSaveTempMapping() {
             this.writeToStream('os');
             this.changes = true;
             this.hasUnsavedChanges = true;
