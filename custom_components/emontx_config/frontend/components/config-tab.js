@@ -42,6 +42,18 @@ Vue.component('config-tab', {
             return this.device.tempSensors.find(s => s.slot === slot);
         },
         handleDragStart(sensor, event) {
+            // Check if drag started from a text-selectable address field
+            const target = event.target;
+            const clickedElement = document.elementFromPoint(event.clientX, event.clientY);
+            if (clickedElement && (
+                clickedElement.classList.contains('sensor-info') ||
+                clickedElement.classList.contains('sensor-addr') ||
+                clickedElement.classList.contains('saved-addr-info')
+            )) {
+                event.preventDefault();
+                return false;
+            }
+
             this.draggedSensor = sensor;
             event.dataTransfer.effectAllowed = 'move';
             event.dataTransfer.setData('text/plain', sensor.addr);
@@ -604,7 +616,7 @@ Vue.component('config-tab', {
                                     <template v-else-if="mergedSlotInfo[slot].status === 'missing'">
                                         <div class="missing-hint">
                                             <div style="font-weight: 500;">{{ t.config.sensorNotFound || 'Sensor not found' }}</div>
-                                            <div class="saved-addr-info" style="margin-top: 6px;" @dragstart.prevent>{{ mergedSlotInfo[slot].savedSensor.addr }}</div>
+                                            <div class="saved-addr-info" style="margin-top: 6px;">{{ mergedSlotInfo[slot].savedSensor.addr }}</div>
                                             <div style="font-size: 11px; margin-top: 4px;">{{ t.config.missingHint || 'Sensor disconnected or failed' }}</div>
                                         </div>
                                         <button type="button" class="btn-clear-missing" @click.stop="$emit('clear-temp-slot', slot)" :disabled="!emontxConnected">
@@ -648,7 +660,7 @@ Vue.component('config-tab', {
                                                :placeholder="t.config.namePlaceholder"
                                                @mousedown.stop
                                                draggable="false" />
-                                        <div class="sensor-info" @dragstart.prevent>{{ mergedSlotInfo[slot].sensor.addr }}</div>
+                                        <div class="sensor-info">{{ mergedSlotInfo[slot].sensor.addr }}</div>
                                         <div v-if="mergedSlotInfo[slot].status === 'new'" class="new-hint">{{ t.config.newSensorHint || 'Click "Save Mapping" to persist' }}</div>
                                         <div v-if="mergedSlotInfo[slot].status === 'modified'" class="modified-hint">{{ t.config.modifiedHint || 'Applied - save to persist' }}</div>
                                         <div v-if="mergedSlotInfo[slot].status === 'pending'" class="pending-hint">{{ t.config.pendingHint || 'Click "Apply" to send to device' }}</div>
@@ -694,7 +706,7 @@ Vue.component('config-tab', {
                                      @dragstart="handleDragStart(sensor, $event)"
                                      @dragend="handleDragEnd">
                                     <span class="sensor-index">#{{ idx + 1 }}</span>
-                                    <span class="sensor-addr" @dragstart.prevent>{{ sensor.addr }}</span>
+                                    <span class="sensor-addr">{{ sensor.addr }}</span>
                                     <select class="assign-dropdown"
                                             @change="reassignSensor(sensor, parseInt($event.target.value)); $event.target.value = ''"
                                             @mousedown.stop
