@@ -731,6 +731,8 @@ input.input-error.no-spinner {
     font-family: monospace;
     margin-bottom: 8px;
     word-break: break-all;
+    user-select: text;
+    cursor: text;
 }
 
 .temp-slot-card .input-label {
@@ -867,6 +869,8 @@ input.input-error.no-spinner {
     font-size: 12px;
     color: #666;
     flex: 1;
+    user-select: text;
+    cursor: text;
 }
 
 .unassigned-sensor-item .assign-dropdown {
@@ -962,6 +966,8 @@ input.input-error.no-spinner {
     margin-bottom: 6px;
     font-family: monospace;
     word-break: break-all;
+    user-select: text;
+    cursor: text;
 }
 
 .temp-slot-card .conflict-info {
