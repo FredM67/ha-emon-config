@@ -91,6 +91,12 @@ const DataParserMixin = {
                 }
             }
 
+            // Check for list end marker (for ol/on commands)
+            if (this.pendingListEnd && line.includes('[end]')) {
+                this.pendingListEnd.resolve();
+                this.pendingListEnd = null;
+            }
+
             if (line.startsWith('firmware = ')) {
                 this.device.firmware = line.split('=')[1].trim();
                 this.configReceived = true;

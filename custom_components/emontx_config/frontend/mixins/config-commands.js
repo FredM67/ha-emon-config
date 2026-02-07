@@ -26,7 +26,7 @@ const ConfigCommandsMixin = {
         },
 
         // Configuration methods
-        loadConfig() {
+        async loadConfig() {
             // Clear error highlighting when reloading config
             this.failedCtIndices = [];
             this.failedCtFields = [];
@@ -34,20 +34,16 @@ const ConfigCommandsMixin = {
             this.writeToStream('l');
 
             // Load both found sensors (ol) and saved sensors (on) after config is received
-            // Use longer delays to avoid commands being concatenated in serial buffer
-            setTimeout(() => {
-                this.listTempSensors();  // 'ol' - found sensors on bus
-            }, 1000);
-            setTimeout(() => {
-                this.listSavedTempSensors(true);  // 'on' - saved sensors in NVM, then reconcile
-            }, 2000);
+            // Wait for list end markers instead of using arbitrary timeouts
+            setTimeout(async () => {
+                await this.listTempSensors();  // 'ol' - found sensors on bus
+                await this.listSavedTempSensors(true);  // 'on' - saved sensors in NVM, then reconcile
 
-            // Update originalDevice after config is fully received to clear pending changes
-            setTimeout(() => {
+                // Update originalDevice after lists are fully received to clear pending changes
                 if (this.configReceived) {
                     this.originalDevice = JSON.parse(JSON.stringify(this.device));
                 }
-            }, 2500);
+            }, 500);
         },
 
         async applyAllChanges() {
@@ -359,6 +355,24 @@ const ConfigCommandsMixin = {
             });
         },
 
+        waitForListEnd(timeout = 5000) {
+            // Wait for [end] marker from ol/on commands
+            return new Promise((resolve, reject) => {
+                const timeoutId = setTimeout(() => {
+                    this.pendingListEnd = null;
+                    reject(new Error('List end marker timeout'));
+                }, timeout);
+
+                this.pendingListEnd = {
+                    resolve: () => {
+                        clearTimeout(timeoutId);
+                        this.pendingListEnd = null;
+                        resolve();
+                    }
+                };
+            });
+        },
+
         async applyBulkCtSettings(changes) {
             // Apply values to selected channels one by one, waiting for acknowledgment
             const total = changes.channels.length;
@@ -526,17 +540,29 @@ const ConfigCommandsMixin = {
             }, 2000);
         },
 
-        listTempSensors() {
+        async listTempSensors() {
             this.device.tempSensors = [];  // Clear before fetching new list
+            const listEndPromise = this.waitForListEnd();
             this.writeToStream('ol');
+            try {
+                await listEndPromise;
+            } catch (e) {
+                this.log('List sensors timeout', 'warning');
+            }
         },
 
-        listSavedTempSensors(reconcileAfter = false) {
+        async listSavedTempSensors(reconcileAfter = false) {
             this.device.savedTempSensors = [];
+            const listEndPromise = this.waitForListEnd();
             this.writeToStream('on');
-            // Only reconcile on initial load, not after every refresh
-            if (reconcileAfter) {
-                setTimeout(() => this.reconcileTempSensorSlots(), 500);
+            try {
+                await listEndPromise;
+                // Only reconcile on initial load, not after every refresh
+                if (reconcileAfter) {
+                    this.reconcileTempSensorSlots();
+                }
+            } catch (e) {
+                this.log('List saved sensors timeout', 'warning');
             }
         },
 
@@ -574,15 +600,15 @@ const ConfigCommandsMixin = {
             this.doSaveTempMapping();
         },
 
-        doSaveTempMapping() {
+        async doSaveTempMapping() {
             this.writeToStream('oh');
             this.changes = true;
             this.hasUnsavedChanges = true;
             this.log('Temperature sensor mapping saved', 'info');
             // Refresh both found and saved sensors list to update status
-            // Use longer delays to avoid commands being concatenated in serial buffer
-            setTimeout(() => this.listTempSensors(), 1000);
-            setTimeout(() => this.listSavedTempSensors(), 2000);
+            // Wait for list end markers - no need for delays
+            await this.listTempSensors();
+            await this.listSavedTempSensors();
         },
 
         async clearTempSlot(slot) {
@@ -598,11 +624,9 @@ const ConfigCommandsMixin = {
             } catch (e) {
                 this.log(`Clear slot T${slot} timeout`, 'warning');
             }
-            // Delay before next command to let serial buffer clear
-            await new Promise(resolve => setTimeout(resolve, 500));
-            this.listTempSensors();
-            // Also refresh saved sensors list with longer delay to avoid concatenation
-            setTimeout(() => this.listSavedTempSensors(), 1000);
+            // Wait for list end markers - no need for delays
+            await this.listTempSensors();
+            await this.listSavedTempSensors();
         },
 
         async clearAllTempSlots() {
@@ -618,11 +642,9 @@ const ConfigCommandsMixin = {
             } catch (e) {
                 this.log('Clear all slots timeout', 'warning');
             }
-            // Delay before next command to let serial buffer clear
-            await new Promise(resolve => setTimeout(resolve, 500));
-            this.listTempSensors();
-            // Also refresh saved sensors list with longer delay to avoid concatenation
-            setTimeout(() => this.listSavedTempSensors(), 1000);
+            // Wait for list end markers - no need for delays
+            await this.listTempSensors();
+            await this.listSavedTempSensors();
         },
 
         syncOriginalTempSensors() {
@@ -654,16 +676,16 @@ const ConfigCommandsMixin = {
             this.hasUnsavedChanges = true;
         },
 
-        saveConfig() {
+        async saveConfig() {
             this.writeToStream('s');
             this.changes = false;
             this.hasUnsavedChanges = false;
             this.log('Configuration saved!', 'info');
             // Refresh both found and saved sensors lists to update status indicators
             // After save, NVM matches runtime so no reconciliation needed
-            // Use longer delays to avoid commands being concatenated in serial buffer
-            setTimeout(() => this.listTempSensors(), 1000);
-            setTimeout(() => this.listSavedTempSensors(), 2000);
+            // Wait for list end markers - no need for delays
+            await this.listTempSensors();
+            await this.listSavedTempSensors();
         },
 
         resetDefaults() {
