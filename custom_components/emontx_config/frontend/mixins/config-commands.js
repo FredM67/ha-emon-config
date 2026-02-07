@@ -575,7 +575,7 @@ const ConfigCommandsMixin = {
         },
 
         doSaveTempMapping() {
-            this.writeToStream('os');
+            this.writeToStream('oh');
             this.changes = true;
             this.hasUnsavedChanges = true;
             this.log('Temperature sensor mapping saved', 'info');
