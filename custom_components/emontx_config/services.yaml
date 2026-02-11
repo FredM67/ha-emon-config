@@ -1,0 +1,18 @@
+send_command:
+  name: Send command
+  description: Send a command to an emonTx/emonPi device via ESPHome.
+  fields:
+    command:
+      name: Command
+      description: The command to send to the emonTx/emonPi device.
+      required: true
+      example: "l"
+      selector:
+        text:
+    device:
+      name: Device
+      description: The ESPHome device name to send the command to.
+      required: true
+      example: "emonwifi"
+      selector:
+        text:

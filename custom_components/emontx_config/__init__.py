@@ -13,10 +13,13 @@ from homeassistant.components import frontend, websocket_api
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant, ServiceCall, callback
+from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.typing import ConfigType
 import voluptuous as vol
 
 from .const import DOMAIN, EVENT_EMONTX_RAW
+
+CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 # Key for storing channel names in config entry options
 CONF_CHANNEL_NAMES = "channel_names"
