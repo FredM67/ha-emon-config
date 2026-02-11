@@ -7,6 +7,8 @@
 [![Maintenance](https://img.shields.io/maintenance/yes/2026)](https://github.com/FredM67/ha-emon-config)
 [![Sponsor](https://img.shields.io/badge/Sponsor-PayPal-blue?logo=paypal)](https://www.paypal.com/donate/?business=CHGDDS5VQUJFN&no_recurring=0&item_name=Support+emonPi%2FTx+Configuration+for+Home+Assistant&currency_code=EUR)
 
+[![Validate HACS](https://github.com/FredM67/ha-emon-config/actions/workflows/validate-hacs.yml/badge.svg)](https://github.com/FredM67/ha-emon-config/actions/workflows/validate-hacs.yml)
+[![Validate hassfest](https://github.com/FredM67/ha-emon-config/actions/workflows/validate-hassfest.yml/badge.svg)](https://github.com/FredM67/ha-emon-config/actions/workflows/validate-hassfest.yml)
 [![Stars](https://img.shields.io/github/stars/FredM67/ha-emon-config)](https://github.com/FredM67/ha-emon-config/stargazers)
 [![Last Commit](https://img.shields.io/github/last-commit/FredM67/ha-emon-config)](https://github.com/FredM67/ha-emon-config/commits)
 [![Open Issues](https://img.shields.io/github/issues/FredM67/ha-emon-config)](https://github.com/FredM67/ha-emon-config/issues)
