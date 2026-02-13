@@ -30,9 +30,14 @@ Vue.component('config-tab', {
     },
     data() {
         return {
-            configSubTab: 'calibration',
+            configSubTab: (window.parent.localStorage || localStorage).getItem('emontx_config_subtab') || 'calibration',
             customCtChannels: {}  // Track which channels are using custom CT values
         };
+    },
+    watch: {
+        configSubTab(newTab) {
+            (window.parent.localStorage || localStorage).setItem('emontx_config_subtab', newTab);
+        }
     },
     methods: {
         isCustomCt(ical) {
