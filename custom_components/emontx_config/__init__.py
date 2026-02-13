@@ -21,8 +21,9 @@ from .const import DOMAIN, EVENT_EMONTX_RAW
 
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
-# Key for storing channel names in config entry options
+# Keys for storing data in config entry options
 CONF_CHANNEL_NAMES = "channel_names"
+CONF_FIRMWARE_SETTINGS = "firmware_settings"
 
 # Flags to track if commands/services have been registered
 WEBSOCKET_REGISTERED = "websocket_registered"
@@ -48,6 +49,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if not hass.data[DOMAIN].get(WEBSOCKET_REGISTERED):
         websocket_api.async_register_command(hass, websocket_get_channel_names)
         websocket_api.async_register_command(hass, websocket_save_channel_names)
+        websocket_api.async_register_command(hass, websocket_get_firmware_settings)
+        websocket_api.async_register_command(hass, websocket_save_firmware_settings)
         hass.data[DOMAIN][WEBSOCKET_REGISTERED] = True
 
     # Store entry data
@@ -197,4 +200,57 @@ async def websocket_save_channel_names(
     hass.config_entries.async_update_entry(entry, options=new_options)
 
     _LOGGER.debug("Saved channel names: %s", channel_names)
+    connection.send_result(msg["id"], {"success": True})
+
+
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "emontx_config/get_firmware_settings",
+    }
+)
+@callback
+def websocket_get_firmware_settings(
+    hass: HomeAssistant,
+    connection: websocket_api.ActiveConnection,
+    msg: dict[str, Any],
+) -> None:
+    """Get firmware check settings from config entry options."""
+    entries = hass.config_entries.async_entries(DOMAIN)
+    if not entries:
+        connection.send_error(msg["id"], "not_found", "No config entry found")
+        return
+
+    entry = entries[0]
+    firmware_settings = entry.options.get(CONF_FIRMWARE_SETTINGS, {})
+
+    connection.send_result(msg["id"], {"firmware_settings": firmware_settings})
+
+
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "emontx_config/save_firmware_settings",
+        vol.Required("firmware_settings"): dict,
+    }
+)
+@websocket_api.async_response
+async def websocket_save_firmware_settings(
+    hass: HomeAssistant,
+    connection: websocket_api.ActiveConnection,
+    msg: dict[str, Any],
+) -> None:
+    """Save firmware check settings to config entry options."""
+    entries = hass.config_entries.async_entries(DOMAIN)
+    if not entries:
+        connection.send_error(msg["id"], "not_found", "No config entry found")
+        return
+
+    entry = entries[0]
+    firmware_settings = msg["firmware_settings"]
+
+    new_options = dict(entry.options)
+    new_options[CONF_FIRMWARE_SETTINGS] = firmware_settings
+
+    hass.config_entries.async_update_entry(entry, options=new_options)
+
+    _LOGGER.debug("Saved firmware settings: %s", firmware_settings)
     connection.send_result(msg["id"], {"success": True})

@@ -43,9 +43,9 @@ const FirmwareUpdateMixin = {
                 const latestVersion = stableRelease.tag_name.replace(/^[vV]/, '');
                 this.latestFirmwareVersion = latestVersion;
 
-                // Store last check time
-                const storage = window.parent.localStorage || localStorage;
-                storage.setItem('emontx_firmware_last_check', Date.now().toString());
+                // Store last check time on HA side
+                this.firmwareLastCheck = Date.now();
+                this.saveFirmwareSettings();
 
                 // Compare versions (strip V/v prefix from device version)
                 const current = this.device.firmware_version.replace(/^[vV]/, '');
@@ -68,10 +68,8 @@ const FirmwareUpdateMixin = {
         shouldCheckFirmware() {
             if (this.firmwareCheckFrequency === 'never') return false;
 
-            const storage = window.parent.localStorage || localStorage;
-            const lastCheck = parseInt(storage.getItem('emontx_firmware_last_check') || '0');
             const now = Date.now();
-            const elapsed = now - lastCheck;
+            const elapsed = now - this.firmwareLastCheck;
 
             const intervals = {
                 'daily': 24 * 60 * 60 * 1000,
@@ -85,15 +83,41 @@ const FirmwareUpdateMixin = {
 
         updateFirmwareFrequency(frequency) {
             this.firmwareCheckFrequency = frequency;
-            const storage = window.parent.localStorage || localStorage;
-            storage.setItem('emontx_firmware_check_frequency', frequency);
+            this.saveFirmwareSettings();
         },
 
-        loadFirmwareCheckFrequency() {
-            const storage = window.parent.localStorage || localStorage;
-            const saved = storage.getItem('emontx_firmware_check_frequency');
-            if (saved) {
-                this.firmwareCheckFrequency = saved;
+        async loadFirmwareSettings() {
+            try {
+                if (this.hass && this.hass.callWS) {
+                    const result = await this.hass.callWS({ type: 'emontx_config/get_firmware_settings' });
+                    if (result && result.firmware_settings) {
+                        const settings = result.firmware_settings;
+                        if (settings.check_frequency) {
+                            this.firmwareCheckFrequency = settings.check_frequency;
+                        }
+                        if (settings.last_check) {
+                            this.firmwareLastCheck = settings.last_check;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error('Failed to load firmware settings:', e);
+            }
+        },
+
+        async saveFirmwareSettings() {
+            try {
+                if (this.hass && this.hass.callWS) {
+                    await this.hass.callWS({
+                        type: 'emontx_config/save_firmware_settings',
+                        firmware_settings: {
+                            check_frequency: this.firmwareCheckFrequency,
+                            last_check: this.firmwareLastCheck
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error('Failed to save firmware settings:', e);
             }
         },
 

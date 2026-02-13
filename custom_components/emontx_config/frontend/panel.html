@@ -219,7 +219,7 @@
             el: '#app',
             mixins: [ConnectionMixin, DataParserMixin, ConfigCommandsMixin, YamlGeneratorMixin, ChannelNamesMixin, FirmwareUpdateMixin],
             data: {
-                integrationVersion: '1.4.4',
+                integrationVersion: '1.4.5-beta.1',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -266,6 +266,7 @@
                 latestFirmwareVersion: null,
                 firmwareUpdateAvailable: false,
                 firmwareCheckFrequency: 'weekly',
+                firmwareLastCheck: 0,
                 checkingFirmware: false,
                 // i18n
                 lang: 'en',
@@ -425,7 +426,7 @@
                 this.populateChannels(6);
                 this.discoverDevices();
                 this.initHassConnection();
-                this.loadFirmwareCheckFrequency();
+                this.loadFirmwareSettings();
             },
             methods: {
                 // Language detection and translation loading
