@@ -65,6 +65,7 @@
             :t="t"
             :emontx-connected="emontxConnected"
             :config-received="configReceived"
+            :no-response="noResponse"
             :upgrade-required="upgradeRequired"
             :has-unsaved-changes="hasUnsavedChanges"
             :has-pending-changes="hasPendingChanges"
@@ -219,12 +220,13 @@
             el: '#app',
             mixins: [ConnectionMixin, DataParserMixin, ConfigCommandsMixin, YamlGeneratorMixin, ChannelNamesMixin, FirmwareUpdateMixin],
             data: {
-                integrationVersion: '1.4.6-beta.2',
+                integrationVersion: '1.4.6-beta.3',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
                 emontxStatus: 'Unknown',
                 configReceived: false,
+                noResponse: false,
                 upgradeRequired: false,
                 changes: false,
                 liveData: {},
@@ -330,7 +332,8 @@
                 },
                 configReceived(newVal) {
                     if (newVal) {
-                        // Clear the no-response timeout
+                        // Clear the no-response timeout and warning
+                        this.noResponse = false;
                         if (this._configTimeoutId) {
                             clearTimeout(this._configTimeoutId);
                             this._configTimeoutId = null;
@@ -519,6 +522,7 @@
                     localStorage.setItem('emontx_selected_device', this.selectedDevice);
                     this.deviceName = this.selectedDevice;
                     this.configReceived = false;
+                    this.noResponse = false;
                     this.emontxConnected = false;
                     this.liveData = {};
                     this.hasUnsavedChanges = false;

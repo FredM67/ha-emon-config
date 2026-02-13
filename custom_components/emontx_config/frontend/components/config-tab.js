@@ -26,7 +26,8 @@ Vue.component('config-tab', {
         firmwareUpdateAvailable: { type: Boolean, default: false },
         latestFirmwareVersion: { type: String, default: null },
         checkingFirmware: { type: Boolean, default: false },
-        tempScanLoading: { type: Boolean, default: false }
+        tempScanLoading: { type: Boolean, default: false },
+        noResponse: { type: Boolean, default: false }
     },
     data() {
         return {
@@ -214,8 +215,13 @@ Vue.component('config-tab', {
                 </template>
             </div>
 
-            <div v-if="!configReceived" class="alert alert-info">
+            <div v-if="!configReceived && !noResponse" class="alert alert-info">
                 {{ t.config.waiting }} {{ t.config.clickLoad }}
+                <button type="button" class="btn btn-primary" style="margin-left: 15px;" @click="$emit('load-config')" :disabled="!emontxConnected">{{ t.buttons.loadConfig }}</button>
+            </div>
+
+            <div v-if="!configReceived && noResponse" class="alert alert-danger">
+                {{ t.config.noResponseWarning }}
                 <button type="button" class="btn btn-primary" style="margin-left: 15px;" @click="$emit('load-config')" :disabled="!emontxConnected">{{ t.buttons.loadConfig }}</button>
             </div>
 

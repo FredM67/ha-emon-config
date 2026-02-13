@@ -34,9 +34,11 @@ const ConfigCommandsMixin = {
             this.writeToStream('l');
 
             // Start a no-response timeout
+            this.noResponse = false;
             if (this._configTimeoutId) clearTimeout(this._configTimeoutId);
             this._configTimeoutId = setTimeout(() => {
                 if (!this.configReceived) {
+                    this.noResponse = true;
                     this.log(this.t.config?.noResponseWarning || 'No response from device. If using an emonTx4/5, the serial jumper must be removed for commands to work. See documentation for details.', 'warning');
                 }
             }, 10000);
