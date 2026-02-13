@@ -216,6 +216,7 @@ Vue.component('config-tab', {
             </div>
 
             <div v-if="!configReceived && !noResponse" class="alert alert-info">
+                <span v-if="emontxConnected" class="spinner-dark"></span>
                 {{ t.config.waiting }} {{ t.config.clickLoad }}
                 <button type="button" class="btn btn-primary" style="margin-left: 15px;" @click="$emit('load-config')" :disabled="!emontxConnected">{{ t.buttons.loadConfig }}</button>
             </div>
