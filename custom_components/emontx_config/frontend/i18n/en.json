@@ -48,6 +48,7 @@
     "config": {
         "waiting": "Waiting for configuration data...",
         "clickLoad": "Click \"Load Config\" to read the current device configuration.",
+        "noResponseWarning": "No response from device. If using an emonTx4/5, the serial jumper must be removed for commands to work. See documentation for details.",
         "firmwareUpdateRequired": "Firmware update required:",
         "firmwareUpdateMessage": "Looks like you are running an older firmware version. Please upgrade the device firmware to use this tool.",
         "deviceInfo": "Device Information",

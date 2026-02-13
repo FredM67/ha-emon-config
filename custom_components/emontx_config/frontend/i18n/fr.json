@@ -48,6 +48,7 @@
     "config": {
         "waiting": "En attente des données de configuration...",
         "clickLoad": "Cliquez sur \"Charger Config\" pour lire la configuration actuelle.",
+        "noResponseWarning": "Aucune réponse du périphérique. Si vous utilisez un emonTx4/5, le cavalier série doit être retiré pour que les commandes fonctionnent. Consultez la documentation pour plus de détails.",
         "firmwareUpdateRequired": "Mise à jour du firmware requise :",
         "firmwareUpdateMessage": "Il semble que vous utilisez une ancienne version du firmware. Veuillez mettre à jour le firmware de l'appareil pour utiliser cet outil.",
         "deviceInfo": "Informations sur l'Appareil",

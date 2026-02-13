@@ -48,6 +48,7 @@
     "config": {
         "waiting": "In attesa dei dati di configurazione...",
         "clickLoad": "Clicca \"Carica Config\" per leggere la configurazione attuale.",
+        "noResponseWarning": "Nessuna risposta dal dispositivo. Se si utilizza un emonTx4/5, il jumper seriale deve essere rimosso affinché i comandi funzionino. Consultare la documentazione per i dettagli.",
         "firmwareUpdateRequired": "Aggiornamento firmware richiesto:",
         "firmwareUpdateMessage": "Sembra che tu stia usando una versione firmware obsoleta. Aggiorna il firmware del dispositivo per usare questo strumento.",
         "deviceInfo": "Informazioni Dispositivo",

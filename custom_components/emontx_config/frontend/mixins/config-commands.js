@@ -33,6 +33,14 @@ const ConfigCommandsMixin = {
             this.failedVcalIndices = [];
             this.writeToStream('l');
 
+            // Start a no-response timeout
+            if (this._configTimeoutId) clearTimeout(this._configTimeoutId);
+            this._configTimeoutId = setTimeout(() => {
+                if (!this.configReceived) {
+                    this.log(this.t.config?.noResponseWarning || 'No response from device. If using an emonTx4/5, the serial jumper must be removed for commands to work. See documentation for details.', 'warning');
+                }
+            }, 10000);
+
             // Load both found sensors (ol) and saved sensors (on) after config is received
             // Wait for list end markers instead of using arbitrary timeouts
             setTimeout(async () => {

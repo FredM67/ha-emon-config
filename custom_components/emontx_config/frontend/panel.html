@@ -329,11 +329,18 @@
                     (window.parent.localStorage || localStorage).setItem('emontx_active_tab', newTab);
                 },
                 configReceived(newVal) {
-                    if (newVal && !this.originalDevice) {
-                        // Store original config after a short delay to ensure all parsing is complete
-                        setTimeout(() => {
-                            this.originalDevice = JSON.parse(JSON.stringify(this.device));
-                        }, 500);
+                    if (newVal) {
+                        // Clear the no-response timeout
+                        if (this._configTimeoutId) {
+                            clearTimeout(this._configTimeoutId);
+                            this._configTimeoutId = null;
+                        }
+                        if (!this.originalDevice) {
+                            // Store original config after a short delay to ensure all parsing is complete
+                            setTimeout(() => {
+                                this.originalDevice = JSON.parse(JSON.stringify(this.device));
+                            }, 500);
+                        }
                     }
                 }
             },
@@ -437,7 +444,7 @@
                             const hassObj = window.parent.document.querySelector('home-assistant');
                             if (hassObj && hassObj.hass && hassObj.hass.language) {
                                 const haLang = hassObj.hass.language.split('-')[0];
-                                if (['en', 'fr', 'de', 'it'].includes(haLang)) {
+                                if (['en', 'fr', 'de', 'it', 'es'].includes(haLang)) {
                                     detectedLang = haLang;
                                 }
                             }
