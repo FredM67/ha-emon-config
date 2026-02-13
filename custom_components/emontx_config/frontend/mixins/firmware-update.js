@@ -26,22 +26,29 @@ const FirmwareUpdateMixin = {
             this.checkingFirmware = true;
 
             try {
-                const response = await fetch('https://api.github.com/repos/openenergymonitor/emon32-fw/releases/latest');
+                // Fetch releases and find the latest non-prerelease
+                const response = await fetch('https://api.github.com/repos/openenergymonitor/emon32-fw/releases');
                 if (!response.ok) {
                     this.log('Could not fetch firmware releases', 'warning');
                     return;
                 }
 
-                const release = await response.json();
-                const latestVersion = release.tag_name.replace(/^v/, '');
+                const releases = await response.json();
+                const stableRelease = releases.find(r => !r.prerelease && !r.draft);
+                if (!stableRelease) {
+                    if (force) this.log('No stable firmware release found', 'warning');
+                    return;
+                }
+
+                const latestVersion = stableRelease.tag_name.replace(/^[vV]/, '');
                 this.latestFirmwareVersion = latestVersion;
 
                 // Store last check time
                 const storage = window.parent.localStorage || localStorage;
                 storage.setItem('emontx_firmware_last_check', Date.now().toString());
 
-                // Compare versions
-                const current = this.device.firmware_version;
+                // Compare versions (strip V/v prefix from device version)
+                const current = this.device.firmware_version.replace(/^[vV]/, '');
                 if (this.isNewerVersion(latestVersion, current)) {
                     this.firmwareUpdateAvailable = true;
                     this.log(`Firmware update available: ${current} → ${latestVersion}`, 'info');
@@ -91,13 +98,16 @@ const FirmwareUpdateMixin = {
         },
 
         isNewerVersion(latest, current) {
-            // Compare semantic versions (e.g., "1.2.3" vs "1.2.2")
-            const latestParts = latest.split('.').map(Number);
-            const currentParts = current.split('.').map(Number);
+            // Strip leading V/v prefix and any pre-release suffix (e.g., "-test", "-beta")
+            const clean = (v) => v.replace(/^[vV]/, '').replace(/-.*$/, '');
+
+            const latestParts = clean(latest).split('.').map(Number);
+            const currentParts = clean(current).split('.').map(Number);
 
             for (let i = 0; i < Math.max(latestParts.length, currentParts.length); i++) {
                 const l = latestParts[i] || 0;
                 const c = currentParts[i] || 0;
+                if (isNaN(l) || isNaN(c)) return false;
                 if (l > c) return true;
                 if (l < c) return false;
             }
