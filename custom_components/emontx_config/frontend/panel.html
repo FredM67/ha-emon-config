@@ -220,7 +220,7 @@
             el: '#app',
             mixins: [ConnectionMixin, DataParserMixin, ConfigCommandsMixin, YamlGeneratorMixin, ChannelNamesMixin, FirmwareUpdateMixin],
             data: {
-                integrationVersion: '1.4.6-beta.3',
+                integrationVersion: '1.4.6-beta.4',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -523,6 +523,7 @@
                     this.deviceName = this.selectedDevice;
                     this.configReceived = false;
                     this.noResponse = false;
+                    this.originalDevice = null;
                     this.emontxConnected = false;
                     this.liveData = {};
                     this.hasUnsavedChanges = false;
