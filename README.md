@@ -37,11 +37,13 @@ A Home Assistant integration that provides a web-based configuration interface f
   - Uses friendly names when configured
   - Supports OPA pulse channels and temperature sensors
 - **Multi-phase Support**: Full support for emonPi3 with 3-phase voltage monitoring
-- **Firmware Update Notification**: Checks for firmware updates from GitHub (emonPi3/emonTx6 only)
+- **Firmware Update Notification**: Checks for firmware updates from GitHub
   - Configurable check frequency (Never, Daily, Weekly, Monthly)
+  - Settings stored on the HA side (shared across all browsers)
   - Blinking badge when update is available
+- **No-response Detection**: Shows a warning if the device doesn't respond within 10 seconds, with guidance for emonTx4/5 users (serial jumper must be removed)
 - **RF Power Warning**: Safety warning when setting RF power to high levels (7 dBm+)
-- **Multi-language**: Supports English, French, German, and Italian
+- **Multi-language**: Supports English, French, German, Italian, and Spanish
 
 ## Requirements
 
@@ -230,10 +232,13 @@ The main configuration interface with three sub-tabs:
   - Scan for connected sensors on the OneWire bus
   - Drag-and-drop sensors between slots to reassign
   - Dropdown selector for slot reassignment
+  - Status indicators: matched (✓), pending (⏳), modified (✎), new (★), missing (⚠)
+  - Selectable/copyable sensor addresses
   - Clear individual slots or all slots at once
   - Restore saved sensor mappings from device memory
-  - Save mappings to device memory
+  - Save mappings to device memory (with warning if pending changes exist)
   - Slot changes use the "Apply/Discard" workflow
+  - Reliable list parsing using firmware `[end]` markers
 - **Channel Names Backup**: Export/Import friendly names as JSON for backup or migration
 
 #### Other Settings
@@ -241,7 +246,7 @@ The main configuration interface with three sub-tabs:
   - Warning displayed when setting RF power to high levels (7 dBm+)
 - **Datalog Interval**: Set the reporting interval
 - **JSON Output**: Enable/disable JSON serial format
-- **Firmware Update Check** (emonPi3 only): Configure automatic update checking frequency and manually check for updates
+- **Firmware Update Check**: Configure automatic update checking frequency and manually check for updates
 
 **Buttons:**
 - **Apply**: Send pending configuration changes to the device
@@ -304,6 +309,9 @@ For detailed information about emonTx/emonPi devices, firmware configuration, an
 | `d` | Reset to default values |
 | `z` | Zero energy counters (requires `y` confirmation) |
 | `k<n> <ical> <ilead>` | Set CT channel calibration |
+| `ol` | List found OneWire temperature sensors on bus |
+| `on` | List saved temperature sensor addresses in NVM |
+| `oh` | Save (hold) current temperature sensor slot mapping to NVM |
 
 Refer to the [emonTx documentation](https://docs.openenergymonitor.org/) for a complete list of commands.
 
@@ -331,6 +339,7 @@ Refer to the [emonTx documentation](https://docs.openenergymonitor.org/) for a c
 - Verify the TX pin is connected and configured in ESPHome
 - Check that `custom_services: true` is set in your `api:` configuration
 - Monitor the serial output with an FTDI adapter to verify commands are being sent
+- **emonTx4/5 users**: The serial jumper must be removed (unsoldered or broken) for the emonWifi to communicate with the board. Without this, the device will not respond to commands. A red warning will appear on the Config tab after 10 seconds if no response is received
 
 ### Phase values showing incorrect numbers
 
