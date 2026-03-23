@@ -132,6 +132,13 @@ api:
     key: "your-32-byte-base64-key-here"  # See note below
   # Required for the send_command service
   custom_services: true
+  actions:
+    - action: send_command
+      variables:
+        command: string
+      then:
+        - emontx.send_command:
+            command: !lambda 'return command;'
 
 # Enable Over-The-Air updates
 ota:
@@ -156,8 +163,8 @@ uart:
 
 # emonTx component
 emontx:
-  # Enable config panel - registers send_command service
-  # and fires esphome.emontx_raw events for serial data
+  # Enable config panel - fires esphome.emontx_raw and
+  # esphome.emontx_json events for serial data
   config_panel: true
 ```
 
@@ -192,16 +199,23 @@ uart:
   tx_pin: GPIO21
   baud_rate: 115200
 
-# Add custom_services to your existing api: section
+# Add custom_services and send_command action to your existing api: section
 api:
   # ... your existing config ...
   custom_services: true
+  actions:
+    - action: send_command
+      variables:
+        command: string
+      then:
+        - emontx.send_command:
+            command: !lambda 'return command;'
 
 emontx:
   config_panel: true
 ```
 
-> **Note**: When `config_panel: true` is set, the `send_command` service is automatically registered. The `custom_services: true` option is required to enable this feature. Commands sent via this service automatically have CR+LF line endings appended as required by the emonTx firmware.
+> **Note**: The `send_command` service is defined in the `api: actions:` section using the standard ESPHome pattern. The `custom_services: true` option is required to enable this feature. The `config_panel: true` option enables automatic firing of `esphome.emontx_raw` and `esphome.emontx_json` events. Commands sent via this service automatically have LF line endings appended as required by the emonTx firmware.
 
 ### Home Assistant Setup
 
@@ -322,7 +336,8 @@ Refer to the [emonTx documentation](https://docs.openenergymonitor.org/) for a c
 - **First**, ensure the ESPHome integration is installed in Home Assistant
 - Verify your ESP32 device is added to the ESPHome integration and shows as "Online"
 - Check that the API encryption key matches between ESPHome firmware and Home Assistant
-- Verify that `config_panel: true` is set in your emontx configuration (this registers the required `_send_command` service)
+- Verify that `config_panel: true` is set in your emontx configuration
+- Verify that the `send_command` action is defined in your `api:` section (see configuration examples above)
 - The device dropdown only shows ESPHome devices that have the `_send_command` service registered
 
 ### No data received
