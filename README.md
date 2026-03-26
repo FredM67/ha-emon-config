@@ -50,10 +50,12 @@ A Home Assistant integration that provides a web-based configuration interface f
 - Home Assistant 2023.1.0 or newer
 - **ESPHome Integration** installed in Home Assistant (Settings > Devices & Services > Add Integration > ESPHome)
 - An **emonWifi** (ESP32-C3 Mini) added to the ESPHome integration and showing as "Online"
-- ESPHome firmware on the emonWifi with the [emonTx component](https://github.com/esphome/esphome/pull/9027) configured
+- ESPHome firmware on the emonWifi with the [emonTx component](https://github.com/FredM67/esphome/tree/emontx-config-panel) configured (with `config_panel: true`)
 - An emonTx/emonPi device connected to the emonWifi via UART
 
 > **Note**: If using a different ESP32 board, some settings (board type, GPIO pins) may need to be adjusted.
+
+> **Important**: This integration requires the `config_panel` feature, which is **not available** in the standard ESPHome emonTx component. The core emonTx component ([PR #9027](https://github.com/esphome/esphome/pull/9027)) does not include `config_panel` due to current ESPHome restrictions on custom service registration in internal components. You **must** use the [`emontx-config-panel`](https://github.com/FredM67/esphome/tree/emontx-config-panel) branch from the FredM67/esphome fork via `external_components` (see [ESPHome Setup](#esphome-setup) below).
 
 ## Installation
 
@@ -76,7 +78,9 @@ A Home Assistant integration that provides a web-based configuration interface f
 
 ### ESPHome Setup
 
-Your ESP32 needs to be configured with the emonTx component from [PR #9027](https://github.com/esphome/esphome/pull/9027).
+Your ESP32 needs to be configured with the emonTx component from the [`emontx-config-panel`](https://github.com/FredM67/esphome/tree/emontx-config-panel) branch (which includes the `config_panel` feature required by this HACS integration).
+
+> **Note**: The core emonTx component is being merged into ESPHome via [PR #9027](https://github.com/esphome/esphome/pull/9027), but the `config_panel` feature is not yet included. Until it is, use the branch above.
 
 #### New to ESPHome? Start Here
 
@@ -130,15 +134,8 @@ logger:
 api:
   encryption:
     key: "your-32-byte-base64-key-here"  # See note below
-  # Required for the send_command service
+  # Required for the auto-registered send_command service
   custom_services: true
-  actions:
-    - action: send_command
-      variables:
-        command: string
-      then:
-        - emontx.send_command:
-            command: !lambda 'return command;'
 
 # Enable Over-The-Air updates
 ota:
@@ -148,9 +145,12 @@ wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
 
-# External component for emonTx support
+# External component for emonTx support (config_panel branch)
 external_components:
-  - source: github://pr#9027
+  - source:
+      type: git
+      url: https://github.com/FredM67/esphome
+      ref: emontx-config-panel
     components: [emontx]
     refresh: 0s
 
@@ -160,6 +160,7 @@ uart:
   rx_pin: GPIO20  # Adjust for your board
   tx_pin: GPIO21  # Adjust for your board
   baud_rate: 115200
+  rx_buffer_size: 2048
 
 # emonTx component
 emontx:
@@ -189,7 +190,10 @@ If you already have an ESPHome device configured, you only need to add these sec
 
 ```yaml
 external_components:
-  - source: github://pr#9027
+  - source:
+      type: git
+      url: https://github.com/FredM67/esphome
+      ref: emontx-config-panel
     components: [emontx]
     refresh: 0s
 
@@ -198,24 +202,18 @@ uart:
   rx_pin: GPIO20
   tx_pin: GPIO21
   baud_rate: 115200
+  rx_buffer_size: 2048
 
-# Add custom_services and send_command action to your existing api: section
+# Add custom_services to your existing api: section
 api:
   # ... your existing config ...
   custom_services: true
-  actions:
-    - action: send_command
-      variables:
-        command: string
-      then:
-        - emontx.send_command:
-            command: !lambda 'return command;'
 
 emontx:
   config_panel: true
 ```
 
-> **Note**: The `send_command` service is defined in the `api: actions:` section using the standard ESPHome pattern. The `custom_services: true` option is required to enable this feature. The `config_panel: true` option enables automatic firing of `esphome.emontx_raw` and `esphome.emontx_json` events. Commands sent via this service automatically have LF line endings appended as required by the emonTx firmware.
+> **Note**: The `custom_services: true` option is required to enable the `send_command` service, which is automatically registered by the emontx component when `config_panel: true` is set. The `config_panel: true` option also enables automatic firing of `esphome.emontx_raw` and `esphome.emontx_json` events. Commands sent via this service automatically have LF line endings appended as required by the emonTx firmware.
 
 ### Home Assistant Setup
 
@@ -337,7 +335,7 @@ Refer to the [emonTx documentation](https://docs.openenergymonitor.org/) for a c
 - Verify your ESP32 device is added to the ESPHome integration and shows as "Online"
 - Check that the API encryption key matches between ESPHome firmware and Home Assistant
 - Verify that `config_panel: true` is set in your emontx configuration
-- Verify that the `send_command` action is defined in your `api:` section (see configuration examples above)
+- Verify that `custom_services: true` is set in your `api:` section (the `send_command` service is auto-registered by the emontx component)
 - The device dropdown only shows ESPHome devices that have the `_send_command` service registered
 
 ### No data received
