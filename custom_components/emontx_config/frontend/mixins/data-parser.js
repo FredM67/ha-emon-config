@@ -236,7 +236,7 @@ const DataParserMixin = {
                         this.configReceived = true;
                         const c = parseInt(key.substring(4).trim()) - 1;
                         if (c >= 0 && c < this.device.ichannels.length) {
-                            this.device.ichannels[c].ical = Math.round(parseFloat(val));
+                            this.device.ichannels[c].ical = parseFloat(val);
                         }
                     }
                     else if (key.startsWith('iLead')) {

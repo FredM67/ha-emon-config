@@ -201,7 +201,7 @@ Vue.component('bulk-ct-modal', {
                 this.ctTypeCustom = true;
             } else {
                 this.ctTypeCustom = false;
-                this.ctTypeValue = parseInt(value);
+                this.ctTypeValue = parseFloat(value);
             }
         },
         apply() {

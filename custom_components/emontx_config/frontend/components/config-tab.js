@@ -57,7 +57,7 @@ Vue.component('config-tab', {
                 this.$set(this.customCtChannels, index, true);
             } else {
                 this.$set(this.customCtChannels, index, false);
-                this.device.ichannels[index].ical = parseInt(value);
+                this.device.ichannels[index].ical = parseFloat(value);
             }
         },
         handleOpaFuncChange(idx, event) {
@@ -328,7 +328,7 @@ Vue.component('config-tab', {
                                             <option value="custom">{{ t.config.custom }}</option>
                                         </select>
                                         <input v-if="getCtSelectValue(index) === 'custom'"
-                                               type="number" min="10" max="200"
+                                               type="number" min="10" max="200" step="0.1"
                                                v-model.number="channel.ical"
                                                :disabled="!emontxConnected"
                                                :class="{ 'input-error': isFieldError(index, 'ical') }"
