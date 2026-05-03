@@ -283,14 +283,14 @@ Vue.component('config-tab', {
                                     <th>{{ t.config.phase }}</th>
                                     <th>{{ t.liveData.groups.V }}</th>
                                 </tr>
-                                <template v-for="(vchannel, index) in device.vchannels">
-                                <tr :key="'v'+index" :class="{ 'row-changed': isFieldChanged('vchannel', index), 'row-error': isVcalFailed(index) }" :title="failedVcalMessages[index] || undefined">
+                                <tr v-for="(vchannel, index) in device.vchannels" :key="'v'+index" :class="{ 'row-changed': isFieldChanged('vchannel', index), 'row-error': isVcalFailed(index) }" :title="failedVcalMessages[index] || undefined">
                                     <td><input type="checkbox" v-model="vchannel.active" :disabled="!emontxConnected" /></td>
                                     <td>V{{ index + 1 }}</td>
                                     <td><input type="text" :value="getChannelName('voltage', String(index + 1))" @input="onNameChange('voltage', String(index + 1), $event)" :placeholder="t.config.namePlaceholder" style="width: 150px;" /></td>
                                     <td>
                                         <input type="number" step="0.01" v-model="vchannel.vcal" :disabled="!emontxConnected" :class="{ 'input-error': isVcalFieldError(index, 'vcal') }" />
                                         <span class="unit">%</span>
+                                        <div v-if="isVcalFailed(index) && failedVcalMessages[index]" class="field-error-msg">{{ failedVcalMessages[index] }}</div>
                                     </td>
                                     <td>
                                         <input type="number" step="0.01" v-model="vchannel.vphase" :disabled="!emontxConnected" :class="{ 'input-error': isVcalFieldError(index, 'vphase') }" />
@@ -298,10 +298,6 @@ Vue.component('config-tab', {
                                     </td>
                                     <td>{{ formatVoltage(vchannel.voltage) }}</td>
                                 </tr>
-                                <tr v-if="isVcalFailed(index) && failedVcalMessages[index]" :key="'v-err'+index">
-                                    <td colspan="6" class="field-error-msg field-error-row">{{ failedVcalMessages[index] }}</td>
-                                </tr>
-                                </template>
                             </table>
                         </div>
                     </div>
