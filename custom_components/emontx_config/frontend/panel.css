@@ -282,6 +282,10 @@ body {
     width: 80px;
 }
 
+.config-table select {
+    width: 130px;
+}
+
 .config-table input:focus,
 .config-table select:focus {
     outline: none;
@@ -339,6 +343,9 @@ input[type="number"].no-spinner {
     .config-table select {
         width: 65px;
         padding: 6px;
+    }
+    .config-table select {
+        width: 100px;
     }
 }
 
