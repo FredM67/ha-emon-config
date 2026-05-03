@@ -87,7 +87,7 @@ const DataParserMixin = {
                 }
                 // Check for error response (device sends "> Error: " prefix)
                 else if (line.includes('> Error:')) {
-                    this.pendingResponse.reject();
+                    this.pendingResponse.reject(line);
                 }
             }
 

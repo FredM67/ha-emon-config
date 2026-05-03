@@ -561,6 +561,14 @@ input.input-error.no-spinner {
     box-shadow: 0 0 8px #f44336 !important;
 }
 
+/* Inline error message below a field */
+.field-error-msg {
+    color: #c62828;
+    font-size: 11px;
+    margin-top: 3px;
+    font-style: italic;
+}
+
 /* Floating bottom bar for pending changes */
 .floating-bottom-bar {
     position: fixed;

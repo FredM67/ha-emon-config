@@ -32,6 +32,7 @@ const ConfigCommandsMixin = {
             this.failedCtFields = [];
             this.failedVcalIndices = [];
             this.failedOpaIndices = [];
+            this.failedOpaMessages = {};
             this.writeToStream('l');
 
             // Start a no-response timeout
@@ -76,6 +77,7 @@ const ConfigCommandsMixin = {
             this.failedCtFields = [];
             this.failedVcalIndices = [];
             this.failedOpaIndices = [];
+            this.failedOpaMessages = {};
 
             this.applyProgress = { current: 0, total: changes.length, currentItem: '' };
             this.log(`Applying ${changes.length} configuration changes...`, 'info');
@@ -108,8 +110,11 @@ const ConfigCommandsMixin = {
                     this.log(`Applied: ${this.getChangeLabel(change)}`, 'info');
                     successfulChanges.push(change);
                 } catch (e) {
-                    this.log(`Failed to apply: ${this.getChangeLabel(change)} (timeout or rejected)`, 'error');
-                    failedChanges.push(change);
+                    const errorMsg = e.message && e.message.includes('> Error:')
+                        ? e.message.replace(/^.*>\s*Error:\s*/, '').trim()
+                        : 'timeout or rejected';
+                    this.log(`Failed to apply: ${this.getChangeLabel(change)} — ${errorMsg}`, 'error');
+                    failedChanges.push({ ...change, errorMessage: errorMsg });
                 }
             }
 
@@ -130,6 +135,9 @@ const ConfigCommandsMixin = {
                     this.failedCtFields = ['ical', 'ilead', 'vchan1', 'vchan2'];
                 } else if (change.type === 'opa') {
                     this.failedOpaIndices.push(change.index);
+                    if (change.errorMessage) {
+                        this.$set(this.failedOpaMessages, change.index, change.errorMessage);
+                    }
                 }
             }
 
@@ -316,6 +324,7 @@ const ConfigCommandsMixin = {
                 this.failedCtFields = [];
                 this.failedVcalIndices = [];
                 this.failedOpaIndices = [];
+                this.failedOpaMessages = {};
                 this.log('Changes discarded', 'info');
             }
         },
@@ -361,10 +370,10 @@ const ConfigCommandsMixin = {
                         clearTimeout(timeoutId);
                         resolve();
                     },
-                    reject: () => {
+                    reject: (errorLine) => {
                         clearTimeout(timeoutId);
                         this.pendingResponse = null;
-                        reject(new Error('Command rejected'));
+                        reject(new Error(errorLine || 'Command rejected'));
                     }
                 };
             });
