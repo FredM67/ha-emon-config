@@ -35,18 +35,42 @@ ha-emon-config/
 │       ├── config_flow.py       # Configuration flow for setup wizard
 │       ├── const.py             # Constants (domain, event names)
 │       ├── manifest.json        # Integration metadata
+│       ├── services.yaml        # Service definitions
 │       ├── strings.json         # Config flow strings (reference)
+│       ├── icon.png             # Integration icon
+│       ├── icon@2x.png          # Integration icon (retina)
 │       ├── translations/        # Config flow translations
 │       │   ├── en.json
 │       │   ├── fr.json
-│       │   └── de.json
+│       │   ├── de.json
+│       │   ├── it.json
+│       │   └── es.json
 │       └── frontend/            # Vue.js frontend application
 │           ├── panel.html       # Main entry point
 │           ├── panel.css        # Global styles
+│           ├── oem_proxy.html   # OEM documentation proxy
 │           ├── components/      # Vue components
+│           │   ├── config-tab.js
+│           │   ├── terminal-tab.js
+│           │   ├── live-data-tab.js
+│           │   ├── accumulators-tab.js
+│           │   ├── temp-sensors-section.js
+│           │   └── modals.js
 │           ├── mixins/          # Vue mixins (shared logic)
+│           │   ├── connection.js
+│           │   ├── data-parser.js
+│           │   ├── config-commands.js
+│           │   ├── yaml-generator.js
+│           │   ├── channel-names.js
+│           │   └── firmware-update.js
 │           └── i18n/            # UI translations
+│               ├── en.json
+│               ├── fr.json
+│               ├── de.json
+│               ├── it.json
+│               └── es.json
 ├── hacs.json                    # HACS configuration
+├── ARCHITECTURE.md              # This document
 └── README.md                    # User documentation
 ```
 
@@ -205,7 +229,7 @@ entry.options = {
 ## Dependencies
 
 - **Home Assistant**: 2023.1.0+
-- **ESPHome**: With emonTx component from [PR #9027](https://github.com/esphome/esphome/pull/9027)
+- **ESPHome**: With built-in `emontx` component and `emontx_ha_bridge` external component from the [`emontx-ha-bridge`](https://github.com/FredM67/esphome/tree/emontx-ha-bridge) branch
 - **Vue.js**: 2.7.14 (loaded from CDN)
 
 ## Build & Development
@@ -221,37 +245,60 @@ Frontend files are served with `cache_headers=False` for easier development.
 
 ## ESPHome Component Details
 
-The ESPHome emonTx component acts as a bridge between Home Assistant and the emonPi/Tx device.
+The ESPHome side uses two components working together: the standard `emontx` hub (merged into ESPHome mainline) and the `emontx_ha_bridge` companion component (external, from the fork).
 
-### Configuration
+### `emontx` (standard ESPHome component)
+
+The built-in `emontx` component acts as a UART hub that reads serial data from the emonPi/Tx device.
 
 ```yaml
 emontx:
-  config_panel: true
 ```
 
-When `config_panel: true` is set, the component:
+It provides `on_data` and `on_json` automation triggers for local use and exposes `emontx.send_command` for sending commands via UART.
+
+### `emontx_ha_bridge` (external component)
+
+The `emontx_ha_bridge` component bridges the `emontx` hub to Home Assistant via the native API.
+
+```yaml
+emontx_ha_bridge:
+```
+
+When configured, it:
 
 1. **Registers a service**: `esphome.<device_name>_send_command`
    - Accepts a `command` parameter (string)
-   - Automatically appends CR+LF to commands (required by emonTx firmware)
-   - Sends the command via UART to the emonPi/Tx
+   - Automatically appends LF to commands (required by emonTx firmware)
+   - Delegates to `emontx.send_command` which writes to UART
 
 2. **Fires events**: `esphome.emontx_raw`
-   - Triggered for every line received from the emonPi/Tx serial port
-   - Event data contains the raw serial output
+   - Triggered for every raw line received from the emonPi/Tx serial port
+   - Event data contains the raw serial line
+
+3. **Fires events**: `esphome.emontx_json`
+   - Triggered for every successfully parsed JSON frame
+   - Event data contains the JSON string
+
+Both `homeassistant_services: true` and `custom_services: true` must be set in the `api:` section.
 
 ### Event Data Format
 
 ```javascript
-// Example event data
+// esphome.emontx_raw — fired for every raw serial line
 {
-  "device_id": "abc123",
-  "data": "V1=240.5,P1=1500,P2=200,E1=12345,E2=6789,T1=21.5,MSG=42"
+  "device_id": "emonwifi",   // ESPHome device name
+  "line": "V1=240.5,P1=1500,P2=200,E1=12345,E2=6789,T1=21.5,MSG=42"
+}
+
+// esphome.emontx_json — fired for every parsed JSON frame
+{
+  "device_id": "emonwifi",
+  "data": "{\"V1\":240.5,\"P1\":1500,...}"
 }
 ```
 
-The frontend parses different response types:
+The frontend parses different response types from `emontx_raw` events:
 - **Live data**: Comma-separated values (V, P, E, T, pulse, MSG)
 - **Config response**: Multi-line output from `l` command
 - **Version info**: Response from `v` command
@@ -380,8 +427,8 @@ esphome logs <device>.yaml
 |-------|----------|
 | UI changes not appearing | Hard refresh browser (Ctrl+Shift+R) |
 | WebSocket not connecting | Check Home Assistant is running, check browser console for errors |
-| Commands not reaching device | Check ESPHome logs, verify `config_panel: true` is set |
-| Events not received | Verify `custom_services: true` in ESPHome `api:` config |
+| Commands not reaching device | Check ESPHome logs, verify `emontx_ha_bridge` is configured |
+| Events not received | Verify `homeassistant_services: true` and `custom_services: true` in ESPHome `api:` config |
 | Panel not showing in sidebar | Restart Home Assistant after installation |
 
 ### Debugging Tips

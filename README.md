@@ -50,12 +50,12 @@ A Home Assistant integration that provides a web-based configuration interface f
 - Home Assistant 2023.1.0 or newer
 - **ESPHome Integration** installed in Home Assistant (Settings > Devices & Services > Add Integration > ESPHome)
 - An **emonWifi** (ESP32-C3 Mini) added to the ESPHome integration and showing as "Online"
-- ESPHome firmware on the emonWifi with the [emonTx component](https://github.com/FredM67/esphome/tree/emontx-config-panel) configured (with `config_panel: true`)
+- ESPHome firmware on the emonWifi with the built-in `emontx` component **and** the [`emontx_ha_bridge`](https://github.com/FredM67/esphome/tree/emontx-ha-bridge) external component configured
 - An emonTx/emonPi device connected to the emonWifi via UART
 
 > **Note**: If using a different ESP32 board, some settings (board type, GPIO pins) may need to be adjusted.
 
-> **Important**: This integration requires the `config_panel` feature, which is **not available** in the standard ESPHome emonTx component. The core emonTx component ([PR #9027](https://github.com/esphome/esphome/pull/9027)) does not include `config_panel` due to current ESPHome restrictions on custom service registration in internal components. You **must** use the [`emontx-config-panel`](https://github.com/FredM67/esphome/tree/emontx-config-panel) branch from the FredM67/esphome fork via `external_components` (see [ESPHome Setup](#esphome-setup) below).
+> **Important**: This integration requires the `emontx_ha_bridge` component, which is **not yet in mainline ESPHome**. It must be loaded via `external_components` from the [`emontx-ha-bridge`](https://github.com/FredM67/esphome/tree/emontx-ha-bridge) branch (see [ESPHome Setup](#esphome-setup) below).
 
 ## Installation
 
@@ -78,9 +78,9 @@ A Home Assistant integration that provides a web-based configuration interface f
 
 ### ESPHome Setup
 
-Your ESP32 needs to be configured with the emonTx component from the [`emontx-config-panel`](https://github.com/FredM67/esphome/tree/emontx-config-panel) branch (which includes the `config_panel` feature required by this HACS integration).
+Your ESP32 needs to be configured with the built-in `emontx` component (now standard in ESPHome) **plus** the `emontx_ha_bridge` external component from the [`emontx-ha-bridge`](https://github.com/FredM67/esphome/tree/emontx-ha-bridge) branch. The bridge component fires `esphome.emontx_raw` / `esphome.emontx_json` events and registers the `send_command` service in Home Assistant.
 
-> **Note**: The core emonTx component is being merged into ESPHome via [PR #9027](https://github.com/esphome/esphome/pull/9027), but the `config_panel` feature is not yet included. Until it is, use the branch above.
+> **Note**: The `emontx_ha_bridge` companion component (which provides the HA-side bridge) is not yet in mainline ESPHome and must be loaded via `external_components`.
 
 #### New to ESPHome? Start Here
 
@@ -134,7 +134,8 @@ logger:
 api:
   encryption:
     key: "your-32-byte-base64-key-here"  # See note below
-  # Required for the auto-registered send_command service
+  # Required for the HA bridge component
+  homeassistant_services: true
   custom_services: true
 
 # Enable Over-The-Air updates
@@ -145,14 +146,17 @@ wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
 
-# External component for emonTx support (config_panel branch)
+# External component for the HA bridge
+# (emontx itself is now built into ESPHome)
 external_components:
   - source:
       type: git
       url: https://github.com/FredM67/esphome
-      ref: emontx-config-panel
-    components: [emontx]
+      ref: emontx-ha-bridge
+    components: [emontx_ha_bridge]
     refresh: 0s
+
+emontx_ha_bridge:
 
 # UART connection to emonTx/emonPi
 uart:
@@ -162,11 +166,8 @@ uart:
   baud_rate: 115200
   rx_buffer_size: 2048
 
-# emonTx component
+# emonTx component (built into ESPHome since 2026.x)
 emontx:
-  # Enable config panel - fires esphome.emontx_raw and
-  # esphome.emontx_json events for serial data
-  config_panel: true
 ```
 
 #### API Encryption Key
@@ -193,9 +194,17 @@ external_components:
   - source:
       type: git
       url: https://github.com/FredM67/esphome
-      ref: emontx-config-panel
-    components: [emontx]
+      ref: emontx-ha-bridge
+    components: [emontx_ha_bridge]
     refresh: 0s
+
+# Add homeassistant_services and custom_services to your existing api: section
+api:
+  # ... your existing config ...
+  homeassistant_services: true
+  custom_services: true
+
+emontx_ha_bridge:
 
 uart:
   id: emontx_uart
@@ -204,16 +213,10 @@ uart:
   baud_rate: 115200
   rx_buffer_size: 2048
 
-# Add custom_services to your existing api: section
-api:
-  # ... your existing config ...
-  custom_services: true
-
 emontx:
-  config_panel: true
 ```
 
-> **Note**: The `custom_services: true` option is required to enable the `send_command` service, which is automatically registered by the emontx component when `config_panel: true` is set. The `config_panel: true` option also enables automatic firing of `esphome.emontx_raw` and `esphome.emontx_json` events. Commands sent via this service automatically have LF line endings appended as required by the emonTx firmware.
+> **Note**: Both `homeassistant_services: true` and `custom_services: true` are required in the `api:` section. The `emontx_ha_bridge` component auto-registers the `send_command` service and fires `esphome.emontx_raw` and `esphome.emontx_json` events to Home Assistant. Commands sent via this service automatically have LF line endings appended as required by the emonTx firmware.
 
 ### Home Assistant Setup
 
@@ -222,7 +225,7 @@ emontx:
 1. Go to Settings > Devices & Services
 2. Click "Add Integration"
 3. Search for "emonPi/Tx Configuration"
-4. Select your ESPHome device from the dropdown (only devices with `config_panel: true` will appear)
+4. Select your ESPHome device from the dropdown (only devices with the `emontx_ha_bridge` component will appear)
 5. Click "Submit"
 
 ## Usage
@@ -334,15 +337,15 @@ Refer to the [emonTx documentation](https://docs.openenergymonitor.org/) for a c
 - **First**, ensure the ESPHome integration is installed in Home Assistant
 - Verify your ESP32 device is added to the ESPHome integration and shows as "Online"
 - Check that the API encryption key matches between ESPHome firmware and Home Assistant
-- Verify that `config_panel: true` is set in your emontx configuration
-- Verify that `custom_services: true` is set in your `api:` section (the `send_command` service is auto-registered by the emontx component)
+- Verify that the `emontx_ha_bridge` component is added to your ESPHome config via `external_components`
+- Verify that `homeassistant_services: true` and `custom_services: true` are set in your `api:` section
 - The device dropdown only shows ESPHome devices that have the `_send_command` service registered
 
 ### No data received
 
 - Check the UART connections between ESP32 and emonTx
 - Verify the baud rate is correct (115200 by default)
-- **Important**: Make sure you have `config_panel: true` set in your ESPHome emontx configuration
+- **Important**: Make sure the `emontx_ha_bridge` component is configured in your ESPHome firmware
 - If you recently renamed your ESPHome device, hard refresh the browser (Ctrl+Shift+R) to reload the frontend
 - Check Developer Tools > Events and listen for `esphome.emontx_raw` events to verify data is being received
 - Look at the ESPHome logs for any errors
@@ -350,7 +353,7 @@ Refer to the [emonTx documentation](https://docs.openenergymonitor.org/) for a c
 ### Config not loading / Commands not working
 
 - Verify the TX pin is connected and configured in ESPHome
-- Check that `custom_services: true` is set in your `api:` configuration
+- Check that `homeassistant_services: true` and `custom_services: true` are set in your `api:` configuration
 - Monitor the serial output with an FTDI adapter to verify commands are being sent
 - **emonTx4/5 users**: The serial jumper must be removed (unsoldered or broken) for the emonWifi to communicate with the board. Without this, the device will not respond to commands. A red warning will appear on the Config tab after 10 seconds if no response is received
 
