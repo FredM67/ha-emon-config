@@ -328,11 +328,11 @@ Vue.component('config-tab', {
                                             <option value="custom">{{ t.config.custom }}</option>
                                         </select>
                                         <input v-if="getCtSelectValue(index) === 'custom'"
-                                               type="number" min="10" max="200" step="0.1"
+                                               type="number" min="10" max="200" step="0.01"
                                                v-model.number="channel.ical"
                                                :disabled="!emontxConnected"
                                                :class="{ 'input-error': isFieldError(index, 'ical') }"
-                                               style="width: 60px;" />
+                                               style="width: 100px;" />
                                         <span v-if="getCtSelectValue(index) === 'custom'">A</span>
                                     </td>
                                     <td><input type="number" step="0.01" v-model.number="channel.ilead" style="width:70px" :disabled="!emontxConnected" :class="{ 'input-error': isFieldError(index, 'ilead') }" class="no-spinner" /><span class="unit">&deg;</span></td>
