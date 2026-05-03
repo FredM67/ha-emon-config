@@ -21,6 +21,7 @@ Vue.component('config-tab', {
         failedCtIndices: { type: Array, default: () => [] },
         failedCtFields: { type: Array, default: () => [] },
         failedVcalIndices: { type: Array, default: () => [] },
+        failedOpaIndices: { type: Array, default: () => [] },
         channelNames: { type: Object, default: () => ({ ct: {}, voltage: {}, opa: {}, temp: {} }) },
         firmwareCheckFrequency: { type: String, default: 'weekly' },
         firmwareUpdateAvailable: { type: Boolean, default: false },
@@ -138,6 +139,9 @@ Vue.component('config-tab', {
         },
         isVcalFailed(index) {
             return this.failedVcalIndices && this.failedVcalIndices.includes(index);
+        },
+        isOpaFailed(index) {
+            return this.failedOpaIndices && this.failedOpaIndices.includes(index);
         },
         isVcalFieldError(index, field) {
             // Only show error if this vchannel failed AND this specific field was changed
@@ -371,7 +375,7 @@ Vue.component('config-tab', {
                                     <th>{{ t.config.period }}</th>
                                     <th>{{ t.config.preset }}</th>
                                 </tr>
-                                <tr v-for="(opa, idx) in device.opa" :key="'opa'+idx" :class="{ 'row-changed': isFieldChanged('opa', idx) }">
+                                <tr v-for="(opa, idx) in device.opa" :key="'opa'+idx" :class="{ 'row-changed': isFieldChanged('opa', idx), 'row-error': isOpaFailed(idx) }">
                                     <td>OPA{{ idx + 1 }}</td>
                                     <td>
                                         <input v-if="opa.func !== 'o'" type="text" :value="getChannelName('opa', String(idx + 1))" @input="onNameChange('opa', String(idx + 1), $event)" :placeholder="t.config.namePlaceholder" style="width: 120px;" />
@@ -387,7 +391,7 @@ Vue.component('config-tab', {
                                         </select>
                                     </td>
                                     <td><input type="checkbox" v-model="opa.pullUp" :disabled="!emontxConnected || opa.func === 'o' || idx === 2" /></td>
-                                    <td><input type="number" v-model="opa.period" :disabled="!emontxConnected || opa.func === 'o'" style="width:80px" /></td>
+                                    <td><input type="number" v-model="opa.period" :disabled="!emontxConnected || opa.func === 'o'" :class="{ 'input-error': isOpaFailed(idx) }" style="width:80px" /></td>
                                     <td>
                                         <button type="button" class="btn btn-sm" @click="applyOpaPreset(idx, 'oem-pulse')" :disabled="!emontxConnected" style="padding: 4px 8px; font-size: 12px;">
                                             {{ t.config.oemPulseSensor }}

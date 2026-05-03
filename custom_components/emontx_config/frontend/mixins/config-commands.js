@@ -31,6 +31,7 @@ const ConfigCommandsMixin = {
             this.failedCtIndices = [];
             this.failedCtFields = [];
             this.failedVcalIndices = [];
+            this.failedOpaIndices = [];
             this.writeToStream('l');
 
             // Start a no-response timeout
@@ -74,6 +75,7 @@ const ConfigCommandsMixin = {
             this.failedCtIndices = [];
             this.failedCtFields = [];
             this.failedVcalIndices = [];
+            this.failedOpaIndices = [];
 
             this.applyProgress = { current: 0, total: changes.length, currentItem: '' };
             this.log(`Applying ${changes.length} configuration changes...`, 'info');
@@ -126,6 +128,8 @@ const ConfigCommandsMixin = {
                     this.failedCtIndices.push(change.index);
                     // Mark all ichannel fields as failed
                     this.failedCtFields = ['ical', 'ilead', 'vchan1', 'vchan2'];
+                } else if (change.type === 'opa') {
+                    this.failedOpaIndices.push(change.index);
                 }
             }
 
@@ -311,6 +315,7 @@ const ConfigCommandsMixin = {
                 this.failedCtIndices = [];
                 this.failedCtFields = [];
                 this.failedVcalIndices = [];
+                this.failedOpaIndices = [];
                 this.log('Changes discarded', 'info');
             }
         },

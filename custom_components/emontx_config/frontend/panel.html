@@ -78,6 +78,7 @@
             :failed-ct-indices="failedCtIndices"
             :failed-ct-fields="failedCtFields"
             :failed-vcal-indices="failedVcalIndices"
+            :failed-opa-indices="failedOpaIndices"
             :channel-names="channelNames"
             :firmware-check-frequency="firmwareCheckFrequency"
             :firmware-update-available="firmwareUpdateAvailable"
@@ -220,7 +221,7 @@
             el: '#app',
             mixins: [ConnectionMixin, DataParserMixin, ConfigCommandsMixin, YamlGeneratorMixin, ChannelNamesMixin, FirmwareUpdateMixin],
             data: {
-                integrationVersion: '1.5.4',
+                integrationVersion: '1.5.5-beta.1',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -255,6 +256,7 @@
                 failedCtIndices: [],  // Indices of CTs that failed to apply
                 failedCtFields: [],   // Fields that were being applied when failure occurred
                 failedVcalIndices: [], // Indices of voltage channels that failed to apply
+                failedOpaIndices: [], // Indices of OPA channels that failed to apply
                 // Temperature sensor scan
                 tempScanLoading: false,
                 // Pending response for sequential commands
