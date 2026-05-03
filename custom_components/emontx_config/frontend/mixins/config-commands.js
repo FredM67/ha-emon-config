@@ -30,7 +30,9 @@ const ConfigCommandsMixin = {
             // Clear error highlighting when reloading config
             this.failedCtIndices = [];
             this.failedCtFields = [];
+            this.failedCtMessages = {};
             this.failedVcalIndices = [];
+            this.failedVcalMessages = {};
             this.failedOpaIndices = [];
             this.failedOpaMessages = {};
             this.writeToStream('l');
@@ -75,7 +77,9 @@ const ConfigCommandsMixin = {
             // Clear previous error highlighting
             this.failedCtIndices = [];
             this.failedCtFields = [];
+            this.failedCtMessages = {};
             this.failedVcalIndices = [];
+            this.failedVcalMessages = {};
             this.failedOpaIndices = [];
             this.failedOpaMessages = {};
 
@@ -129,10 +133,16 @@ const ConfigCommandsMixin = {
             for (const change of failedChanges) {
                 if (change.type === 'vchannel') {
                     this.failedVcalIndices.push(change.index);
+                    if (change.errorMessage) {
+                        this.$set(this.failedVcalMessages, change.index, change.errorMessage);
+                    }
                 } else if (change.type === 'ichannel') {
                     this.failedCtIndices.push(change.index);
                     // Mark all ichannel fields as failed
                     this.failedCtFields = ['ical', 'ilead', 'vchan1', 'vchan2'];
+                    if (change.errorMessage) {
+                        this.$set(this.failedCtMessages, change.index, change.errorMessage);
+                    }
                 } else if (change.type === 'opa') {
                     this.failedOpaIndices.push(change.index);
                     if (change.errorMessage) {
@@ -322,7 +332,9 @@ const ConfigCommandsMixin = {
                 // Clear error highlighting when discarding changes
                 this.failedCtIndices = [];
                 this.failedCtFields = [];
+                this.failedCtMessages = {};
                 this.failedVcalIndices = [];
+                this.failedVcalMessages = {};
                 this.failedOpaIndices = [];
                 this.failedOpaMessages = {};
                 this.log('Changes discarded', 'info');

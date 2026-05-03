@@ -20,7 +20,9 @@ Vue.component('config-tab', {
         ctsAvailable: Array,
         failedCtIndices: { type: Array, default: () => [] },
         failedCtFields: { type: Array, default: () => [] },
+        failedCtMessages: { type: Object, default: () => ({}) },
         failedVcalIndices: { type: Array, default: () => [] },
+        failedVcalMessages: { type: Object, default: () => ({}) },
         failedOpaIndices: { type: Array, default: () => [] },
         failedOpaMessages: { type: Object, default: () => ({}) },
         channelNames: { type: Object, default: () => ({ ct: {}, voltage: {}, opa: {}, temp: {} }) },
@@ -281,7 +283,8 @@ Vue.component('config-tab', {
                                     <th>{{ t.config.phase }}</th>
                                     <th>{{ t.liveData.groups.V }}</th>
                                 </tr>
-                                <tr v-for="(vchannel, index) in device.vchannels" :key="'v'+index" :class="{ 'row-changed': isFieldChanged('vchannel', index), 'row-error': isVcalFailed(index) }">
+                                <template v-for="(vchannel, index) in device.vchannels">
+                                <tr :key="'v'+index" :class="{ 'row-changed': isFieldChanged('vchannel', index), 'row-error': isVcalFailed(index) }" :title="failedVcalMessages[index] || undefined">
                                     <td><input type="checkbox" v-model="vchannel.active" :disabled="!emontxConnected" /></td>
                                     <td>V{{ index + 1 }}</td>
                                     <td><input type="text" :value="getChannelName('voltage', String(index + 1))" @input="onNameChange('voltage', String(index + 1), $event)" :placeholder="t.config.namePlaceholder" style="width: 150px;" /></td>
@@ -295,6 +298,10 @@ Vue.component('config-tab', {
                                     </td>
                                     <td>{{ formatVoltage(vchannel.voltage) }}</td>
                                 </tr>
+                                <tr v-if="isVcalFailed(index) && failedVcalMessages[index]" :key="'v-err'+index">
+                                    <td colspan="6" class="field-error-msg field-error-row">{{ failedVcalMessages[index] }}</td>
+                                </tr>
+                                </template>
                             </table>
                         </div>
                     </div>
@@ -321,7 +328,8 @@ Vue.component('config-tab', {
                                     <th v-if="device.hardware === 'emonPi3'">{{ t.config.vChan1 }}</th>
                                     <th v-if="device.hardware === 'emonPi3'">{{ t.config.vChan2 }}</th>
                                 </tr>
-                                <tr v-for="(channel, index) in device.ichannels" :key="'i'+index" :class="{ 'row-changed': isFieldChanged('ichannel', index), 'row-error': isCtFailed(index) }">
+                                <template v-for="(channel, index) in device.ichannels">
+                                <tr :key="'i'+index" :class="{ 'row-changed': isFieldChanged('ichannel', index), 'row-error': isCtFailed(index) }" :title="failedCtMessages[index] || undefined">
                                     <td v-if="device.hardware === 'emonPi3'">
                                         <input type="checkbox" v-model="channel.active" :disabled="!emontxConnected" />
                                     </td>
@@ -352,6 +360,10 @@ Vue.component('config-tab', {
                                         </select>
                                     </td>
                                 </tr>
+                                <tr v-if="isCtFailed(index) && failedCtMessages[index]" :key="'i-err'+index">
+                                    <td :colspan="device.hardware === 'emonPi3' ? 7 : 4" class="field-error-msg field-error-row">{{ failedCtMessages[index] }}</td>
+                                </tr>
+                                </template>
                             </table>
                         </div>
                     </div>

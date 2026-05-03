@@ -77,7 +77,9 @@
             :cts-available="ctsAvailable"
             :failed-ct-indices="failedCtIndices"
             :failed-ct-fields="failedCtFields"
+            :failed-ct-messages="failedCtMessages"
             :failed-vcal-indices="failedVcalIndices"
+            :failed-vcal-messages="failedVcalMessages"
             :failed-opa-indices="failedOpaIndices"
             :failed-opa-messages="failedOpaMessages"
             :channel-names="channelNames"
@@ -222,7 +224,7 @@
             el: '#app',
             mixins: [ConnectionMixin, DataParserMixin, ConfigCommandsMixin, YamlGeneratorMixin, ChannelNamesMixin, FirmwareUpdateMixin],
             data: {
-                integrationVersion: '1.5.6-beta.1',
+                integrationVersion: '1.5.6-beta.2',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -256,7 +258,9 @@
                 bulkProgress: null,  // { current, total, currentCt, error }
                 failedCtIndices: [],  // Indices of CTs that failed to apply
                 failedCtFields: [],   // Fields that were being applied when failure occurred
+                failedCtMessages: {}, // Error messages keyed by CT index
                 failedVcalIndices: [], // Indices of voltage channels that failed to apply
+                failedVcalMessages: {}, // Error messages keyed by vchannel index
                 failedOpaIndices: [], // Indices of OPA channels that failed to apply
                 failedOpaMessages: {}, // Error messages keyed by OPA index
                 // Temperature sensor scan

@@ -569,6 +569,13 @@ input.input-error.no-spinner {
     font-style: italic;
 }
 
+/* Error sub-row spanning all columns */
+.field-error-row {
+    background-color: #ffebee !important;
+    padding: 2px 8px 5px !important;
+    margin-top: 0 !important;
+}
+
 /* Floating bottom bar for pending changes */
 .floating-bottom-bar {
     position: fixed;
