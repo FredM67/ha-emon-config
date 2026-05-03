@@ -283,12 +283,12 @@ Vue.component('config-tab', {
                                     <th>{{ t.config.phase }}</th>
                                     <th>{{ t.liveData.groups.V }}</th>
                                 </tr>
-                                <tr v-for="(vchannel, index) in device.vchannels" :key="'v'+index" :class="{ 'row-changed': isFieldChanged('vchannel', index), 'row-error': isVcalFailed(index) }" :title="failedVcalMessages[index] || undefined">
+                                <tr v-for="(vchannel, index) in device.vchannels" :key="'v'+index" :class="{ 'row-changed': isFieldChanged('vchannel', index), 'row-error': isVcalFailed(index) }">
                                     <td><input type="checkbox" v-model="vchannel.active" :disabled="!emontxConnected" /></td>
                                     <td>V{{ index + 1 }}</td>
                                     <td><input type="text" :value="getChannelName('voltage', String(index + 1))" @input="onNameChange('voltage', String(index + 1), $event)" :placeholder="t.config.namePlaceholder" style="width: 150px;" /></td>
                                     <td>
-                                        <input type="number" step="0.01" v-model="vchannel.vcal" :disabled="!emontxConnected" :class="{ 'input-error': isVcalFieldError(index, 'vcal') }" />
+                                        <input type="number" step="0.01" v-model="vchannel.vcal" :disabled="!emontxConnected" :class="{ 'input-error': isVcalFieldError(index, 'vcal') }" :title="failedVcalMessages[index] || undefined" />
                                         <span class="unit">%</span>
                                         <div v-if="isVcalFailed(index) && failedVcalMessages[index]" class="field-error-msg">{{ failedVcalMessages[index] }}</div>
                                     </td>
@@ -324,27 +324,31 @@ Vue.component('config-tab', {
                                     <th v-if="device.hardware === 'emonPi3'">{{ t.config.vChan1 }}</th>
                                     <th v-if="device.hardware === 'emonPi3'">{{ t.config.vChan2 }}</th>
                                 </tr>
-                                <tr v-for="(channel, index) in device.ichannels" :key="'i'+index" :class="{ 'row-changed': isFieldChanged('ichannel', index), 'row-error': isCtFailed(index) }" :title="failedCtMessages[index] || undefined">
+                                <tr v-for="(channel, index) in device.ichannels" :key="'i'+index" :class="{ 'row-changed': isFieldChanged('ichannel', index), 'row-error': isCtFailed(index) }">
                                     <td v-if="device.hardware === 'emonPi3'">
                                         <input type="checkbox" v-model="channel.active" :disabled="!emontxConnected" />
                                     </td>
                                     <td>CT {{ index + 1 }}</td>
                                     <td><input type="text" :value="getChannelName('ct', String(index + 1))" @input="onNameChange('ct', String(index + 1), $event)" :placeholder="t.config.namePlaceholder" style="width: 150px;" /></td>
                                     <td>
-                                        <div style="display: flex; align-items: center; gap: 5px;">
+                                        <div style="display: flex; align-items: flex-start; gap: 5px;">
                                             <select :value="getCtSelectValue(index)" @change="handleCtTypeChange(index, $event)" :disabled="!emontxConnected" :class="{ 'input-error': isFieldError(index, 'ical') }">
                                                 <option v-for="rating in ctsAvailable" :value="rating" :key="rating">{{ rating }}A</option>
                                                 <option value="custom">{{ t.config.custom }}</option>
                                             </select>
-                                            <input v-if="getCtSelectValue(index) === 'custom'"
-                                                   type="number" min="10" max="200" step="0.01"
-                                                   v-model.number="channel.ical"
-                                                   :disabled="!emontxConnected"
-                                                   :class="{ 'input-error': isFieldError(index, 'ical') }"
-                                                   style="width: 100px;" />
-                                            <span v-if="getCtSelectValue(index) === 'custom'">A</span>
+                                            <div v-if="getCtSelectValue(index) === 'custom'">
+                                                <div style="display: flex; align-items: center; gap: 3px;">
+                                                    <input type="number" min="10" max="200" step="0.01"
+                                                           v-model.number="channel.ical"
+                                                           :disabled="!emontxConnected"
+                                                           :class="{ 'input-error': isFieldError(index, 'ical') }"
+                                                           :title="failedCtMessages[index] || undefined"
+                                                           style="width: 100px;" />
+                                                    <span>A</span>
+                                                </div>
+                                                <div v-if="isCtFailed(index) && failedCtMessages[index]" class="field-error-msg">{{ failedCtMessages[index] }}</div>
+                                            </div>
                                         </div>
-                                        <div v-if="isCtFailed(index) && failedCtMessages[index]" class="field-error-msg">{{ failedCtMessages[index] }}</div>
                                     </td>
                                     <td><input type="number" step="0.01" v-model.number="channel.ilead" style="width:70px" :disabled="!emontxConnected" :class="{ 'input-error': isFieldError(index, 'ilead') }" class="no-spinner" /><span class="unit">&deg;</span></td>
                                     <td v-if="device.hardware === 'emonPi3'">
@@ -382,7 +386,7 @@ Vue.component('config-tab', {
                                     <th>{{ t.config.period }}</th>
                                     <th>{{ t.config.preset }}</th>
                                 </tr>
-                                <tr v-for="(opa, idx) in device.opa" :key="'opa'+idx" :class="{ 'row-changed': isFieldChanged('opa', idx), 'row-error': isOpaFailed(idx) }" :title="failedOpaMessages[idx] || undefined">
+                                <tr v-for="(opa, idx) in device.opa" :key="'opa'+idx" :class="{ 'row-changed': isFieldChanged('opa', idx), 'row-error': isOpaFailed(idx) }">
                                     <td>OPA{{ idx + 1 }}</td>
                                     <td>
                                         <input v-if="opa.func !== 'o'" type="text" :value="getChannelName('opa', String(idx + 1))" @input="onNameChange('opa', String(idx + 1), $event)" :placeholder="t.config.namePlaceholder" style="width: 120px;" />
@@ -399,7 +403,7 @@ Vue.component('config-tab', {
                                     </td>
                                     <td><input type="checkbox" v-model="opa.pullUp" :disabled="!emontxConnected || opa.func === 'o' || idx === 2" /></td>
                                     <td>
-                                        <input type="number" v-model="opa.period" :disabled="!emontxConnected || opa.func === 'o'" :class="{ 'input-error': isOpaFailed(idx) }" style="width:80px" />
+                                        <input type="number" v-model="opa.period" :disabled="!emontxConnected || opa.func === 'o'" :class="{ 'input-error': isOpaFailed(idx) }" :title="failedOpaMessages[idx] || undefined" style="width:80px" />
                                         <div v-if="isOpaFailed(idx) && failedOpaMessages[idx]" class="field-error-msg">{{ failedOpaMessages[idx] }}</div>
                                     </td>
                                     <td>
