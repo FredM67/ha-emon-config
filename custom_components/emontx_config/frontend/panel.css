@@ -1,5 +1,7 @@
 /* emonPi/Tx Configuration Panel Styles */
 
+[v-cloak] { display: none !important; }
+
 * { box-sizing: border-box; }
 
 body {
