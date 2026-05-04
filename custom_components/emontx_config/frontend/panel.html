@@ -9,8 +9,13 @@
 </head>
 <body>
     <div id="app" class="container">
+        <!-- Loading -->
+        <div v-if="!translationsLoaded" style="display:flex;justify-content:center;align-items:center;height:100px;">
+            <span>Loading...</span>
+        </div>
+
         <!-- Translation Error -->
-        <div v-if="translationError" class="alert alert-danger" style="margin: 20px; text-align: center;">
+        <div v-else-if="translationError" class="alert alert-danger" style="margin: 20px; text-align: center;">
             <h2>Failed to load translations</h2>
             <p>Could not load the language files. Please check your installation and try refreshing the page.</p>
         </div>
