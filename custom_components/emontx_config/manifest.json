@@ -10,5 +10,5 @@
   "issue_tracker": "https://github.com/FredM67/ha-emon-config/issues",
   "requirements": [],
   "single_config_entry": true,
-  "version": "1.5.7"
+  "version": "1.5.8-beta.1"
 }
