@@ -548,8 +548,8 @@ Vue.component('config-tab', {
                                 {{ t.config.uartBootloaderNote }}
                             </p>
                         </div>
-                        <!-- Flash firmware section — shown when an update is available and a .bin URL was found -->
-                        <div v-if="firmwareUpdateAvailable && latestFirmwareBinUrl"
+                        <!-- Flash firmware section — shown whenever a .bin URL is known (update available or not) -->
+                        <div v-if="latestFirmwareBinUrl"
                              style="border-top: 1px solid #eee; padding-top: 12px; margin-top: 4px;">
                             <div v-if="!flashingFirmware">
                                 <button type="button" class="btn btn-warning" @click="$emit('flash-firmware')"
