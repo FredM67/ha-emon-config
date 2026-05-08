@@ -539,8 +539,8 @@ Vue.component('config-tab', {
                                 {{ t.config.upToDate }}
                             </span>
                         </div>
-                        <!-- UART bootloader prerequisite notice (emonTx6 only) -->
-                        <div v-if="device.hardware === 'emonTx6'"
+                        <!-- UART bootloader prerequisite notice (emonTx6 and emonPi3 share the same hw/fw) -->
+                        <div v-if="device.hardware === 'emonTx6' || device.hardware === 'emonPi3'"
                              style="border-top: 1px solid #eee; padding-top: 12px; margin-top: 4px;
                                     background: #fff8e1; border: 1px solid #ffe082; border-radius: 4px; padding: 10px 14px;">
                             <strong style="color: #e65100;">&#9888; {{ t.config.uartBootloaderTitle }}</strong>
