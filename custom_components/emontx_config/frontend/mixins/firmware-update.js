@@ -1,6 +1,7 @@
 /**
  * Firmware Update Mixin
- * Handles checking for firmware updates from GitHub releases
+ * Handles checking for firmware updates from GitHub releases and flashing
+ * via the ESPHome emontx_updater component service.
  */
 const FirmwareUpdateMixin = {
     methods: {
@@ -42,6 +43,12 @@ const FirmwareUpdateMixin = {
 
                 const latestVersion = stableRelease.tag_name.replace(/^[vV]/, '');
                 this.latestFirmwareVersion = latestVersion;
+
+                // Extract the .bin asset download URL for flashing
+                const binAsset = stableRelease.assets
+                    ? stableRelease.assets.find(a => a.name && a.name.endsWith('.bin'))
+                    : null;
+                this.latestFirmwareBinUrl = binAsset ? binAsset.browser_download_url : null;
 
                 // Store last check time on HA side
                 this.firmwareLastCheck = Date.now();
@@ -136,6 +143,60 @@ const FirmwareUpdateMixin = {
                 if (l < c) return false;
             }
             return false;
+        },
+
+        // ── Firmware flashing ──────────────────────────────────────────────
+
+        /**
+         * Call the ESPHome flash_emontx6 service with the latest release .bin URL.
+         * The ESPHome component fires esphome.emontx_flash_status events as it progresses.
+         */
+        flashFirmware() {
+            if (!this.latestFirmwareBinUrl) {
+                this.log('No firmware binary URL available — run a firmware check first', 'warning');
+                return;
+            }
+            this.flashingFirmware = true;
+            this.flashStatus = 'started';
+            this.flashProgress = 0;
+
+            const service = this.deviceName + '_flash_emontx6';
+            if (this.hass && this.hass.callService) {
+                this.hass.callService('esphome', service, { url: this.latestFirmwareBinUrl });
+            } else if (this.ws) {
+                this.ws.send(JSON.stringify({
+                    id: this.wsMessageId++,
+                    type: 'call_service',
+                    domain: 'esphome',
+                    service: service,
+                    service_data: { url: this.latestFirmwareBinUrl }
+                }));
+            }
+        },
+
+        /**
+         * Handle esphome.emontx_flash_status events fired by the ESPHome component.
+         * Called by connection.js subscribeToEvents (hass path) and handleWsMessage (WS path).
+         */
+        handleFlashStatus(data) {
+            // Filter by device — ESPHome device_id matches the selectedDevice name
+            if (data.device_id) {
+                const normalizedEvent = data.device_id.replace(/_/g, '-');
+                const normalizedSelected = this.selectedDevice.replace(/_/g, '-');
+                if (normalizedEvent !== normalizedSelected) return;
+            }
+
+            this.flashStatus = data.status;
+            this.flashProgress = parseInt(data.progress || 0);
+
+            if (data.status === 'complete') {
+                this.flashingFirmware = false;
+                this.firmwareUpdateAvailable = false;
+                this.log('Firmware flash complete — device is rebooting', 'info');
+            } else if (data.status === 'failed') {
+                this.flashingFirmware = false;
+                this.log('Firmware flash failed: ' + (data.message || 'unknown error'), 'error');
+            }
         }
     }
 };

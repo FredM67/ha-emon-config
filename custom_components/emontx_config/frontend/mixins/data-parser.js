@@ -114,7 +114,6 @@ const DataParserMixin = {
                     this.populateChannels(12);
                 }
             }
-
             if (line.startsWith('hardware_rev = ')) {
                 this.device.hardware_rev = line.split('=')[1].trim();
             }
@@ -286,8 +285,8 @@ const DataParserMixin = {
                     }
                     else if (key === 'version') {
                         this.device.firmware_version = val;
-                        // Check for firmware updates (only for emonPi3/emonTx6)
-                        if (this.device.hardware === 'emonPi3') {
+                        // Check for firmware updates (emonPi3 and emonTx6 share the same firmware)
+                        if (this.device.hardware === 'emonPi3' || this.device.hardware === 'emonTx6') {
                             this.checkFirmwareUpdate();
                         }
                     }

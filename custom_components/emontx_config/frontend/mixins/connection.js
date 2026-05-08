@@ -78,6 +78,8 @@ const ConnectionMixin = {
                 case 'event':
                     if (msg.event && msg.event.event_type === 'esphome.emontx_raw') {
                         this.handleEmontxData(msg.event.data);
+                    } else if (msg.event && msg.event.event_type === 'esphome.emontx_flash_status') {
+                        this.handleFlashStatus(msg.event.data);
                     }
                     break;
             }
@@ -111,11 +113,25 @@ const ConnectionMixin = {
                 ).catch((err) => {
                     console.error('Failed to subscribe:', err);
                 });
+
+                this.hass.connection.subscribeEvents(
+                    (event) => {
+                        this.handleFlashStatus(event.data);
+                    },
+                    'esphome.emontx_flash_status'
+                ).catch((err) => {
+                    console.error('Failed to subscribe to flash status:', err);
+                });
             } else if (this.ws) {
                 this.ws.send(JSON.stringify({
                     id: this.wsMessageId++,
                     type: 'subscribe_events',
                     event_type: 'esphome.emontx_raw'
+                }));
+                this.ws.send(JSON.stringify({
+                    id: this.wsMessageId++,
+                    type: 'subscribe_events',
+                    event_type: 'esphome.emontx_flash_status'
                 }));
             }
         },

@@ -91,7 +91,11 @@
             :firmware-check-frequency="firmwareCheckFrequency"
             :firmware-update-available="firmwareUpdateAvailable"
             :latest-firmware-version="latestFirmwareVersion"
+            :latest-firmware-bin-url="latestFirmwareBinUrl"
             :checking-firmware="checkingFirmware"
+            :flashing-firmware="flashingFirmware"
+            :flash-status="flashStatus"
+            :flash-progress="flashProgress"
             @load-config="loadConfig"
             @save-config="saveConfig"
             @apply-changes="applyAllChanges"
@@ -99,6 +103,7 @@
             @scan-temp-sensors="scanTempSensors"
             @update-firmware-frequency="updateFirmwareFrequency"
             @check-firmware-now="checkFirmwareNow"
+            @flash-firmware="flashFirmware"
             @list-temp-sensors="listTempSensors"
             @list-saved-temp-sensors="listSavedTempSensors"
             @assign-temp-slot="assignTempSensorToSlot"
@@ -280,9 +285,14 @@
                 // Firmware update check
                 latestFirmwareVersion: null,
                 firmwareUpdateAvailable: false,
+                latestFirmwareBinUrl: null,
                 firmwareCheckFrequency: 'weekly',
                 firmwareLastCheck: 0,
                 checkingFirmware: false,
+                // Firmware flashing
+                flashingFirmware: false,
+                flashStatus: null,
+                flashProgress: 0,
                 // i18n
                 lang: 'en',
                 translations: {},

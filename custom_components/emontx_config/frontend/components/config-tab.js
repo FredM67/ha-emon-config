@@ -29,7 +29,11 @@ Vue.component('config-tab', {
         firmwareCheckFrequency: { type: String, default: 'weekly' },
         firmwareUpdateAvailable: { type: Boolean, default: false },
         latestFirmwareVersion: { type: String, default: null },
+        latestFirmwareBinUrl: { type: String, default: null },
         checkingFirmware: { type: Boolean, default: false },
+        flashingFirmware: { type: Boolean, default: false },
+        flashStatus: { type: String, default: null },
+        flashProgress: { type: Number, default: 0 },
         tempScanLoading: { type: Boolean, default: false },
         noResponse: { type: Boolean, default: false }
     },
@@ -511,8 +515,8 @@ Vue.component('config-tab', {
                         </div>
                     </div>
                 </div>
-                <!-- Firmware Update Check (only for emonPi3) -->
-                <div class="card" v-if="device.hardware === 'emonPi3'">
+                <!-- Firmware Update Check (emonPi3 and emonTx6 share the same firmware) -->
+                <div class="card" v-if="device.hardware === 'emonPi3' || device.hardware === 'emonTx6'">
                     <div class="card-header">{{ t.config.firmwareUpdate }}</div>
                     <div class="card-body">
                         <div class="form-group">
@@ -525,7 +529,7 @@ Vue.component('config-tab', {
                             </select>
                         </div>
                         <div class="form-group" style="display: flex; align-items: center; gap: 15px;">
-                            <button type="button" class="btn btn-info" @click="$emit('check-firmware-now')" :disabled="checkingFirmware">
+                            <button type="button" class="btn btn-info" @click="$emit('check-firmware-now')" :disabled="checkingFirmware || flashingFirmware">
                                 {{ checkingFirmware ? t.config.checking : t.config.checkNow }}
                             </button>
                             <span v-if="firmwareUpdateAvailable" style="color: #4CAF50; font-weight: bold;">
@@ -534,6 +538,44 @@ Vue.component('config-tab', {
                             <span v-else-if="latestFirmwareVersion" style="color: #666;">
                                 {{ t.config.upToDate }}
                             </span>
+                        </div>
+                        <!-- UART bootloader prerequisite notice (emonTx6 only) -->
+                        <div v-if="device.hardware === 'emonTx6'"
+                             style="border-top: 1px solid #eee; padding-top: 12px; margin-top: 4px;
+                                    background: #fff8e1; border: 1px solid #ffe082; border-radius: 4px; padding: 10px 14px;">
+                            <strong style="color: #e65100;">&#9888; {{ t.config.uartBootloaderTitle }}</strong>
+                            <p style="margin: 6px 0 0; font-size: 13px; color: #555;">
+                                {{ t.config.uartBootloaderNote }}
+                            </p>
+                        </div>
+                        <!-- Flash firmware section — shown when an update is available and a .bin URL was found -->
+                        <div v-if="firmwareUpdateAvailable && latestFirmwareBinUrl"
+                             style="border-top: 1px solid #eee; padding-top: 12px; margin-top: 4px;">
+                            <div v-if="!flashingFirmware">
+                                <button type="button" class="btn btn-warning" @click="$emit('flash-firmware')"
+                                        style="margin-right: 10px;">
+                                    {{ t.config.flashFirmware }}
+                                </button>
+                                <span style="font-size: 12px; color: #888; margin-right: 10px;">
+                                    {{ t.config.flashFirmwareDesc }}
+                                </span>
+                                <span style="font-size: 12px; font-weight: bold; color: #e53935; background: #fdecea; border: 1px solid #e53935; border-radius: 3px; padding: 2px 6px;">
+                                    ⚠ EXPERIMENTAL — DO NOT USE
+                                </span>
+                            </div>
+                            <div v-else>
+                                <div style="margin-bottom: 6px; font-weight: bold;">
+                                    {{ t.config.flashingFirmware }} {{ flashProgress }}%
+                                </div>
+                                <div style="background: #ddd; border-radius: 4px; height: 10px; overflow: hidden; width: 220px;">
+                                    <div :style="{ width: flashProgress + '%', background: flashStatus === 'failed' ? '#e53935' : '#4CAF50', height: '100%', transition: 'width 0.5s' }"></div>
+                                </div>
+                                <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                                    <span v-if="flashStatus === 'complete'" style="color: #4CAF50; font-weight: bold;">{{ t.config.flashComplete }}</span>
+                                    <span v-else-if="flashStatus === 'failed'" style="color: #e53935; font-weight: bold;">{{ t.config.flashFailed }}</span>
+                                    <span v-else>{{ t.config.flashingFirmware }}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
