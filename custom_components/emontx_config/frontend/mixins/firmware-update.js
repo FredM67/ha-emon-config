@@ -160,10 +160,11 @@ const FirmwareUpdateMixin = {
             // Resolve the GitHub redirect to the direct CDN URL before passing to ESPHome.
             // GitHub release URLs redirect to a signed objects.githubusercontent.com URL whose
             // response headers exceed the ESP32 http_request buffer, causing ESP_FAIL at open.
-            // A browser HEAD request follows the redirect and response.url is the final URL.
+            // Use a GET request and immediately cancel the body — HEAD is unreliable on GitHub CDN.
             let resolvedUrl = this.latestFirmwareBinUrl;
             try {
-                const probe = await fetch(this.latestFirmwareBinUrl, { method: 'HEAD' });
+                const probe = await fetch(this.latestFirmwareBinUrl);
+                if (probe.body) probe.body.cancel().catch(() => {});
                 if (probe.url && probe.url !== this.latestFirmwareBinUrl) {
                     resolvedUrl = probe.url;
                 }
