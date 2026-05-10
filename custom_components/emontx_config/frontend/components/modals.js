@@ -284,7 +284,7 @@ Vue.component('bulk-ct-modal', {
                             <option v-for="ct in ctsAvailable" :key="ct" :value="ct">{{ ct }}A</option>
                             <option value="custom">{{ t.config.custom }}</option>
                         </select>
-                        <input v-if="ctTypeCustom" type="number" min="10" max="200" v-model.number="ctTypeCustomValue" :disabled="!applyCtType" style="padding: 6px; border: 1px solid #ddd; border-radius: 4px; width: 70px;" />
+                        <input v-if="ctTypeCustom" type="number" min="10" max="200" step="0.01" v-model.number="ctTypeCustomValue" :disabled="!applyCtType" style="padding: 6px; border: 1px solid #ddd; border-radius: 4px; width: 70px;" />
                         <span v-if="ctTypeCustom">A</span>
                     </div>
 
