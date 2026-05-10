@@ -151,41 +151,25 @@ const FirmwareUpdateMixin = {
          * Call the ESPHome flash_emontx6 service with the latest release .bin URL.
          * The ESPHome component fires esphome.emontx_flash_status events as it progresses.
          */
-        async flashFirmware() {
+        flashFirmware() {
             if (!this.latestFirmwareBinUrl) {
                 this.log('No firmware binary URL available — run a firmware check first', 'warning');
                 return;
             }
-
-            // Resolve the GitHub redirect to the direct CDN URL before passing to ESPHome.
-            // GitHub release URLs redirect to a signed objects.githubusercontent.com URL whose
-            // response headers exceed the ESP32 http_request buffer, causing ESP_FAIL at open.
-            // Use a GET request and immediately cancel the body — HEAD is unreliable on GitHub CDN.
-            let resolvedUrl = this.latestFirmwareBinUrl;
-            try {
-                const probe = await fetch(this.latestFirmwareBinUrl);
-                if (probe.body) probe.body.cancel().catch(() => {});
-                if (probe.url && probe.url !== this.latestFirmwareBinUrl) {
-                    resolvedUrl = probe.url;
-                }
-            } catch (e) {
-                this.log('Could not resolve firmware URL redirect — using original URL', 'warning');
-            }
-
             this.flashingFirmware = true;
             this.flashStatus = 'started';
             this.flashProgress = 0;
 
             const service = this.deviceName + '_flash_emontx6';
             if (this.hass && this.hass.callService) {
-                this.hass.callService('esphome', service, { url: resolvedUrl });
+                this.hass.callService('esphome', service, { url: this.latestFirmwareBinUrl });
             } else if (this.ws) {
                 this.ws.send(JSON.stringify({
                     id: this.wsMessageId++,
                     type: 'call_service',
                     domain: 'esphome',
                     service: service,
-                    service_data: { url: resolvedUrl }
+                    service_data: { url: this.latestFirmwareBinUrl }
                 }));
             }
         },
