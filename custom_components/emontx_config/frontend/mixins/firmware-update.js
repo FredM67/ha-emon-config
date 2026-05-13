@@ -14,12 +14,10 @@ const FirmwareUpdateMixin = {
         },
 
         async checkFirmwareNow() {
-            // Manual check - always perform
-            if (!this.device.firmware_version) {
-                this.log('No firmware version available', 'warning');
-                return;
-            }
-
+            // Manual check — always fetch GitHub releases, even if device firmware
+            // version is unknown (e.g. after a corrupt flash).  We treat the current
+            // version as '0.0.0' in that case so the latest release always shows as
+            // available, giving the user the option to reflash.
             await this.doFirmwareCheck(true);
         },
 
@@ -54,8 +52,10 @@ const FirmwareUpdateMixin = {
                 this.firmwareLastCheck = Date.now();
                 this.saveFirmwareSettings();
 
-                // Compare versions (strip V/v prefix from device version)
-                const current = this.device.firmware_version.replace(/^[vV]/, '');
+                // Compare versions (strip V/v prefix from device version).
+                // If firmware_version is unknown (e.g. corrupt device), treat current
+                // as '0.0.0' so any release shows as an available update.
+                const current = (this.device.firmware_version || '0.0.0').replace(/^[vV]/, '');
                 if (this.isNewerVersion(latestVersion, current)) {
                     this.firmwareUpdateAvailable = true;
                     this.log(`Firmware update available: ${current} → ${latestVersion}`, 'info');

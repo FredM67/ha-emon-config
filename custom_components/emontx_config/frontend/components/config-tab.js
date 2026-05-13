@@ -516,7 +516,7 @@ Vue.component('config-tab', {
                     </div>
                 </div>
                 <!-- Firmware Update Check (emonPi3 and emonTx6 share the same firmware) -->
-                <div class="card" v-if="device.hardware === 'emonPi3' || device.hardware === 'emonTx6'">
+                <div class="card">
                     <div class="card-header">{{ t.config.firmwareUpdate }}</div>
                     <div class="card-body">
                         <div class="form-group">
@@ -558,9 +558,6 @@ Vue.component('config-tab', {
                                 </button>
                                 <span style="font-size: 12px; color: #888; margin-right: 10px;">
                                     {{ t.config.flashFirmwareDesc }}
-                                </span>
-                                <span style="font-size: 12px; font-weight: bold; color: #e53935; background: #fdecea; border: 1px solid #e53935; border-radius: 3px; padding: 2px 6px;">
-                                    ⚠ EXPERIMENTAL — DO NOT USE
                                 </span>
                             </div>
                             <div v-else>
