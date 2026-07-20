@@ -234,7 +234,7 @@
             el: '#app',
             mixins: [ConnectionMixin, DataParserMixin, ConfigCommandsMixin, YamlGeneratorMixin, ChannelNamesMixin, FirmwareUpdateMixin],
             data: {
-                integrationVersion: '1.5.8',
+                integrationVersion: '1.5.9',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -304,6 +304,7 @@
                     firmware_commit: '',
                     hardware: '',
                     hardware_rev: '',
+                    bootloader: '',
                     voltage: '',
                     emon_library: 'emonLibDB',
                     RF: false,

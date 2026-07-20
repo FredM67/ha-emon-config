@@ -540,14 +540,23 @@ Vue.component('config-tab', {
                             </span>
                         </div>
                         <!-- UART bootloader prerequisite notice (emonTx6 and emonPi3 share the same hw/fw) -->
-                        <div v-if="device.hardware === 'emonTx6' || device.hardware === 'emonPi3'"
-                             style="border-top: 1px solid #eee; padding-top: 12px; margin-top: 4px;
-                                    background: #fff8e1; border: 1px solid #ffe082; border-radius: 4px; padding: 10px 14px;">
-                            <strong style="color: #e65100;">&#9888; {{ t.config.uartBootloaderTitle }}</strong>
-                            <p style="margin: 6px 0 0; font-size: 13px; color: #555;">
-                                {{ t.config.uartBootloaderNote }}
-                            </p>
-                        </div>
+                        <template v-if="device.hardware === 'emonTx6' || device.hardware === 'emonPi3'">
+                            <!-- UF2/USB bootloader detected (or unknown): setup required -->
+                            <div v-if="device.bootloader !== 'uart'"
+                                 style="border-top: 1px solid #eee; padding-top: 12px; margin-top: 4px;
+                                        background: #fff8e1; border: 1px solid #ffe082; border-radius: 4px; padding: 10px 14px;">
+                                <strong style="color: #e65100;">&#9888; {{ t.config.uartBootloaderTitle }}</strong>
+                                <p style="margin: 6px 0 0; font-size: 13px; color: #555;">
+                                    {{ t.config.uartBootloaderNote }}
+                                </p>
+                            </div>
+                            <!-- UART bootloader detected: ready for OTA -->
+                            <div v-else
+                                 style="border-top: 1px solid #eee; padding-top: 12px; margin-top: 4px;
+                                        background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 4px; padding: 10px 14px;">
+                                <strong style="color: #2e7d32;">&#10003; {{ t.config.uartBootloaderReady }}</strong>
+                            </div>
+                        </template>
                         <!-- Flash firmware section — shown whenever a .bin URL is known (update available or not) -->
                         <div v-if="latestFirmwareBinUrl"
                              style="border-top: 1px solid #eee; padding-top: 12px; margin-top: 4px;">

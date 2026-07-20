@@ -97,6 +97,7 @@
         "flashFailed": "Flash failed — check ESPHome logs",
         "uartBootloaderTitle": "Configurazione USB una tantum richiesta (emonTx6 / emonPi3)",
         "uartBootloaderNote": "Il flash OTA richiede il bootloader UART SAM-BA. Se è il primo flash OTA, collegare il dispositivo via USB, copiare change-bootloader-uart.uf2 dalla versione emon32-fw sull'unità EMONBOOT, poi espellere. Questa operazione va eseguita una sola volta.",
+        "uartBootloaderReady": "Bootloader UART rilevato — il dispositivo è pronto per gli aggiornamenti firmware OTA.",
         "pulseSettings": "Impostazioni Impulsi",
         "pulseInput": "Ingresso Impulsi",
         "pulsePeriod": "Periodo Impulsi",

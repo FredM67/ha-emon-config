@@ -117,6 +117,9 @@ const DataParserMixin = {
             if (line.startsWith('hardware_rev = ')) {
                 this.device.hardware_rev = line.split('=')[1].trim();
             }
+            if (line.startsWith('bootloader = ')) {
+                this.device.bootloader = line.split('=')[1].trim();
+            }
 
             if (line.startsWith('Settings:')) {
                 this.configReceived = true;
