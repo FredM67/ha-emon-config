@@ -37,10 +37,12 @@ A Home Assistant integration that provides a web-based configuration interface f
   - Uses friendly names when configured
   - Supports OPA pulse channels and temperature sensors
 - **Multi-phase Support**: Full support for emonPi3 with 3-phase voltage monitoring
-- **Firmware Update Notification**: Checks for firmware updates from GitHub
+- **Firmware Update & OTA Flash**: Checks for emon32-fw firmware updates from GitHub and flashes them wirelessly
   - Configurable check frequency (Never, Daily, Weekly, Monthly)
   - Settings stored on the HA side (shared across all browsers)
   - Blinking badge when update is available
+  - One-click OTA flash via emonWifi (emonTx6 / emonPi3, requires UART SAM-BA bootloader)
+  - Bootloader auto-detection: contextual notice shows setup steps or a green "ready" indicator based on the active bootloader
 - **No-response Detection**: Shows a warning if the device doesn't respond within 10 seconds, with guidance for emonTx4/5 users (serial jumper must be removed)
 - **RF Power Warning**: Safety warning when setting RF power to high levels (7 dBm+)
 - **Multi-language**: Supports English, French, German, Italian, and Spanish
@@ -261,7 +263,15 @@ The main configuration interface with three sub-tabs:
   - Warning displayed when setting RF power to high levels (7 dBm+)
 - **Datalog Interval**: Set the reporting interval
 - **JSON Output**: Enable/disable JSON serial format
-- **Firmware Update Check**: Configure automatic update checking frequency and manually check for updates
+- **Firmware Update & OTA Flash**: Manage emon32-fw firmware directly from the UI
+  - Configure automatic update checking frequency (Never / Daily / Weekly / Monthly)
+  - **Check Now** button fetches the latest stable release from GitHub immediately
+  - A blinking badge appears on the Config tab when a newer version is available
+  - **Flash Firmware** button sends the `.bin` to the device over the air via emonWifi (~2 min, do not power off)
+  - A progress bar tracks the flash; the device reboots automatically on completion
+  - **Bootloader detection** (emonTx6 / emonPi3): the `l` command response is parsed to read the active bootloader
+    - `uart` (SAM-BA): a green notice confirms the device is ready for OTA flashing
+    - `usb` (UF2) or unknown: a yellow notice explains the one-time USB setup needed to switch to the UART bootloader
 
 **Buttons:**
 - **Apply**: Send pending configuration changes to the device
@@ -356,6 +366,17 @@ Refer to the [emonTx documentation](https://docs.openenergymonitor.org/) for a c
 - Check that `homeassistant_services: true` and `custom_services: true` are set in your `api:` configuration
 - Monitor the serial output with an FTDI adapter to verify commands are being sent
 - **emonTx4/5 users**: The serial jumper must be removed (unsoldered or broken) for the emonWifi to communicate with the board. Without this, the device will not respond to commands. A red warning will appear on the Config tab after 10 seconds if no response is received
+
+### OTA firmware flash fails or Flash button is missing
+
+- The **Flash Firmware** button only appears after a firmware check finds a `.bin` asset in the latest GitHub release
+- OTA flashing requires the **UART SAM-BA bootloader** (not the default UF2 bootloader shipped on new devices)
+- If the yellow "One-time USB setup required" notice is shown, you need to switch the bootloader once:
+  1. Connect the device via USB
+  2. Copy `change-bootloader-uart.uf2` from the [emon32-fw release](https://github.com/openenergymonitor/emon32-fw/releases) onto the `EMONBOOT` drive
+  3. Eject the drive — the device reboots with the UART bootloader active
+  4. Reload the Config tab; the notice should turn green
+- After switching, the bootloader change is permanent — the USB step does not need to be repeated
 
 ### Phase values showing incorrect numbers
 
