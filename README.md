@@ -155,7 +155,7 @@ external_components:
       type: git
       url: https://github.com/FredM67/esphome
       ref: emontx-ha-bridge
-    components: [emontx_ha_bridge]
+    components: [emontx, emontx_ha_bridge, emontx_updater]
     refresh: 0s
 
 emontx_ha_bridge:
@@ -168,8 +168,15 @@ uart:
   baud_rate: 115200
   rx_buffer_size: 2048
 
-# emonTx component (built into ESPHome since 2026.x)
+# emonTx component — loaded from the fork branch (includes timing fixes)
 emontx:
+
+# HTTP client required by emontx_updater to download firmware binaries
+http_request:
+  buffer_size_rx: 4096
+
+# OTA firmware updater — registers the flash_emontx6 service in Home Assistant
+emontx_updater:
 ```
 
 #### API Encryption Key
@@ -197,7 +204,7 @@ external_components:
       type: git
       url: https://github.com/FredM67/esphome
       ref: emontx-ha-bridge
-    components: [emontx_ha_bridge]
+    components: [emontx, emontx_ha_bridge, emontx_updater]
     refresh: 0s
 
 # Add homeassistant_services and custom_services to your existing api: section
@@ -216,9 +223,14 @@ uart:
   rx_buffer_size: 2048
 
 emontx:
+
+http_request:
+  buffer_size_rx: 4096
+
+emontx_updater:
 ```
 
-> **Note**: Both `homeassistant_services: true` and `custom_services: true` are required in the `api:` section. The `emontx_ha_bridge` component auto-registers the `send_command` service and fires `esphome.emontx_raw` and `esphome.emontx_json` events to Home Assistant. Commands sent via this service automatically have LF line endings appended as required by the emonTx firmware.
+> **Note**: Both `homeassistant_services: true` and `custom_services: true` are required in the `api:` section. The `emontx_ha_bridge` component auto-registers the `send_command` service and fires `esphome.emontx_raw` and `esphome.emontx_json` events to Home Assistant. Commands sent via this service automatically have LF line endings appended as required by the emonTx firmware. Even though `emontx` is built into mainline ESPHome, the fork branch must be used as it adds a loop pause needed to keep the watchdog happy during the lengthy OTA firmware upload. `emontx_updater` requires `http_request` with `buffer_size_rx: 4096` to download firmware binaries.
 
 ### Home Assistant Setup
 
