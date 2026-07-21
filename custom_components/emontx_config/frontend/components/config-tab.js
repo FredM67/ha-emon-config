@@ -562,6 +562,7 @@ Vue.component('config-tab', {
                              style="border-top: 1px solid #eee; padding-top: 12px; margin-top: 4px;">
                             <div v-if="!flashingFirmware">
                                 <button type="button" class="btn btn-warning" @click="$emit('flash-firmware')"
+                                        :disabled="!firmwareUpdateAvailable"
                                         style="margin-right: 10px;">
                                     {{ t.config.flashFirmware }}
                                 </button>
