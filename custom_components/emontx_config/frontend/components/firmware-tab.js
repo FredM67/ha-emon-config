@@ -20,6 +20,11 @@ Vue.component('firmware-tab', {
         flashStatus: { type: String, default: null },
         flashProgress: { type: Number, default: 0 }
     },
+    data() {
+        return {
+            confirmSwitchUsb: false
+        };
+    },
     computed: {
         effectiveVersion() {
             if (this.advancedFirmwareMode && this.selectedFirmwareVersion) {
@@ -137,7 +142,7 @@ Vue.component('firmware-tab', {
                                 </div>
 
                                 <!-- Version selector (disabled when direct URL is set) -->
-                                <div v-if="releasesOldestFirst.length > 0"
+                                <div v-if="releasesNewestFirst.length > 0"
                                      class="form-group" style="margin-bottom: 10px;">
                                     <label style="font-size: 13px; display: block; margin-bottom: 4px;">{{ t.config.firmwareVersion }}</label>
                                     <select :value="selectedFirmwareVersion || latestFirmwareVersion"
@@ -191,6 +196,43 @@ Vue.component('firmware-tab', {
                             </div>
                         </div>
                     </div>
+
+                    <!-- Switch to USB bootloader — only shown when UART is active -->
+                    <template v-if="(device.hardware === 'emonTx6' || device.hardware === 'emonPi3') && device.bootloader === 'uart'">
+                        <div style="border-top: 1px solid #eee; padding-top: 12px; margin-top: 12px;">
+                            <div v-if="!flashingFirmware">
+                                <div v-if="!confirmSwitchUsb">
+                                    <button type="button"
+                                            class="btn"
+                                            @click="confirmSwitchUsb = true"
+                                            style="background: #c62828; color: #fff; border: none;">
+                                        {{ t.config.switchToUsbBootloader }}
+                                    </button>
+                                    <span style="font-size: 12px; color: #888; margin-left: 10px;">
+                                        {{ t.config.switchToUsbBootloaderDesc }}
+                                    </span>
+                                </div>
+                                <div v-else
+                                     style="background: #ffebee; border: 1px solid #ef9a9a; border-radius: 4px; padding: 12px;">
+                                    <strong style="color: #c62828;">&#9888; {{ t.config.switchToUsbConfirmTitle }}</strong>
+                                    <p style="margin: 6px 0 10px; font-size: 13px; color: #555;">
+                                        {{ t.config.switchToUsbConfirmNote }}
+                                    </p>
+                                    <div style="display: flex; gap: 10px;">
+                                        <button type="button"
+                                                class="btn"
+                                                @click="$emit('switch-to-usb-bootloader'); confirmSwitchUsb = false"
+                                                style="background: #c62828; color: #fff; border: none;">
+                                            {{ t.config.switchToUsbConfirm }}
+                                        </button>
+                                        <button type="button" class="btn btn-default" @click="confirmSwitchUsb = false">
+                                            {{ t.config.cancel }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
                 </div>
             </div>
         </div>

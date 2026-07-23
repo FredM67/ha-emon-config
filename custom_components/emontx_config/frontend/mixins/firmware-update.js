@@ -222,6 +222,32 @@ const FirmwareUpdateMixin = {
         },
 
         /**
+         * Flash the change-bootloader-usb.bin file to switch the device from UART
+         * SAM-BA bootloader back to the USB/UF2 bootloader.
+         * After this, OTA flashing will no longer be possible without re-applying
+         * the UART bootloader via USB.
+         */
+        switchToUsbBootloader() {
+            const binUrl = 'https://raw.githubusercontent.com/openenergymonitor/emon32-fw/main/bin/bootloaders/change-bootloader-usb.bin';
+            this.flashingFirmware = true;
+            this.flashStatus = 'started';
+            this.flashProgress = 0;
+
+            const service = this.deviceName + '_flash_emontx6';
+            if (this.hass && this.hass.callService) {
+                this.hass.callService('esphome', service, { url: binUrl });
+            } else if (this.ws) {
+                this.ws.send(JSON.stringify({
+                    id: this.wsMessageId++,
+                    type: 'call_service',
+                    domain: 'esphome',
+                    service: service,
+                    service_data: { url: binUrl }
+                }));
+            }
+        },
+
+        /**
          * Handle esphome.emontx_flash_status events fired by the ESPHome component.
          * Called by connection.js subscribeToEvents (hass path) and handleWsMessage (WS path).
          */
