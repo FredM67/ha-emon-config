@@ -61,6 +61,7 @@
             <div :class="['tab', activeTab === 'accumulators' ? 'active' : '']" @click="activeTab = 'accumulators'" :title="t.tooltips.tabAccumulators">{{ t.tabs.accumulators }}</div>
             <div :class="['tab', activeTab === 'data' ? 'active' : '']" @click="activeTab = 'data'" :title="t.tooltips.tabLiveData">{{ t.tabs.liveData }}</div>
             <div :class="['tab', activeTab === 'terminal' ? 'active' : '']" @click="activeTab = 'terminal'" :title="t.tooltips.tabTerminal">{{ t.tabs.terminal }}</div>
+            <div :class="['tab', activeTab === 'firmware' ? 'active' : '']" @click="activeTab = 'firmware'" :title="t.tooltips.tabFirmware">{{ t.tabs.firmware }}</div>
         </div>
 
         <!-- Device Configuration Tab -->
@@ -88,22 +89,11 @@
             :failed-opa-indices="failedOpaIndices"
             :failed-opa-messages="failedOpaMessages"
             :channel-names="channelNames"
-            :firmware-check-frequency="firmwareCheckFrequency"
-            :firmware-update-available="firmwareUpdateAvailable"
-            :latest-firmware-version="latestFirmwareVersion"
-            :latest-firmware-bin-url="latestFirmwareBinUrl"
-            :checking-firmware="checkingFirmware"
-            :flashing-firmware="flashingFirmware"
-            :flash-status="flashStatus"
-            :flash-progress="flashProgress"
             @load-config="loadConfig"
             @save-config="saveConfig"
             @apply-changes="applyAllChanges"
             @discard-changes="discardChanges"
             @scan-temp-sensors="scanTempSensors"
-            @update-firmware-frequency="updateFirmwareFrequency"
-            @check-firmware-now="checkFirmwareNow"
-            @flash-firmware="flashFirmware"
             @list-temp-sensors="listTempSensors"
             @list-saved-temp-sensors="listSavedTempSensors"
             @assign-temp-slot="assignTempSensorToSlot"
@@ -133,6 +123,24 @@
             @send-command="writeToStream"
             @save-config="saveConfig"
         ></terminal-tab>
+
+        <!-- Firmware Update Tab -->
+        <firmware-tab
+            v-show="activeTab === 'firmware'"
+            :t="t"
+            :device="device"
+            :firmware-check-frequency="firmwareCheckFrequency"
+            :firmware-update-available="firmwareUpdateAvailable"
+            :latest-firmware-version="latestFirmwareVersion"
+            :latest-firmware-bin-url="latestFirmwareBinUrl"
+            :checking-firmware="checkingFirmware"
+            :flashing-firmware="flashingFirmware"
+            :flash-status="flashStatus"
+            :flash-progress="flashProgress"
+            @update-firmware-frequency="updateFirmwareFrequency"
+            @check-firmware-now="checkFirmwareNow"
+            @flash-firmware="flashFirmware"
+        ></firmware-tab>
 
         <!-- Live Data Tab -->
         <live-data-tab
@@ -220,6 +228,7 @@
     <script src="/emontx_config_static/components/terminal-tab.js"></script>
     <script src="/emontx_config_static/components/live-data-tab.js"></script>
     <script src="/emontx_config_static/components/accumulators-tab.js"></script>
+    <script src="/emontx_config_static/components/firmware-tab.js"></script>
 
     <!-- Load mixins -->
     <script src="/emontx_config_static/mixins/connection.js"></script>
@@ -234,7 +243,7 @@
             el: '#app',
             mixins: [ConnectionMixin, DataParserMixin, ConfigCommandsMixin, YamlGeneratorMixin, ChannelNamesMixin, FirmwareUpdateMixin],
             data: {
-                integrationVersion: '1.6.1',
+                integrationVersion: '1.7.0-beta.1',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,

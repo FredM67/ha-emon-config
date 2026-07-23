@@ -275,15 +275,6 @@ The main configuration interface with three sub-tabs:
   - Warning displayed when setting RF power to high levels (7 dBm+)
 - **Datalog Interval**: Set the reporting interval
 - **JSON Output**: Enable/disable JSON serial format
-- **Firmware Update & OTA Flash**: Manage emon32-fw firmware directly from the UI
-  - Configure automatic update checking frequency (Never / Daily / Weekly / Monthly)
-  - **Check Now** button fetches the latest stable release from GitHub immediately
-  - A blinking badge appears on the Config tab when a newer version is available
-  - **Flash Firmware** button sends the `.bin` to the device over the air via emonWifi (~2 min, do not power off)
-  - A progress bar tracks the flash; the device reboots automatically on completion
-  - **Bootloader detection** (emonTx6 / emonPi3): the `l` command response is parsed to read the active bootloader
-    - `uart` (SAM-BA): a green notice confirms the device is ready for OTA flashing
-    - `usb` (UF2) or unknown: a yellow notice explains the one-time USB setup needed to switch to the UART bootloader
 
 **Buttons:**
 - **Apply**: Send pending configuration changes to the device
@@ -309,6 +300,19 @@ A full serial terminal for direct communication:
 - **Command Input**: Type commands to send to the emonPi/Tx
 - **Quick Commands**: Buttons for common commands (l, v, s, ?)
 - **Toolbar**: Autoscroll toggle, copy to clipboard, download log, clear terminal
+
+### Firmware Update Tab
+
+Manage emon32-fw firmware directly from the UI:
+
+- **Check frequency**: Configure automatic update checks (Never / Daily / Weekly / Monthly)
+- **Check Now**: Fetches the latest stable release from GitHub immediately
+- A blinking badge appears in the tab bar when a newer version is available
+- **Bootloader detection** (emonTx6 / emonPi3): the `l` command response is parsed to identify the active bootloader
+  - `uart` (SAM-BA): a green notice confirms the device is ready for OTA flashing
+  - `usb` (UF2) or unknown: a yellow notice explains the one-time USB setup needed to switch to the UART bootloader
+- **Flash Firmware**: Sends the `.bin` to the device over the air via emonWifi (~2 min, do not power off)
+  - A progress bar tracks the flash; the device reboots automatically on completion
 
 ### Live Data Tab
 

@@ -105,6 +105,15 @@ const FirmwareUpdateMixin = {
                         if (settings.last_check) {
                             this.firmwareLastCheck = settings.last_check;
                         }
+                        if (settings.latest_version) {
+                            this.latestFirmwareVersion = settings.latest_version;
+                        }
+                        if (settings.latest_bin_url) {
+                            this.latestFirmwareBinUrl = settings.latest_bin_url;
+                        }
+                        if (settings.update_available !== undefined) {
+                            this.firmwareUpdateAvailable = settings.update_available;
+                        }
                     }
                 }
             } catch (e) {
@@ -119,7 +128,10 @@ const FirmwareUpdateMixin = {
                         type: 'emontx_config/save_firmware_settings',
                         firmware_settings: {
                             check_frequency: this.firmwareCheckFrequency,
-                            last_check: this.firmwareLastCheck
+                            last_check: this.firmwareLastCheck,
+                            latest_version: this.latestFirmwareVersion,
+                            latest_bin_url: this.latestFirmwareBinUrl,
+                            update_available: this.firmwareUpdateAvailable
                         }
                     });
                 }
@@ -192,6 +204,7 @@ const FirmwareUpdateMixin = {
             if (data.status === 'complete') {
                 this.flashingFirmware = false;
                 this.firmwareUpdateAvailable = false;
+                this.saveFirmwareSettings();
                 this.log('Firmware flash complete — device is rebooting', 'info');
             } else if (data.status === 'failed') {
                 this.flashingFirmware = false;

@@ -8,6 +8,7 @@
     "tabs": {
         "config": "Configurazione",
         "terminal": "Terminale Seriale",
+        "firmware": "Aggiornamento firmware",
         "liveData": "Dati in Tempo Reale",
         "accumulators": "Azzera Accumulatori"
     },
@@ -97,6 +98,7 @@
         "flashFailed": "Flash failed — check ESPHome logs",
         "uartBootloaderTitle": "Configurazione USB una tantum richiesta (emonTx6 / emonPi3)",
         "uartBootloaderNote": "Il flash OTA richiede il bootloader UART SAM-BA. Se è il primo flash OTA, collegare il dispositivo via USB, copiare change-bootloader-uart.uf2 dalla versione emon32-fw sull'unità EMONBOOT, poi espellere. Questa operazione va eseguita una sola volta.",
+        "uartBootloaderDocLink": "Istruzioni passo passo: Cambiare il bootloader (documentazione OpenEnergyMonitor)",
         "uartBootloaderReady": "Bootloader UART rilevato — il dispositivo è pronto per gli aggiornamenti firmware OTA.",
         "pulseSettings": "Impostazioni Impulsi",
         "pulseInput": "Ingresso Impulsi",
@@ -245,6 +247,7 @@
         "tabAccumulators": "Visualizza e reimposta accumulatori energia e impulsi",
         "tabLiveData": "Visualizza letture sensori in tempo reale",
         "tabTerminal": "Invia comandi direttamente al dispositivo",
+        "tabFirmware": "Verifica e installa aggiornamenti firmware di emonTx via radio",
         "subCalibration": "Calibrazione sensori di tensione e corrente",
         "subSensors": "Canali OPA, sensori temperatura e ingressi impulsi",
         "subMisc": "Radio, intervallo datalog e altre impostazioni",
