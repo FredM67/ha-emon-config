@@ -48,8 +48,8 @@ Vue.component('firmware-tab', {
             if (this.advancedFirmwareMode) return hasUrl && bootloaderOk;
             return this.firmwareUpdateAvailable && hasUrl && bootloaderOk;
         },
-        releasesOldestFirst() {
-            return this.firmwareReleases.slice().reverse();
+        releasesNewestFirst() {
+            return this.firmwareReleases.slice();
         },
         usingDirectUrl() {
             return this.advancedFirmwareMode && this.firmwareDirectUrl && this.firmwareDirectUrl.trim();
@@ -144,7 +144,7 @@ Vue.component('firmware-tab', {
                                             @change="$emit('update:selected-firmware-version', $event.target.value)"
                                             :disabled="!!usingDirectUrl"
                                             style="width: 160px;">
-                                        <option v-for="rel in releasesOldestFirst" :key="rel.version" :value="rel.version">
+                                        <option v-for="rel in releasesNewestFirst" :key="rel.version" :value="rel.version">
                                             {{ rel.version }}{{ rel.version === latestFirmwareVersion ? ' (' + t.config.latest + ')' : '' }}
                                         </option>
                                     </select>
