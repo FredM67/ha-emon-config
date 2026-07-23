@@ -48,10 +48,6 @@ const FirmwareUpdateMixin = {
                     : null;
                 this.latestFirmwareBinUrl = binAsset ? binAsset.browser_download_url : null;
 
-                // Store last check time on HA side
-                this.firmwareLastCheck = Date.now();
-                this.saveFirmwareSettings();
-
                 // Compare versions (strip V/v prefix from device version).
                 // If firmware_version is unknown (e.g. corrupt device), treat current
                 // as '0.0.0' so any release shows as an available update.
@@ -65,6 +61,10 @@ const FirmwareUpdateMixin = {
                         this.log(`Firmware is up to date (${current})`, 'info');
                     }
                 }
+
+                // Save after comparison so update_available reflects the real result
+                this.firmwareLastCheck = Date.now();
+                this.saveFirmwareSettings();
             } catch (e) {
                 this.log('Could not check for firmware updates', 'warning');
             } finally {
@@ -119,6 +119,12 @@ const FirmwareUpdateMixin = {
             } catch (e) {
                 console.error('Failed to load firmware settings:', e);
             }
+            // Always run a background check on startup so the badge is confirmed
+            // against GitHub rather than relying solely on persisted state.
+            // We reset firmwareLastCheck to 0 to bypass shouldCheckFirmware's
+            // interval guard — this is a deliberate one-time startup refresh.
+            this.firmwareLastCheck = 0;
+            this.checkFirmwareUpdate();
         },
 
         async saveFirmwareSettings() {

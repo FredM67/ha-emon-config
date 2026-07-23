@@ -69,7 +69,7 @@ Vue.component('firmware-tab', {
                          style="border-top: 1px solid #eee; padding-top: 12px; margin-top: 4px;">
                         <div v-if="!flashingFirmware">
                             <button type="button" class="btn btn-warning" @click="$emit('flash-firmware')"
-                                    :disabled="!firmwareUpdateAvailable"
+                                    :disabled="!firmwareUpdateAvailable || ((device.hardware === 'emonTx6' || device.hardware === 'emonPi3') && device.bootloader !== 'uart')"
                                     style="margin-right: 10px;">
                                 {{ t.config.flashFirmware }}
                             </button>
