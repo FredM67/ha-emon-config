@@ -138,6 +138,7 @@
             :advanced-firmware-mode="advancedFirmwareMode"
             :firmware-repo="firmwareRepo"
             :firmware-direct-url="firmwareDirectUrl"
+            :flash-service-available="flashServiceAvailable"
             :checking-firmware="checkingFirmware"
             :flashing-firmware="flashingFirmware"
             :flash-status="flashStatus"
@@ -253,7 +254,7 @@
             el: '#app',
             mixins: [ConnectionMixin, DataParserMixin, ConfigCommandsMixin, YamlGeneratorMixin, ChannelNamesMixin, FirmwareUpdateMixin],
             data: {
-                integrationVersion: '1.7.0',
+                integrationVersion: '1.7.1',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -398,6 +399,11 @@
             computed: {
                 t() {
                     return this.translations[this.lang] || this.translations.en || {};
+                },
+                flashServiceAvailable() {
+                    if (!this.hass || !this.hass.services || !this.deviceName) return false;
+                    const esphomeServices = this.hass.services.esphome || {};
+                    return !!(esphomeServices[this.deviceName + '_flash_emontx6']);
                 },
                 voltageChannelCount() {
                     if (this.device.hardware === 'emonPi3') {

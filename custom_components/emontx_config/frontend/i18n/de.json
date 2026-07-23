@@ -104,6 +104,8 @@
         "flashingFirmware": "Flashing...",
         "flashComplete": "Flash complete — device is rebooting",
         "flashFailed": "Flash failed — check ESPHome logs",
+        "flashServiceMissing": "OTA-Flash-Dienst nicht verfügbar",
+        "flashServiceMissingNote": "Die Komponente emontx_updater ist auf diesem ESPHome-Gerät nicht geladen. Fügen Sie emontx_updater (und http_request) zu Ihrer ESPHome-Konfiguration hinzu und flashen Sie das Gerät erneut per USB, um OTA-Firmware-Updates zu aktivieren.",
         "uartBootloaderTitle": "Einmalige USB-Einrichtung erforderlich (emonTx6 / emonPi3)",
         "uartBootloaderNote": "OTA-Flash erfordert den UART SAM-BA Bootloader. Beim ersten OTA-Flash: Gerät per USB verbinden, change-bootloader-uart.uf2 aus dem emon32-fw-Release auf das EMONBOOT-Laufwerk kopieren, dann auswerfen. Dies muss nur einmal durchgeführt werden.",
         "uartBootloaderDocLink": "Schritt-für-Schritt-Anleitung: Bootloader wechseln (OpenEnergyMonitor-Dokumentation)",

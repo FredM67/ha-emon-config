@@ -15,6 +15,7 @@ Vue.component('firmware-tab', {
         advancedFirmwareMode: { type: Boolean, default: false },
         firmwareRepo: { type: String, default: 'openenergymonitor/emon32-fw' },
         firmwareDirectUrl: { type: String, default: '' },
+        flashServiceAvailable: { type: Boolean, default: false },
         checkingFirmware: { type: Boolean, default: false },
         flashingFirmware: { type: Boolean, default: false },
         flashStatus: { type: String, default: null },
@@ -45,6 +46,7 @@ Vue.component('firmware-tab', {
             return this.latestFirmwareBinUrl;
         },
         canFlash() {
+            if (!this.flashServiceAvailable) return false;
             const hasUrl = !!this.effectiveBinUrl;
             const bootloaderOk = !(
                 (this.device.hardware === 'emonTx6' || this.device.hardware === 'emonPi3') &&
@@ -105,6 +107,15 @@ Vue.component('firmware-tab', {
                             <strong style="color: #2e7d32;">&#10003; {{ t.config.uartBootloaderReady }}</strong>
                         </div>
                     </template>
+                    <!-- emontx_updater service missing notice -->
+                    <div v-if="!flashServiceAvailable"
+                         style="background: #fff8e1; border: 1px solid #ffe082; border-radius: 4px; padding: 10px 14px; margin-top: 8px;">
+                        <strong style="color: #e65100;">&#9888; {{ t.config.flashServiceMissing }}</strong>
+                        <p style="margin: 6px 0 0; font-size: 13px; color: #555;">
+                            {{ t.config.flashServiceMissingNote }}
+                        </p>
+                    </div>
+
                     <!-- Flash firmware section -->
                     <div style="border-top: 1px solid #eee; padding-top: 12px; margin-top: 12px;">
                         <div v-if="!flashingFirmware">

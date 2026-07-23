@@ -401,6 +401,17 @@ Refer to the [emonTx documentation](https://docs.openenergymonitor.org/) for a c
 - Monitor the serial output with an FTDI adapter to verify commands are being sent
 - **emonTx4/5 users**: The serial jumper must be removed (unsoldered or broken) for the emonWifi to communicate with the board. Without this, the device will not respond to commands. A red warning will appear on the Config tab after 10 seconds if no response is received
 
+### "action esphome.xxx_flash_emontx6 not found" error
+
+The `emontx_updater` component is not loaded on your ESPHome device — the flash service is never registered in Home Assistant without it. To fix:
+
+1. Add `emontx_updater:` and `http_request: { buffer_size_rx: 4096 }` to your ESPHome YAML (see [ESPHome Setup](#esphome-setup))
+2. Make sure `emontx_updater` is listed in the `external_components` block
+3. Rebuild and flash the ESPHome firmware to the device via USB
+4. After it reconnects, the Flash Firmware button will be enabled
+
+A yellow warning is shown in the Firmware Update tab when the service is not detected.
+
 ### OTA firmware flash fails or Flash button is missing
 
 - The **Flash Firmware** button only appears after a firmware check finds a `.bin` asset in the latest GitHub release

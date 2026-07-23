@@ -104,6 +104,8 @@
         "flashingFirmware": "Flashing...",
         "flashComplete": "Flash complete — device is rebooting",
         "flashFailed": "Flash failed — check ESPHome logs",
+        "flashServiceMissing": "Service de flash OTA non disponible",
+        "flashServiceMissingNote": "Le composant emontx_updater n'est pas chargé sur cet appareil ESPHome. Ajoutez emontx_updater (et http_request) à votre configuration ESPHome et reflashez l'appareil via USB pour activer les mises à jour OTA.",
         "uartBootloaderTitle": "Configuration USB unique requise (emonTx6 / emonPi3)",
         "uartBootloaderNote": "Le flash OTA nécessite le bootloader UART SAM-BA. Si c'est votre premier flash OTA, connectez l'appareil via USB, copiez change-bootloader-uart.uf2 depuis la version emon32-fw sur le lecteur EMONBOOT, puis éjectez. Cela ne doit être fait qu'une seule fois.",
         "uartBootloaderDocLink": "Instructions détaillées : Changer le bootloader (documentation OpenEnergyMonitor)",
