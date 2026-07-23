@@ -33,18 +33,27 @@ const FirmwareUpdateMixin = {
                 }
 
                 const releases = await response.json();
-                const stableRelease = releases.find(r => !r.prerelease && !r.draft);
-                if (!stableRelease) {
+                const stableReleases = releases.filter(r => !r.prerelease && !r.draft);
+                if (!stableReleases.length) {
                     if (force) this.log('No stable firmware release found', 'warning');
                     return;
                 }
 
-                const latestVersion = stableRelease.tag_name.replace(/^[vV]/, '');
+                // Build release list (newest first from API, present oldest-first in UI)
+                this.firmwareReleases = stableReleases.map(r => ({
+                    version: r.tag_name.replace(/^[vV]/, ''),
+                    binUrl: (r.assets ? r.assets.find(a => a.name && a.name.endsWith('.bin')) : null)
+                        ? r.assets.find(a => a.name && a.name.endsWith('.bin')).browser_download_url
+                        : null
+                }));
+
+                const latestRelease = stableReleases[0];
+                const latestVersion = latestRelease.tag_name.replace(/^[vV]/, '');
                 this.latestFirmwareVersion = latestVersion;
 
-                // Extract the .bin asset download URL for flashing
-                const binAsset = stableRelease.assets
-                    ? stableRelease.assets.find(a => a.name && a.name.endsWith('.bin'))
+                // Extract the .bin asset download URL for the latest release
+                const binAsset = latestRelease.assets
+                    ? latestRelease.assets.find(a => a.name && a.name.endsWith('.bin'))
                     : null;
                 this.latestFirmwareBinUrl = binAsset ? binAsset.browser_download_url : null;
 
@@ -170,7 +179,14 @@ const FirmwareUpdateMixin = {
          * The ESPHome component fires esphome.emontx_flash_status events as it progresses.
          */
         flashFirmware() {
-            if (!this.latestFirmwareBinUrl) {
+            // In advanced mode use the selected version's URL; otherwise use latest
+            let binUrl = this.latestFirmwareBinUrl;
+            if (this.advancedFirmwareMode && this.selectedFirmwareVersion) {
+                const rel = this.firmwareReleases.find(r => r.version === this.selectedFirmwareVersion);
+                if (rel && rel.binUrl) binUrl = rel.binUrl;
+            }
+
+            if (!binUrl) {
                 this.log('No firmware binary URL available — run a firmware check first', 'warning');
                 return;
             }
@@ -180,14 +196,14 @@ const FirmwareUpdateMixin = {
 
             const service = this.deviceName + '_flash_emontx6';
             if (this.hass && this.hass.callService) {
-                this.hass.callService('esphome', service, { url: this.latestFirmwareBinUrl });
+                this.hass.callService('esphome', service, { url: binUrl });
             } else if (this.ws) {
                 this.ws.send(JSON.stringify({
                     id: this.wsMessageId++,
                     type: 'call_service',
                     domain: 'esphome',
                     service: service,
-                    service_data: { url: this.latestFirmwareBinUrl }
+                    service_data: { url: binUrl }
                 }));
             }
         },

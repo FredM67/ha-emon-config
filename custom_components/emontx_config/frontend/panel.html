@@ -133,6 +133,9 @@
             :firmware-update-available="firmwareUpdateAvailable"
             :latest-firmware-version="latestFirmwareVersion"
             :latest-firmware-bin-url="latestFirmwareBinUrl"
+            :firmware-releases="firmwareReleases"
+            :selected-firmware-version="selectedFirmwareVersion"
+            :advanced-firmware-mode="advancedFirmwareMode"
             :checking-firmware="checkingFirmware"
             :flashing-firmware="flashingFirmware"
             :flash-status="flashStatus"
@@ -140,6 +143,8 @@
             @update-firmware-frequency="updateFirmwareFrequency"
             @check-firmware-now="checkFirmwareNow"
             @flash-firmware="flashFirmware"
+            @update:selected-firmware-version="selectedFirmwareVersion = $event"
+            @update:advanced-firmware-mode="advancedFirmwareMode = $event"
         ></firmware-tab>
 
         <!-- Live Data Tab -->
@@ -243,7 +248,7 @@
             el: '#app',
             mixins: [ConnectionMixin, DataParserMixin, ConfigCommandsMixin, YamlGeneratorMixin, ChannelNamesMixin, FirmwareUpdateMixin],
             data: {
-                integrationVersion: '1.7.0-beta.2',
+                integrationVersion: '1.7.0-beta.3',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -295,6 +300,9 @@
                 latestFirmwareVersion: null,
                 firmwareUpdateAvailable: false,
                 latestFirmwareBinUrl: null,
+                firmwareReleases: [],
+                selectedFirmwareVersion: null,
+                advancedFirmwareMode: false,
                 firmwareCheckFrequency: 'weekly',
                 firmwareLastCheck: 0,
                 checkingFirmware: false,
