@@ -197,44 +197,51 @@ Vue.component('firmware-tab', {
                         </div>
                     </div>
 
-                    <!-- Switch to USB bootloader — only shown when UART is active -->
-                    <template v-if="(device.hardware === 'emonTx6' || device.hardware === 'emonPi3') && device.bootloader === 'uart'">
-                        <div style="border-top: 1px solid #eee; padding-top: 12px; margin-top: 12px;">
-                            <div v-if="!flashingFirmware">
-                                <div v-if="!confirmSwitchUsb">
+                </div>
+            </div>
+
+            <!-- Bootloader section — only shown for emonTx6/emonPi3 with UART bootloader active -->
+            <template v-if="(device.hardware === 'emonTx6' || device.hardware === 'emonPi3') && device.bootloader === 'uart'">
+                <div class="card" style="margin-top: 16px;">
+                    <div class="card-header">{{ t.config.bootloaderSection }}</div>
+                    <div class="card-body">
+                        <div v-if="!flashingFirmware">
+                            <div v-if="!confirmSwitchUsb">
+                                <button type="button"
+                                        class="btn"
+                                        @click="confirmSwitchUsb = true"
+                                        style="background: #c62828; color: #fff; border: none;">
+                                    {{ t.config.switchToUsbBootloader }}
+                                </button>
+                                <span style="font-size: 12px; color: #888; margin-left: 10px;">
+                                    {{ t.config.switchToUsbBootloaderDesc }}
+                                </span>
+                            </div>
+                            <div v-else
+                                 style="background: #ffebee; border: 1px solid #ef9a9a; border-radius: 4px; padding: 12px;">
+                                <strong style="color: #c62828;">&#9888; {{ t.config.switchToUsbConfirmTitle }}</strong>
+                                <p style="margin: 6px 0 10px; font-size: 13px; color: #555;">
+                                    {{ t.config.switchToUsbConfirmNote }}
+                                </p>
+                                <div style="display: flex; gap: 10px;">
                                     <button type="button"
                                             class="btn"
-                                            @click="confirmSwitchUsb = true"
+                                            @click="$emit('switch-to-usb-bootloader'); confirmSwitchUsb = false"
                                             style="background: #c62828; color: #fff; border: none;">
-                                        {{ t.config.switchToUsbBootloader }}
+                                        {{ t.config.switchToUsbConfirm }}
                                     </button>
-                                    <span style="font-size: 12px; color: #888; margin-left: 10px;">
-                                        {{ t.config.switchToUsbBootloaderDesc }}
-                                    </span>
-                                </div>
-                                <div v-else
-                                     style="background: #ffebee; border: 1px solid #ef9a9a; border-radius: 4px; padding: 12px;">
-                                    <strong style="color: #c62828;">&#9888; {{ t.config.switchToUsbConfirmTitle }}</strong>
-                                    <p style="margin: 6px 0 10px; font-size: 13px; color: #555;">
-                                        {{ t.config.switchToUsbConfirmNote }}
-                                    </p>
-                                    <div style="display: flex; gap: 10px;">
-                                        <button type="button"
-                                                class="btn"
-                                                @click="$emit('switch-to-usb-bootloader'); confirmSwitchUsb = false"
-                                                style="background: #c62828; color: #fff; border: none;">
-                                            {{ t.config.switchToUsbConfirm }}
-                                        </button>
-                                        <button type="button" class="btn btn-default" @click="confirmSwitchUsb = false">
-                                            {{ t.config.cancel }}
-                                        </button>
-                                    </div>
+                                    <button type="button" class="btn btn-default" @click="confirmSwitchUsb = false">
+                                        {{ t.config.cancel }}
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                    </template>
+                        <div v-else style="font-size: 13px; color: #888;">
+                            {{ t.config.flashingFirmware }}…
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </template>
         </div>
     `
 });
