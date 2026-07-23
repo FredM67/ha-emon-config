@@ -43,6 +43,7 @@ A Home Assistant integration that provides a web-based configuration interface f
   - Blinking badge when update is available
   - One-click OTA flash via emonWifi (emonTx6 / emonPi3, requires UART SAM-BA bootloader)
   - Bootloader auto-detection: contextual notice shows setup steps or a green "ready" indicator based on the active bootloader
+  - **Switch back to USB/UF2 bootloader**: when the UART bootloader is active, a dedicated Bootloader card lets you revert to the UF2 bootloader from the UI (with inline confirmation), without needing a USB cable
 - **No-response Detection**: Shows a warning if the device doesn't respond within 10 seconds, with guidance for emonTx4/5 users (serial jumper must be removed)
 - **RF Power Warning**: Safety warning when setting RF power to high levels (7 dBm+)
 - **Multi-language**: Supports English, French, German, Italian, and Spanish
@@ -314,6 +315,23 @@ Manage emon32-fw firmware directly from the UI:
 - **Flash Firmware**: Sends the `.bin` to the device over the air via emonWifi (~2 min, do not power off)
   - A progress bar tracks the flash; the device reboots automatically on completion
 
+#### Advanced Mode
+
+Enable the **Advanced Mode** checkbox to access additional flashing options:
+
+- **Custom GitHub repository**: override the default `openenergymonitor/emon32-fw` source to fetch releases from a fork or alternative repo; a **Check Now** button re-fetches the release list from the new repo
+- **Version selector**: pick any specific release (newest first) instead of always flashing the latest; the latest version is labelled for convenience
+- **Direct `.bin` URL**: paste any URL to a firmware binary to bypass the release list entirely — useful for testing pre-release or custom builds; when set, it takes precedence over the version selector and an orange warning is shown
+
+#### Bootloader card
+
+When the UART SAM-BA bootloader is active, a separate **Bootloader** section appears below the Firmware Update card:
+
+- **Switch back to USB bootloader**: reverts the device to the UF2/USB bootloader without a USB cable
+  - An inline confirmation panel (red-tinted, no browser dialog) explains the consequences before proceeding
+  - After flashing, OTA firmware updates will no longer work until the UART bootloader is re-applied via USB
+  - The device reboots automatically and the green "ready" badge disappears
+
 ### Live Data Tab
 
 Real-time display of all sensor values received from the emonPi/Tx, grouped by type:
@@ -387,12 +405,20 @@ Refer to the [emonTx documentation](https://docs.openenergymonitor.org/) for a c
 
 - The **Flash Firmware** button only appears after a firmware check finds a `.bin` asset in the latest GitHub release
 - OTA flashing requires the **UART SAM-BA bootloader** (not the default UF2 bootloader shipped on new devices)
-- If the yellow "One-time USB setup required" notice is shown, you need to switch the bootloader once:
+- If the yellow "One-time USB setup required" notice is shown, you need to switch the bootloader once via USB:
   1. Connect the device via USB
   2. Copy `change-bootloader-uart.uf2` from the [emon32-fw release](https://github.com/openenergymonitor/emon32-fw/releases) onto the `EMONBOOT` drive
   3. Eject the drive — the device reboots with the UART bootloader active
   4. Reload the Config tab; the notice should turn green
 - After switching, the bootloader change is permanent — the USB step does not need to be repeated
+
+### Switching back to the USB/UF2 bootloader
+
+If you want to revert to the UF2 bootloader (e.g. to use drag-and-drop USB firmware updates again):
+
+- When the UART bootloader is active, use the **Bootloader** card in the Firmware Update tab — no USB cable needed
+- After confirming, the device flashes `change-bootloader-usb.bin` and reboots automatically
+- Once reverted, OTA firmware updates will not work until you re-apply the UART bootloader via USB
 
 ### Phase values showing incorrect numbers
 
