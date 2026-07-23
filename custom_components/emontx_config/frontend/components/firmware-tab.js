@@ -13,13 +13,14 @@ Vue.component('firmware-tab', {
         firmwareReleases: { type: Array, default: () => [] },
         selectedFirmwareVersion: { type: String, default: null },
         advancedFirmwareMode: { type: Boolean, default: false },
+        firmwareRepo: { type: String, default: 'openenergymonitor/emon32-fw' },
+        firmwareDirectUrl: { type: String, default: '' },
         checkingFirmware: { type: Boolean, default: false },
         flashingFirmware: { type: Boolean, default: false },
         flashStatus: { type: String, default: null },
         flashProgress: { type: Number, default: 0 }
     },
     computed: {
-        // The version that will actually be flashed
         effectiveVersion() {
             if (this.advancedFirmwareMode && this.selectedFirmwareVersion) {
                 return this.selectedFirmwareVersion;
@@ -27,14 +28,17 @@ Vue.component('firmware-tab', {
             return this.latestFirmwareVersion;
         },
         effectiveBinUrl() {
-            if (this.advancedFirmwareMode && this.selectedFirmwareVersion) {
-                const rel = this.firmwareReleases.find(r => r.version === this.selectedFirmwareVersion);
-                return rel ? rel.binUrl : null;
+            if (this.advancedFirmwareMode) {
+                if (this.firmwareDirectUrl && this.firmwareDirectUrl.trim()) {
+                    return this.firmwareDirectUrl.trim();
+                }
+                if (this.selectedFirmwareVersion) {
+                    const rel = this.firmwareReleases.find(r => r.version === this.selectedFirmwareVersion);
+                    return rel ? rel.binUrl : null;
+                }
             }
             return this.latestFirmwareBinUrl;
         },
-        // In advanced mode allow flashing any version with a .bin; in normal
-        // mode only allow flashing when an update is available.
         canFlash() {
             const hasUrl = !!this.effectiveBinUrl;
             const bootloaderOk = !(
@@ -44,9 +48,11 @@ Vue.component('firmware-tab', {
             if (this.advancedFirmwareMode) return hasUrl && bootloaderOk;
             return this.firmwareUpdateAvailable && hasUrl && bootloaderOk;
         },
-        // Releases sorted oldest-first for the dropdown
         releasesOldestFirst() {
             return this.firmwareReleases.slice().reverse();
+        },
+        usingDirectUrl() {
+            return this.advancedFirmwareMode && this.firmwareDirectUrl && this.firmwareDirectUrl.trim();
         }
     },
     template: `
@@ -76,10 +82,8 @@ Vue.component('firmware-tab', {
                     </div>
                     <!-- UART bootloader prerequisite notice (emonTx6 and emonPi3 share the same hw/fw) -->
                     <template v-if="device.hardware === 'emonTx6' || device.hardware === 'emonPi3'">
-                        <!-- UF2/USB bootloader detected (or unknown): setup required -->
                         <div v-if="device.bootloader !== 'uart'"
-                             style="border-top: 1px solid #eee; padding-top: 12px; margin-top: 4px;
-                                    background: #fff8e1; border: 1px solid #ffe082; border-radius: 4px; padding: 10px 14px;">
+                             style="background: #fff8e1; border: 1px solid #ffe082; border-radius: 4px; padding: 10px 14px; margin-top: 4px;">
                             <strong style="color: #e65100;">&#9888; {{ t.config.uartBootloaderTitle }}</strong>
                             <p style="margin: 6px 0 0; font-size: 13px; color: #555;">
                                 {{ t.config.uartBootloaderNote }}
@@ -91,16 +95,13 @@ Vue.component('firmware-tab', {
                                 </a>
                             </p>
                         </div>
-                        <!-- UART bootloader detected: ready for OTA -->
                         <div v-else
-                             style="border-top: 1px solid #eee; padding-top: 12px; margin-top: 4px;
-                                    background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 4px; padding: 10px 14px;">
+                             style="background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 4px; padding: 10px 14px; margin-top: 4px;">
                             <strong style="color: #2e7d32;">&#10003; {{ t.config.uartBootloaderReady }}</strong>
                         </div>
                     </template>
-                    <!-- Flash firmware section — shown whenever a .bin URL is known -->
-                    <div v-if="latestFirmwareBinUrl"
-                         style="border-top: 1px solid #eee; padding-top: 12px; margin-top: 12px;">
+                    <!-- Flash firmware section -->
+                    <div style="border-top: 1px solid #eee; padding-top: 12px; margin-top: 12px;">
                         <div v-if="!flashingFirmware">
                             <!-- Advanced Mode toggle -->
                             <div style="margin-bottom: 10px;">
@@ -112,26 +113,67 @@ Vue.component('firmware-tab', {
                                     {{ t.config.advancedMode }}
                                 </label>
                             </div>
-                            <!-- Version selector (advanced mode only) -->
-                            <div v-if="advancedFirmwareMode && releasesOldestFirst.length > 0"
-                                 class="form-group" style="margin-bottom: 10px;">
-                                <label style="font-size: 13px;">{{ t.config.firmwareVersion }}</label>
-                                <select :value="selectedFirmwareVersion || latestFirmwareVersion"
-                                        @change="$emit('update:selected-firmware-version', $event.target.value)"
-                                        style="width: 160px; margin-left: 8px;">
-                                    <option v-for="rel in releasesOldestFirst" :key="rel.version" :value="rel.version">
-                                        {{ rel.version }}{{ rel.version === latestFirmwareVersion ? ' (' + t.config.latest + ')' : '' }}
-                                    </option>
-                                </select>
+
+                            <!-- Advanced mode controls -->
+                            <div v-if="advancedFirmwareMode"
+                                 style="background: #f5f5f5; border: 1px solid #ddd; border-radius: 4px; padding: 12px; margin-bottom: 10px;">
+
+                                <!-- Custom GitHub repo -->
+                                <div class="form-group" style="margin-bottom: 10px;">
+                                    <label style="font-size: 13px; display: block; margin-bottom: 4px;">{{ t.config.firmwareRepo }}</label>
+                                    <div style="display: flex; gap: 8px; align-items: center;">
+                                        <input type="text"
+                                               :value="firmwareRepo"
+                                               @input="$emit('update:firmware-repo', $event.target.value)"
+                                               placeholder="owner/repo"
+                                               style="width: 260px; font-family: monospace; font-size: 13px;">
+                                        <button type="button" class="btn btn-info btn-sm"
+                                                @click="$emit('check-firmware-now')"
+                                                :disabled="checkingFirmware || flashingFirmware"
+                                                style="font-size: 12px; padding: 3px 10px;">
+                                            {{ checkingFirmware ? t.config.checking : t.config.checkNow }}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Version selector (disabled when direct URL is set) -->
+                                <div v-if="releasesOldestFirst.length > 0"
+                                     class="form-group" style="margin-bottom: 10px;">
+                                    <label style="font-size: 13px; display: block; margin-bottom: 4px;">{{ t.config.firmwareVersion }}</label>
+                                    <select :value="selectedFirmwareVersion || latestFirmwareVersion"
+                                            @change="$emit('update:selected-firmware-version', $event.target.value)"
+                                            :disabled="!!usingDirectUrl"
+                                            style="width: 160px;">
+                                        <option v-for="rel in releasesOldestFirst" :key="rel.version" :value="rel.version">
+                                            {{ rel.version }}{{ rel.version === latestFirmwareVersion ? ' (' + t.config.latest + ')' : '' }}
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <!-- Direct .bin URL override -->
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label style="font-size: 13px; display: block; margin-bottom: 4px;">{{ t.config.firmwareDirectUrl }}</label>
+                                    <input type="text"
+                                           :value="firmwareDirectUrl"
+                                           @input="$emit('update:firmware-direct-url', $event.target.value)"
+                                           :placeholder="t.config.firmwareDirectUrlPlaceholder"
+                                           style="width: 100%; font-family: monospace; font-size: 12px;">
+                                    <span v-if="usingDirectUrl" style="font-size: 11px; color: #e65100;">
+                                        &#9888; {{ t.config.firmwareDirectUrlOverride }}
+                                    </span>
+                                </div>
                             </div>
+
+                            <!-- Flash button -->
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <button type="button" class="btn btn-warning" @click="$emit('flash-firmware')"
-                                        :disabled="!canFlash"
-                                        style="margin-right: 0;">
+                                        :disabled="!canFlash">
                                     {{ t.config.flashFirmware }}
                                 </button>
                                 <span style="font-size: 12px; color: #888;">
-                                    {{ advancedFirmwareMode && effectiveVersion ? 'v' + effectiveVersion : t.config.flashFirmwareDesc }}
+                                    <template v-if="usingDirectUrl">{{ t.config.firmwareDirectUrlActive }}</template>
+                                    <template v-else-if="advancedFirmwareMode && effectiveVersion">v{{ effectiveVersion }}</template>
+                                    <template v-else>{{ t.config.flashFirmwareDesc }}</template>
                                 </span>
                             </div>
                         </div>

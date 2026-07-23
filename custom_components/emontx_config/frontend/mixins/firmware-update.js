@@ -26,7 +26,8 @@ const FirmwareUpdateMixin = {
 
             try {
                 // Fetch releases and find the latest non-prerelease
-                const response = await fetch('https://api.github.com/repos/openenergymonitor/emon32-fw/releases');
+                const repo = (this.firmwareRepo || 'openenergymonitor/emon32-fw').trim();
+                const response = await fetch(`https://api.github.com/repos/${repo}/releases`);
                 if (!response.ok) {
                     this.log('Could not fetch firmware releases', 'warning');
                     return;
@@ -123,6 +124,12 @@ const FirmwareUpdateMixin = {
                         if (settings.update_available !== undefined) {
                             this.firmwareUpdateAvailable = settings.update_available;
                         }
+                        if (settings.firmware_repo) {
+                            this.firmwareRepo = settings.firmware_repo;
+                        }
+                        if (settings.firmware_direct_url !== undefined) {
+                            this.firmwareDirectUrl = settings.firmware_direct_url;
+                        }
                     }
                 }
             } catch (e) {
@@ -146,7 +153,9 @@ const FirmwareUpdateMixin = {
                             last_check: this.firmwareLastCheck,
                             latest_version: this.latestFirmwareVersion,
                             latest_bin_url: this.latestFirmwareBinUrl,
-                            update_available: this.firmwareUpdateAvailable
+                            update_available: this.firmwareUpdateAvailable,
+                            firmware_repo: this.firmwareRepo,
+                            firmware_direct_url: this.firmwareDirectUrl
                         }
                     });
                 }
@@ -179,11 +188,15 @@ const FirmwareUpdateMixin = {
          * The ESPHome component fires esphome.emontx_flash_status events as it progresses.
          */
         flashFirmware() {
-            // In advanced mode use the selected version's URL; otherwise use latest
+            // Priority: direct URL → selected version → latest
             let binUrl = this.latestFirmwareBinUrl;
-            if (this.advancedFirmwareMode && this.selectedFirmwareVersion) {
-                const rel = this.firmwareReleases.find(r => r.version === this.selectedFirmwareVersion);
-                if (rel && rel.binUrl) binUrl = rel.binUrl;
+            if (this.advancedFirmwareMode) {
+                if (this.firmwareDirectUrl && this.firmwareDirectUrl.trim()) {
+                    binUrl = this.firmwareDirectUrl.trim();
+                } else if (this.selectedFirmwareVersion) {
+                    const rel = this.firmwareReleases.find(r => r.version === this.selectedFirmwareVersion);
+                    if (rel && rel.binUrl) binUrl = rel.binUrl;
+                }
             }
 
             if (!binUrl) {
