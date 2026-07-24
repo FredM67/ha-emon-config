@@ -54,6 +54,7 @@ ha-emon-config/
 │           │   ├── terminal-tab.js
 │           │   ├── live-data-tab.js
 │           │   ├── accumulators-tab.js
+│           │   ├── firmware-tab.js
 │           │   ├── temp-sensors-section.js
 │           │   └── modals.js
 │           ├── mixins/          # Vue mixins (shared logic)
@@ -123,6 +124,7 @@ The frontend is a Vue.js 2.x application loaded in an iframe. It communicates wi
 | `terminal-tab.js` | Serial terminal for direct command input/output |
 | `live-data-tab.js` | Real-time display of sensor values |
 | `accumulators-tab.js` | Energy and pulse accumulator management |
+| `firmware-tab.js` | Firmware update UI (version check, OTA flash) |
 | `modals.js` | Modal dialogs (zero confirmation, RF power warning, bulk CT settings, YAML generator) |
 
 ### Mixins (`mixins/`)
@@ -145,6 +147,7 @@ UI translations in JSON format:
 - `fr.json` - French
 - `de.json` - German
 - `it.json` - Italian
+- `es.json` - Spanish
 
 Language is auto-detected from Home Assistant settings.
 
