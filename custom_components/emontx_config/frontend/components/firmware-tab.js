@@ -48,12 +48,15 @@ Vue.component('firmware-tab', {
         canFlash() {
             if (!this.flashServiceAvailable) return false;
             const hasUrl = !!this.effectiveBinUrl;
-            const bootloaderOk = !(
+            // Block only when the bootloader is positively identified as non-UART.
+            // Unknown ('') means the firmware doesn't report it — allow the attempt;
+            // the flash will simply fail safely if the wrong bootloader is active.
+            const bootloaderBlocked =
                 (this.device.hardware === 'emonTx6' || this.device.hardware === 'emonPi3') &&
-                this.device.bootloader !== 'uart'
-            );
-            if (this.advancedFirmwareMode) return hasUrl && bootloaderOk;
-            return this.firmwareUpdateAvailable && hasUrl && bootloaderOk;
+                this.device.bootloader !== '' &&
+                this.device.bootloader !== 'uart';
+            if (this.advancedFirmwareMode) return hasUrl && !bootloaderBlocked;
+            return this.firmwareUpdateAvailable && hasUrl && !bootloaderBlocked;
         },
         releasesNewestFirst() {
             return this.firmwareReleases.slice();
@@ -89,7 +92,8 @@ Vue.component('firmware-tab', {
                     </div>
                     <!-- UART bootloader prerequisite notice (emonTx6 and emonPi3 share the same hw/fw) -->
                     <template v-if="device.hardware === 'emonTx6' || device.hardware === 'emonPi3'">
-                        <div v-if="device.bootloader !== 'uart'"
+                        <!-- Bootloader positively identified as non-UART → hard warning, button blocked -->
+                        <div v-if="device.bootloader && device.bootloader !== 'uart'"
                              style="background: #fff8e1; border: 1px solid #ffe082; border-radius: 4px; padding: 10px 14px; margin-top: 4px;">
                             <strong style="color: #e65100;">&#9888; {{ t.config.uartBootloaderTitle }}</strong>
                             <p style="margin: 6px 0 0; font-size: 13px; color: #555;">
@@ -102,6 +106,15 @@ Vue.component('firmware-tab', {
                                 </a>
                             </p>
                         </div>
+                        <!-- Bootloader unknown (old firmware without 'l'/'v' reporting) → soft notice, flash still allowed -->
+                        <div v-else-if="!device.bootloader"
+                             style="background: #f5f5f5; border: 1px solid #bdbdbd; border-radius: 4px; padding: 10px 14px; margin-top: 4px;">
+                            <strong style="color: #555;">&#9432; {{ t.config.uartBootloaderUnknown }}</strong>
+                            <p style="margin: 6px 0 0; font-size: 13px; color: #666;">
+                                {{ t.config.uartBootloaderUnknownNote }}
+                            </p>
+                        </div>
+                        <!-- Bootloader confirmed UART → green ready -->
                         <div v-else
                              style="background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 4px; padding: 10px 14px; margin-top: 4px;">
                             <strong style="color: #2e7d32;">&#10003; {{ t.config.uartBootloaderReady }}</strong>

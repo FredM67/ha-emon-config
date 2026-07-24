@@ -110,6 +110,8 @@
         "uartBootloaderNote": "Il flash OTA richiede il bootloader UART SAM-BA. Se è il primo flash OTA, collegare il dispositivo via USB, copiare change-bootloader-uart.uf2 dalla versione emon32-fw sull'unità EMONBOOT, poi espellere. Questa operazione va eseguita una sola volta.",
         "uartBootloaderDocLink": "Istruzioni passo passo: Cambiare il bootloader (documentazione OpenEnergyMonitor)",
         "uartBootloaderReady": "Bootloader UART rilevato — il dispositivo è pronto per gli aggiornamenti firmware OTA.",
+        "uartBootloaderUnknown": "Stato del bootloader sconosciuto",
+        "uartBootloaderUnknownNote": "Questo firmware non riporta il tipo di bootloader. È comunque possibile tentare il flash OTA — se il bootloader UART non è installato, il flash fallirà in modo sicuro senza modificare il dispositivo.",
         "bootloaderSection": "Bootloader",
         "switchToUsbBootloader": "Torna al bootloader USB",
         "switchToUsbBootloaderDesc": "Ripristina il bootloader UF2/USB — il flash OTA non sarà più disponibile.",
