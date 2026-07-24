@@ -1,3 +1,9 @@
+## What's new in v1.7.3
+
+### Fix: correct integrationVersion displayed in panel
+
+`panel.html` was still reporting version `1.7.1` after the v1.7.2 release.
+
 ## What's new in v1.7.2
 
 ### Fix: allow OTA flash when bootloader status is unknown
