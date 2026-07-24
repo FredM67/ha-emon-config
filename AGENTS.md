@@ -1,4 +1,4 @@
-# CLAUDE.md
+# emonPi/Tx Configuration for Home Assistant Collaboration Guide
 
 This file provides guidance to AI models when working with code in this repository.
 
