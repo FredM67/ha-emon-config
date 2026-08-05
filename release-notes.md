@@ -1,3 +1,11 @@
+## What's new in v1.8.0-beta.2
+
+### Fix: show friendly channel names during automatic calibration
+
+- Show the configured friendly name for each selected CT or voltage channel
+- Leave the name column empty when no friendly name has been configured
+- Hide the internal firmware input number from the channel selection list
+
 ## What's new in v1.8.0-beta.1
 
 ### Feature: automatic voltage and CT calibration

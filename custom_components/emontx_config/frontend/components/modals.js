@@ -472,7 +472,7 @@ Vue.component('auto-calibration-modal', {
                         <label v-for="channel in channels" :key="channel.commandIndex" class="calibration-channel">
                             <input type="checkbox" :value="channel.index" v-model="selectedChannels" />
                             <span>{{ channel.label }}{{ channelName(channel) }}</span>
-                            <small>{{ t.autoCalibration.input }} {{ channel.commandIndex }}</small>
+                            <small>{{ channel.name || '' }}</small>
                         </label>
                     </div>
 
