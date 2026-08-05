@@ -178,6 +178,28 @@
         "channelNamesBackup": "Sauvegarde des Noms",
         "channelNamesBackupDesc": "Exporter ou importer les noms de canaux pour sauvegarde ou migration vers une nouvelle installation Home Assistant."
     },
+    "autoCalibration": {
+        "title": "Calibration automatique",
+        "open": "Calibration automatique",
+        "description": "Calibrez la tension de chaque phase ou plusieurs CT avec une référence connue. Le firmware enregistre automatiquement chaque calibration réussie.",
+        "current": "Courant",
+        "voltage": "Tension",
+        "currentHelp": "Placez tous les CT sélectionnés autour du même conducteur parcouru par une charge connue et stable.",
+        "voltageHelp": "Connectez toutes les entrées de tension sélectionnées à la même source et utilisez la tension mesurée avec un compteur officiel ou un appareil MID.",
+        "selectChannels": "Sélectionner les canaux",
+        "selectAll": "Tout sélectionner",
+        "selectNone": "Ne rien sélectionner",
+        "input": "Entrée",
+        "actualCurrent": "Courant réel de la charge",
+        "referenceVoltage": "Tension de référence",
+        "warning": "La calibration peut prendre jusqu'à une minute par canal. Maintenez la charge ou la tension stable jusqu'à la fin de l'opération.",
+        "start": "Démarrer la calibration",
+        "calibrating": "Calibration en cours...",
+        "complete": "Calibration terminée",
+        "newCalibration": "Nouvelle calibration",
+        "cancel": "Annuler",
+        "close": "Fermer"
+    },
     "terminal": {
         "title": "Moniteur Série",
         "placeholder": "Entrez une commande...",
@@ -262,12 +284,12 @@
         "inactive": "Inactif"
     },
     "tooltips": {
-        "tabConfig": "Configurer les capteurs CT, l'étalonnage et les paramètres",
+        "tabConfig": "Configurer les capteurs CT, la calibration et les paramètres",
         "tabAccumulators": "Afficher et réinitialiser les accumulateurs d'énergie et d'impulsions",
         "tabLiveData": "Afficher les mesures en temps réel",
         "tabTerminal": "Envoyer des commandes directement à l'appareil",
         "tabFirmware": "Vérifier et installer les mises à jour du firmware emonTx par liaison radio",
-        "subCalibration": "Étalonnage des capteurs de tension et de courant",
+        "subCalibration": "Calibration des capteurs de tension et de courant",
         "subSensors": "Canaux OPA, capteurs de température et entrées d'impulsions",
         "subMisc": "Radio, intervalle de journalisation et autres paramètres",
         "btnSave": "Enregistrer la configuration dans l'EEPROM de l'appareil",

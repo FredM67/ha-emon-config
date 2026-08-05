@@ -428,6 +428,7 @@ const ConfigCommandsMixin = {
                     if (changes.values.active !== undefined) {
                         this.$set(this.device.ichannels[idx], 'active', changes.values.active);
                     }
+
                     if (changes.values.ical !== undefined) {
                         this.$set(this.device.ichannels[idx], 'ical', changes.values.ical);
                     }
@@ -477,6 +478,76 @@ const ConfigCommandsMixin = {
                     this.bulkProgress = null;
                 }, 500);
             }
+        },
+
+        startAutoCalibration: async function (calibration) {
+            if (this.autoCalibrationProgress && this.autoCalibrationProgress.running) return;
+
+            const channels = calibration.channels.map(index => {
+                const isVoltage = calibration.mode === 'voltage';
+                return {
+                    index: index,
+                    commandIndex: isVoltage ? index + 1 : index + 4,
+                    label: isVoltage ? 'V' + (index + 1) : 'CT ' + (index + 1)
+                };
+            });
+            const reference = parseFloat(calibration.reference);
+            const results = [];
+            this.autoCalibrationProgress = { running: true, current: 0, total: channels.length, currentLabel: '', results: results };
+            this.log(`Starting ${calibration.mode} auto-calibration for ${channels.length} channel(s)`, 'info');
+
+            for (let i = 0; i < channels.length; i++) {
+                const channel = channels[i];
+                this.autoCalibrationProgress = { ...this.autoCalibrationProgress, current: i, currentLabel: `${channel.label} (input ${channel.commandIndex})` };
+
+                try {
+                    const responsePromise = this.waitForCalibration(channel.commandIndex, channel.label);
+                    this.writeToStream(`i${channel.commandIndex} a ${reference.toFixed(2)}`);
+                    const result = await responsePromise;
+                    results.push({ commandIndex: channel.commandIndex, label: channel.label, success: true, measured: result.measured, actual: result.actual, newCalibration: result.newCalibration });
+                    this.log(`Calibration complete for ${channel.label}: ${result.newCalibration}`, 'info');
+                } catch (e) {
+                    const error = e.message || 'Calibration failed or timed out';
+                    results.push({ commandIndex: channel.commandIndex, label: channel.label, success: false, error: error });
+                    this.log(`Calibration failed for ${channel.label}: ${error}`, 'error');
+                }
+                this.autoCalibrationProgress = { ...this.autoCalibrationProgress, current: i + 1, results: results };
+            }
+
+            this.autoCalibrationProgress = { ...this.autoCalibrationProgress, running: false, current: channels.length, currentLabel: '', results: results };
+            this.loadConfig();
+        },
+
+        closeAutoCalibration: function () {
+            if (this.autoCalibrationProgress && this.autoCalibrationProgress.running) return;
+            this.showAutoCalibration = false;
+            this.autoCalibrationProgress = null;
+        },
+
+        waitForCalibration: function (commandIndex, label, timeout = 60000) {
+            return new Promise((resolve, reject) => {
+                const timeoutId = setTimeout(() => {
+                    this.pendingCalibration = null;
+                    reject(new Error('No completion response received'));
+                }, timeout);
+                this.pendingCalibration = {
+                    commandIndex: commandIndex,
+                    label: label,
+                    measured: null,
+                    actual: null,
+                    newCalibration: null,
+                    resolve: (result) => {
+                        clearTimeout(timeoutId);
+                        this.pendingCalibration = null;
+                        resolve(result);
+                    },
+                    reject: (error) => {
+                        clearTimeout(timeoutId);
+                        this.pendingCalibration = null;
+                        reject(new Error(error || 'Calibration rejected'));
+                    }
+                };
+            });
         },
 
         openBulkCtModal() {

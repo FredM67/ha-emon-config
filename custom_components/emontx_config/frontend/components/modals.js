@@ -352,6 +352,168 @@ Vue.component('bulk-ct-modal', {
     `
 });
 
+// Automatic voltage and current calibration workflow
+Vue.component('auto-calibration-modal', {
+    props: {
+        show: Boolean,
+        t: Object,
+        device: Object,
+        channelNames: Object,
+        progress: Object
+    },
+    data() {
+        return {
+            mode: 'current',
+            selectedChannels: [],
+            referenceValue: 200,
+            started: false
+        };
+    },
+    watch: {
+        show(value) {
+            if (value) {
+                this.mode = 'current';
+                this.selectedChannels = [];
+                this.referenceValue = 200;
+                this.started = false;
+            }
+        },
+        mode() {
+            this.selectedChannels = [];
+            this.referenceValue = this.mode === 'current' ? 200 : 230;
+        }
+    },
+    computed: {
+        channels() {
+            if (this.mode === 'voltage') {
+                return (this.device.vchannels || []).map((channel, index) => ({
+                    index: index,
+                    commandIndex: index + 1,
+                    label: 'V' + (index + 1),
+                    name: (this.channelNames.voltage || {})[String(index + 1)] || ''
+                }));
+            }
+            return (this.device.ichannels || []).map((channel, index) => ({
+                index: index,
+                commandIndex: index + 4,
+                label: 'CT ' + (index + 1),
+                name: (this.channelNames.ct || {})[String(index + 1)] || ''
+            }));
+        },
+        unit() {
+            return this.mode === 'current' ? 'A' : 'V';
+        },
+        isRunning() {
+            return this.progress && this.progress.running;
+        },
+        isComplete() {
+            return this.progress && !this.progress.running && this.progress.current === this.progress.total;
+        },
+        progressPercent() {
+            if (!this.progress || !this.progress.total) return 0;
+            return Math.round((this.progress.current / this.progress.total) * 100);
+        }
+    },
+    methods: {
+        toggleChannel(index) {
+            const position = this.selectedChannels.indexOf(index);
+            if (position === -1) this.selectedChannels.push(index);
+            else this.selectedChannels.splice(position, 1);
+        },
+        selectAll() {
+            this.selectedChannels = this.channels.map(channel => channel.index);
+        },
+        selectNone() {
+            this.selectedChannels = [];
+        },
+        channelName(channel) {
+            return channel.name ? ' - ' + channel.name : '';
+        },
+        start() {
+            const reference = parseFloat(this.referenceValue);
+            if (!this.selectedChannels.length || !isFinite(reference) || reference <= 0) return;
+            this.started = true;
+            this.$emit('start', {
+                mode: this.mode,
+                channels: this.selectedChannels.slice(),
+                reference: reference
+            });
+        }
+    },
+    template: `
+        <div v-if="show" class="modal-overlay">
+            <div class="modal-content wide calibration-modal">
+                <h3 class="modal-title calibration-title">{{ t.autoCalibration.title }}</h3>
+
+                <template v-if="!started">
+                    <div class="calibration-mode">
+                        <label :class="{ active: mode === 'current' }">
+                            <input type="radio" value="current" v-model="mode" />
+                            {{ t.autoCalibration.current }}
+                        </label>
+                        <label :class="{ active: mode === 'voltage' }">
+                            <input type="radio" value="voltage" v-model="mode" />
+                            {{ t.autoCalibration.voltage }}
+                        </label>
+                    </div>
+
+                    <p class="calibration-help">
+                        {{ mode === 'current' ? t.autoCalibration.currentHelp : t.autoCalibration.voltageHelp }}
+                    </p>
+
+                    <div class="calibration-selection-header">
+                        <strong>{{ t.autoCalibration.selectChannels }}</strong>
+                        <span>
+                            <button type="button" class="btn btn-sm btn-info" @click="selectAll">{{ t.autoCalibration.selectAll }}</button>
+                            <button type="button" class="btn btn-sm" @click="selectNone" style="background: #ccc;">{{ t.autoCalibration.selectNone }}</button>
+                        </span>
+                    </div>
+                    <div class="calibration-channel-list">
+                        <label v-for="channel in channels" :key="channel.commandIndex" class="calibration-channel">
+                            <input type="checkbox" :value="channel.index" v-model="selectedChannels" />
+                            <span>{{ channel.label }}{{ channelName(channel) }}</span>
+                            <small>{{ t.autoCalibration.input }} {{ channel.commandIndex }}</small>
+                        </label>
+                    </div>
+
+                    <label class="calibration-reference">
+                        <span>{{ mode === 'current' ? t.autoCalibration.actualCurrent : t.autoCalibration.referenceVoltage }}</span>
+                        <input type="number" min="0.01" step="0.01" v-model="referenceValue" />
+                        <strong>{{ unit }}</strong>
+                    </label>
+                    <p class="calibration-warning">{{ t.autoCalibration.warning }}</p>
+                </template>
+
+                <template v-else>
+                    <div class="calibration-progress">
+                        <strong v-if="isRunning">{{ t.autoCalibration.calibrating }}</strong>
+                        <strong v-else>{{ t.autoCalibration.complete }}</strong>
+                        <span v-if="progress">{{ progress.current }} / {{ progress.total }}</span>
+                    </div>
+                    <div class="calibration-progress-bar"><div :style="{ width: progressPercent + '%' }"></div></div>
+                    <p v-if="progress && progress.currentLabel" class="calibration-current">{{ progress.currentLabel }}</p>
+                    <div v-if="progress && progress.results" class="calibration-results">
+                        <div v-for="result in progress.results" :key="result.commandIndex" :class="['calibration-result', result.success ? 'success' : 'failure']">
+                            <strong>{{ result.label }}</strong>
+                            <span v-if="result.success">{{ result.measured }} / {{ result.actual }} -> {{ t.autoCalibration.newCalibration }}: {{ result.newCalibration }}</span>
+                            <span v-else>{{ result.error }}</span>
+                        </div>
+                    </div>
+                </template>
+
+                <div class="modal-buttons">
+                    <button v-if="!started" type="button" class="btn btn-primary" @click="start" :disabled="!selectedChannels.length || !referenceValue">
+                        {{ t.autoCalibration.start }}
+                    </button>
+                    <button type="button" class="btn" @click="$emit('close')" :disabled="isRunning" style="background: #ccc;">
+                        {{ isComplete || !started ? t.autoCalibration.close : t.autoCalibration.cancel }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    `
+});
+
 // Temperature Slot Clear Confirmation Modal
 Vue.component('temp-slot-clear-modal', {
     props: {

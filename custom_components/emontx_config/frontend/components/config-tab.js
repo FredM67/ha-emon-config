@@ -253,6 +253,18 @@ Vue.component('config-tab', {
                 <!-- CALIBRATION SUB-TAB -->
                 <div v-show="configSubTab === 'calibration'">
 
+                <div class="card calibration-card">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>{{ t.autoCalibration.title }}</span>
+                        <button type="button" class="btn btn-sm btn-primary" @click="$emit('open-auto-calibration')" :disabled="!emontxConnected">
+                            {{ t.autoCalibration.open }}
+                        </button>
+                    </div>
+                    <div class="card-body calibration-card-body">
+                        {{ t.autoCalibration.description }}
+                    </div>
+                </div>
+
                 <!-- Voltage Calibration (non-emonPi3) -->
                 <div class="card" v-if="device.hardware !== 'emonPi3'">
                     <div class="card-header">{{ t.config.voltageCalibration }}</div>

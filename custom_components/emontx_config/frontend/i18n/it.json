@@ -178,6 +178,9 @@
         "channelNamesBackup": "Backup Nomi Canali",
         "channelNamesBackupDesc": "Esporta o importa i nomi dei canali per backup o migrazione a una nuova installazione Home Assistant."
     },
+    "autoCalibration": {
+        "title": "Calibrazione automatica", "open": "Calibra automaticamente", "description": "Calibra la tensione di ogni fase o più CT con un riferimento noto. Il firmware salva automaticamente ogni calibrazione riuscita.", "current": "Corrente", "voltage": "Tensione", "currentHelp": "Posizionare tutti i CT selezionati attorno allo stesso conduttore con un carico stabile noto.", "voltageHelp": "Collegare gli ingressi di tensione selezionati alla stessa sorgente e usare la tensione misurata da un contatore ufficiale o MID.", "selectChannels": "Seleziona canali", "selectAll": "Seleziona tutti", "selectNone": "Deseleziona tutti", "input": "Ingresso", "actualCurrent": "Corrente reale del carico", "referenceVoltage": "Tensione di riferimento", "warning": "La calibrazione può richiedere fino a un minuto per canale. Mantenere stabile il carico o la tensione.", "start": "Avvia calibrazione", "calibrating": "Calibrazione in corso...", "complete": "Calibrazione completata", "newCalibration": "Nuova calibrazione", "cancel": "Annulla", "close": "Chiudi"
+    },
     "terminal": {
         "title": "Monitor Seriale",
         "placeholder": "Inserisci comando...",

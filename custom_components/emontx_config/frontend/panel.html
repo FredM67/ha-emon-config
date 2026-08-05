@@ -110,6 +110,7 @@
             @update-channel-name="updateChannelName"
             @export-names="exportChannelNames"
             @import-names="importChannelNames"
+            @open-auto-calibration="showAutoCalibration = true"
         ></config-tab>
 
         <!-- Serial Terminal Tab -->
@@ -229,6 +230,16 @@
             @reset-progress="bulkProgress = null"
         ></bulk-ct-modal>
 
+        <auto-calibration-modal
+            :show="showAutoCalibration"
+            :t="t"
+            :device="device"
+            :channel-names="channelNames"
+            :progress="autoCalibrationProgress"
+            @start="startAutoCalibration"
+            @close="closeAutoCalibration"
+        ></auto-calibration-modal>
+
         </template>
     </div>
 
@@ -286,6 +297,8 @@
                 // Bulk CT settings
                 showBulkCtModal: false,
                 bulkProgress: null,  // { current, total, currentCt, error }
+                showAutoCalibration: false,
+                autoCalibrationProgress: null,
                 failedCtIndices: [],  // Indices of CTs that failed to apply
                 failedCtFields: [],   // Fields that were being applied when failure occurred
                 failedCtMessages: {}, // Error messages keyed by CT index

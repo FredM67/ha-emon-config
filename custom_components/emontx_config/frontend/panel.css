@@ -505,6 +505,47 @@ h4 { margin: 20px 0 10px 0; color: #333; }
     margin-top: 15px;
 }
 
+.calibration-title { color: #1976D2; }
+.calibration-card { border: 1px solid #bbdefb; }
+.calibration-card-body { color: #555; font-size: 13px; }
+.calibration-mode { display: flex; gap: 8px; margin-bottom: 15px; }
+.calibration-mode label {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+}
+.calibration-mode label.active { border-color: #2196F3; background: #e3f2fd; color: #1565c0; }
+.calibration-help { color: #555; font-size: 13px; margin: 0 0 15px; }
+.calibration-selection-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.calibration-selection-header .btn { margin-left: 5px; }
+.calibration-channel-list { border: 1px solid #ddd; border-radius: 4px; max-height: 220px; overflow-y: auto; }
+.calibration-channel { display: flex; align-items: center; gap: 10px; padding: 9px 12px; cursor: pointer; border-bottom: 1px solid #eee; }
+.calibration-channel:last-child { border-bottom: 0; }
+.calibration-channel:nth-child(even) { background: #f9f9f9; }
+.calibration-channel small { margin-left: auto; color: #777; }
+.calibration-reference { display: flex; align-items: center; gap: 10px; margin-top: 15px; }
+.calibration-reference span { flex: 1; }
+.calibration-reference input { width: 110px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+.calibration-warning { background: #fff3e0; color: #e65100; padding: 10px; border-radius: 4px; font-size: 13px; }
+.calibration-progress { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.calibration-progress-bar { height: 18px; background: #e0e0e0; border-radius: 4px; overflow: hidden; }
+.calibration-progress-bar div { height: 100%; background: #2196F3; transition: width 0.3s ease; }
+.calibration-current { color: #1565c0; font-weight: 500; }
+.calibration-results { max-height: 300px; overflow-y: auto; margin-top: 15px; border: 1px solid #ddd; border-radius: 4px; }
+.calibration-result { display: flex; justify-content: space-between; gap: 10px; padding: 9px 12px; border-bottom: 1px solid #eee; font-size: 13px; }
+.calibration-result:last-child { border-bottom: 0; }
+.calibration-result.success { color: #2e7d32; }
+.calibration-result.failure { color: #c62828; }
+
+@media (max-width: 600px) {
+    .calibration-reference { align-items: flex-start; flex-wrap: wrap; }
+    .calibration-reference span { flex-basis: 100%; }
+    .calibration-result { flex-direction: column; gap: 3px; }
+}
+
 /* Changed field highlighting for batch apply mode */
 .row-changed {
     background-color: #fff8e1 !important;

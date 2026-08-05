@@ -178,6 +178,9 @@
         "channelNamesBackup": "Copia de Seguridad de Nombres",
         "channelNamesBackupDesc": "Exporte o importe nombres de canales para copia de seguridad o migración a una nueva instalación de Home Assistant."
     },
+    "autoCalibration": {
+        "title": "Calibración automática", "open": "Calibrar automáticamente", "description": "Calibre la tensión de cada fase o varios CT con una referencia conocida. El firmware guarda automáticamente cada calibración correcta.", "current": "Corriente", "voltage": "Tensión", "currentHelp": "Coloque todos los CT seleccionados alrededor del mismo conductor con una carga estable conocida.", "voltageHelp": "Conecte las entradas de tensión seleccionadas a la misma fuente y use la tensión medida por un medidor oficial o MID.", "selectChannels": "Seleccionar canales", "selectAll": "Seleccionar todos", "selectNone": "No seleccionar ninguno", "input": "Entrada", "actualCurrent": "Corriente real de carga", "referenceVoltage": "Tensión de referencia", "warning": "La calibración puede tardar hasta un minuto por canal. Mantenga estable la carga o la tensión.", "start": "Iniciar calibración", "calibrating": "Calibración en curso...", "complete": "Calibración completada", "newCalibration": "Nueva calibración", "cancel": "Cancelar", "close": "Cerrar"
+    },
     "terminal": {
         "title": "Monitor Serie",
         "placeholder": "Introducir comando...",

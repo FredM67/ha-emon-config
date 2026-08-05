@@ -71,13 +71,38 @@ const DataParserMixin = {
                         this.$set(this.device.ichannels[c], 'energy', sensorData[eKey] + ' Wh');
                     }
                 }
-            } else if (line.includes(' = ') || line.includes('> Error:') || line.match(/^\d+\s+\[->/) || line.match(/^\[\d\]/) ) {
+            } else if (line.includes(' = ') || line.includes('> Error:') || line.match(/^\d+\s+\[->/) || line.match(/^\[\d\]/) || (this.pendingCalibration && (line.includes('calibration') || line.includes('IRMS'))) ) {
                 // Process configuration lines, errors, temperature sensor list (ol), and saved sensors (on)
                 this.processLine(line);
             }
         },
 
         processLine(line) {
+            if (this.pendingCalibration) {
+                if (line.includes('> Error:')) {
+                    this.pendingCalibration.reject(line.replace(/^.*>\s*Error:\s*/, '').trim());
+                    return;
+                }
+
+                const measuredMatch = line.match(/Measured IRMS\s*:\s*([-+]?\d+(?:\.\d+)?)/i);
+                if (measuredMatch) this.pendingCalibration.measured = parseFloat(measuredMatch[1]);
+
+                const actualMatch = line.match(/Actual IRMS\s*:\s*([-+]?\d+(?:\.\d+)?)/i);
+                if (actualMatch) this.pendingCalibration.actual = parseFloat(actualMatch[1]);
+
+                const newCalibrationMatch = line.match(/New calibration\s*:\s*([-+]?\d+(?:\.\d+)?)/i);
+                if (newCalibrationMatch) this.pendingCalibration.newCalibration = parseFloat(newCalibrationMatch[1]).toFixed(2);
+
+                if (line.includes('Finished calibration for')) {
+                    this.pendingCalibration.resolve({
+                        measured: this.pendingCalibration.measured,
+                        actual: this.pendingCalibration.actual,
+                        newCalibration: this.pendingCalibration.newCalibration || '-'
+                    });
+                    return;
+                }
+            }
+
             // Check for pending response (used by bulk operations)
             if (this.pendingResponse) {
                 // Check for success pattern

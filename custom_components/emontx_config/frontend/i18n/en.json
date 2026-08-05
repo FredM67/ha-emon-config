@@ -178,6 +178,28 @@
         "channelNamesBackup": "Channel Names Backup",
         "channelNamesBackupDesc": "Export or import channel names for backup or migration to a new Home Assistant installation."
     },
+    "autoCalibration": {
+        "title": "Automatic Calibration",
+        "open": "Auto-calibrate",
+        "description": "Calibrate the voltage of each phase or multiple CTs with a known reference. The firmware saves each successful calibration automatically.",
+        "current": "Current",
+        "voltage": "Voltage",
+        "currentHelp": "Place all selected CTs around the same conductor carrying a stable known load.",
+        "voltageHelp": "Connect all selected voltage inputs to the same source and use the voltage measured by an official meter or MID device.",
+        "selectChannels": "Select channels",
+        "selectAll": "Select all",
+        "selectNone": "Select none",
+        "input": "Input",
+        "actualCurrent": "Actual load current",
+        "referenceVoltage": "Reference voltage",
+        "warning": "Calibration can take up to one minute per channel. Keep the load or voltage stable until the operation completes.",
+        "start": "Start calibration",
+        "calibrating": "Calibration in progress...",
+        "complete": "Calibration complete",
+        "newCalibration": "New calibration",
+        "cancel": "Cancel",
+        "close": "Close"
+    },
     "terminal": {
         "title": "Serial Monitor",
         "placeholder": "Enter command...",
