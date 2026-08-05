@@ -1,3 +1,13 @@
+## What's new in v1.8.0-beta.1
+
+### Feature: automatic voltage and CT calibration
+
+- Calibrate individual or multiple voltage phases and CT channels from the configuration panel
+- Enter a reference voltage from an official meter or MID device, or a known load current
+- Show calibration progress and firmware results for each selected channel
+- Reload the device configuration after calibration because the firmware saves the new value automatically
+- Added translations for English, French, German, Spanish, and Italian
+
 ## What's new in v1.7.3
 
 ### Fix: correct integrationVersion displayed in panel
