@@ -492,7 +492,7 @@ Vue.component('auto-calibration-modal', {
                     <div v-if="progress && progress.results" class="calibration-results">
                         <div v-for="result in progress.results" :key="result.commandIndex" :class="['calibration-result', result.success ? 'success' : 'failure']">
                             <strong>{{ result.label }}</strong>
-                            <span v-if="result.success">{{ result.measured }} / {{ result.actual }} -> {{ t.autoCalibration.newCalibration }}: {{ result.newCalibration }}</span>
+                            <span v-if="result.success">{{ t.autoCalibration.measured }}: {{ result.measured }} {{ result.unit }} | {{ t.autoCalibration.actual }}: {{ result.actual }} {{ result.unit }} | {{ t.autoCalibration.newCalibration }}: {{ result.newCalibration }}</span>
                             <span v-else>{{ result.error }}</span>
                         </div>
                     </div>

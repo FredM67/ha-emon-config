@@ -1,3 +1,11 @@
+## What's new in v1.8.0-beta.4
+
+### Fix: parse complete automatic calibration results
+
+- Parse the complete calibration result block after `Finished calibration`
+- Support both current (`IRMS`) and voltage (`VRMS`) result values
+- Display measured, actual, and new calibration values with labels and units
+
 ## What's new in v1.8.0-beta.3
 
 ### Fix: avoid duplicate friendly channel names

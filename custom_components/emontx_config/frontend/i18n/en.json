@@ -196,6 +196,8 @@
         "start": "Start calibration",
         "calibrating": "Calibration in progress...",
         "complete": "Calibration complete",
+        "measured": "Measured",
+        "actual": "Actual",
         "newCalibration": "New calibration",
         "cancel": "Cancel",
         "close": "Close"

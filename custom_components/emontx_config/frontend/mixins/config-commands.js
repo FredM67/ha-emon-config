@@ -504,7 +504,7 @@ const ConfigCommandsMixin = {
                     const responsePromise = this.waitForCalibration(channel.commandIndex, channel.label);
                     this.writeToStream(`i${channel.commandIndex} a ${reference.toFixed(2)}`);
                     const result = await responsePromise;
-                    results.push({ commandIndex: channel.commandIndex, label: channel.label, success: true, measured: result.measured, actual: result.actual, newCalibration: result.newCalibration });
+                    results.push({ commandIndex: channel.commandIndex, label: channel.label, success: true, measured: result.measured, actual: result.actual, newCalibration: result.newCalibration, unit: calibration.mode === 'voltage' ? 'V' : 'A' });
                     this.log(`Calibration complete for ${channel.label}: ${result.newCalibration}`, 'info');
                 } catch (e) {
                     const error = e.message || 'Calibration failed or timed out';
@@ -533,6 +533,7 @@ const ConfigCommandsMixin = {
                 this.pendingCalibration = {
                     commandIndex: commandIndex,
                     label: label,
+                    resultStarted: false,
                     measured: null,
                     actual: null,
                     newCalibration: null,

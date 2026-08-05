@@ -84,16 +84,27 @@ const DataParserMixin = {
                     return;
                 }
 
-                const measuredMatch = line.match(/Measured IRMS\s*:\s*([-+]?\d+(?:\.\d+)?)/i);
+                const finishedMatch = line.match(/Finished calibration for\s+(?:V|I|CT)?\s*(\d+)/i);
+                if (finishedMatch) {
+                    const finishedIndex = parseInt(finishedMatch[1]);
+                    if (finishedIndex === this.pendingCalibration.commandIndex) {
+                        this.pendingCalibration.resultStarted = true;
+                    }
+                    return;
+                }
+
+                if (!this.pendingCalibration.resultStarted) return;
+
+                const measuredMatch = line.match(/Measured (?:I|V)RMS\s*:\s*([-+]?\d+(?:\.\d+)?)/i);
                 if (measuredMatch) this.pendingCalibration.measured = parseFloat(measuredMatch[1]);
 
-                const actualMatch = line.match(/Actual IRMS\s*:\s*([-+]?\d+(?:\.\d+)?)/i);
+                const actualMatch = line.match(/Actual (?:I|V)RMS\s*:\s*([-+]?\d+(?:\.\d+)?)/i);
                 if (actualMatch) this.pendingCalibration.actual = parseFloat(actualMatch[1]);
 
                 const newCalibrationMatch = line.match(/New calibration\s*:\s*([-+]?\d+(?:\.\d+)?)/i);
                 if (newCalibrationMatch) this.pendingCalibration.newCalibration = parseFloat(newCalibrationMatch[1]).toFixed(2);
 
-                if (line.includes('Finished calibration for')) {
+                if (newCalibrationMatch && this.pendingCalibration.measured !== null && this.pendingCalibration.actual !== null) {
                     this.pendingCalibration.resolve({
                         measured: this.pendingCalibration.measured,
                         actual: this.pendingCalibration.actual,
