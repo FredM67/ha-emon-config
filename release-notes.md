@@ -1,3 +1,10 @@
+## What's new in v1.8.0-beta.3
+
+### Fix: avoid duplicate friendly channel names
+
+- Show the channel identifier and friendly name in separate columns during automatic calibration
+- Prevent friendly names from being displayed twice
+
 ## What's new in v1.8.0-beta.2
 
 ### Fix: show friendly channel names during automatic calibration

@@ -426,9 +426,6 @@ Vue.component('auto-calibration-modal', {
         selectNone() {
             this.selectedChannels = [];
         },
-        channelName(channel) {
-            return channel.name ? ' - ' + channel.name : '';
-        },
         start() {
             const reference = parseFloat(this.referenceValue);
             if (!this.selectedChannels.length || !isFinite(reference) || reference <= 0) return;
@@ -471,7 +468,7 @@ Vue.component('auto-calibration-modal', {
                     <div class="calibration-channel-list">
                         <label v-for="channel in channels" :key="channel.commandIndex" class="calibration-channel">
                             <input type="checkbox" :value="channel.index" v-model="selectedChannels" />
-                            <span>{{ channel.label }}{{ channelName(channel) }}</span>
+                            <span>{{ channel.label }}</span>
                             <small>{{ channel.name || '' }}</small>
                         </label>
                     </div>
