@@ -448,6 +448,18 @@ input[type="number"].no-spinner {
     color: #4CAF50;
 }
 
+/* Device-wide live readings laid out on a single line */
+.global-readings {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.global-readings .config-item {
+    flex: 1 1 120px;
+}
+
 /* Segmented control for switching the live data layout */
 .view-mode-toggle {
     display: flex;

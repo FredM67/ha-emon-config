@@ -1,3 +1,10 @@
+## What's new in v1.8.0-beta.7
+
+### Improvement: global readings on top of the per-channel view
+
+- The message counter and the voltages are now shown above the channel table, on a single line
+- Temperatures and pulse counts keep the grouped layout below the table
+
 ## What's new in v1.8.0-beta.6
 
 ### Feature: switch the Live Data layout between measurement and channel views

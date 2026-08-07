@@ -63,11 +63,24 @@ Vue.component('live-data-tab', {
             }
             return rows;
         },
-        // Everything that is not indexed by CT channel keeps the grouped layout.
+        // Device-wide readings shown on a single line above the channel table.
+        globalItems() {
+            const items = [];
+            for (const prefix of ['MSG', 'V']) {
+                const group = this.groupedLiveData[prefix];
+                for (const key in group) {
+                    items.push({ key: key, value: group[key] });
+                }
+            }
+            return items;
+        },
+        // Everything else that is not indexed by CT channel keeps the grouped
+        // layout, below the channel table.
         nonChannelGroups() {
             const result = {};
+            const skip = this.ctMetrics.concat(['MSG', 'V']);
             for (const prefix in this.groupedLiveData) {
-                if (this.ctMetrics.indexOf(prefix) === -1) {
+                if (skip.indexOf(prefix) === -1) {
                     result[prefix] = this.groupedLiveData[prefix];
                 }
             }
@@ -331,6 +344,14 @@ Vue.component('live-data-tab', {
 
                     <!-- One row per channel -->
                     <div v-else>
+                        <!-- Device-wide readings (message counter, voltages) on a single line -->
+                        <div v-if="globalItems.length > 0" class="global-readings">
+                            <div class="config-item" v-for="item in globalItems" :key="item.key">
+                                <label>{{ item.key }}</label>
+                                <div class="value">{{ item.value }}</div>
+                            </div>
+                        </div>
+
                         <div v-if="ctMetrics.length > 0" class="table-responsive">
                             <table class="device-info-table">
                                 <tr>
