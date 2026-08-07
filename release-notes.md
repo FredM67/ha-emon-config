@@ -1,3 +1,10 @@
+## What's new in v1.8.0-beta.8
+
+### Improvement: consistent global readings in both Live Data views
+
+- The message counter and the voltages are now shown the same way in both views: on a single line at the top, above the view-specific content
+- Both keep their group heading
+
 ## What's new in v1.8.0-beta.7
 
 ### Improvement: global readings on top of the per-channel view

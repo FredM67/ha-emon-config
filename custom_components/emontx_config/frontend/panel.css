@@ -448,16 +448,22 @@ input[type="number"].no-spinner {
     color: #4CAF50;
 }
 
-/* Device-wide live readings laid out on a single line */
+/* Device-wide live readings laid out on a single line, one block per group */
 .global-readings {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 10px 20px;
     margin-bottom: 15px;
 }
 
+.global-readings-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
 .global-readings .config-item {
-    flex: 1 1 120px;
+    min-width: 120px;
 }
 
 /* Segmented control for switching the live data layout */

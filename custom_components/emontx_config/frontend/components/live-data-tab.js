@@ -63,16 +63,17 @@ Vue.component('live-data-tab', {
             }
             return rows;
         },
-        // Device-wide readings shown on a single line above the channel table.
-        globalItems() {
-            const items = [];
+        // Device-wide readings shown on a single line at the top of both views,
+        // each group keeping its own heading.
+        globalGroups() {
+            const result = [];
             for (const prefix of ['MSG', 'V']) {
                 const group = this.groupedLiveData[prefix];
-                for (const key in group) {
-                    items.push({ key: key, value: group[key] });
+                if (group && Object.keys(group).length > 0) {
+                    result.push({ prefix: prefix, items: group });
                 }
             }
-            return items;
+            return result;
         },
         // Everything else that is not indexed by CT channel keeps the grouped
         // layout, below the channel table.
@@ -81,6 +82,17 @@ Vue.component('live-data-tab', {
             const skip = this.ctMetrics.concat(['MSG', 'V']);
             for (const prefix in this.groupedLiveData) {
                 if (skip.indexOf(prefix) === -1) {
+                    result[prefix] = this.groupedLiveData[prefix];
+                }
+            }
+            return result;
+        },
+        // Same as groupedLiveData, minus the device-wide readings which both
+        // views render on their own single line at the top.
+        measurementGroups() {
+            const result = {};
+            for (const prefix in this.groupedLiveData) {
+                if (prefix !== 'MSG' && prefix !== 'V') {
                     result[prefix] = this.groupedLiveData[prefix];
                 }
             }
@@ -329,9 +341,23 @@ Vue.component('live-data-tab', {
                         {{ t.liveData.waiting }}
                     </div>
 
+                    <!-- Device-wide readings (message counter, voltages) on a
+                         single line, identical in both views -->
+                    <div v-if="globalGroups.length > 0" class="global-readings">
+                        <div v-for="group in globalGroups" :key="group.prefix" class="global-readings-group">
+                            <h4 style="margin: 0 0 8px 0; color: #666; font-size: 14px;">{{ getGroupLabel(group.prefix) }}</h4>
+                            <div class="global-readings-items">
+                                <div class="config-item" v-for="(value, key) in group.items" :key="key">
+                                    <label>{{ key }}</label>
+                                    <div class="value">{{ value }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Grouped by measurement type -->
-                    <div v-else-if="viewMode === 'measurement'">
-                        <div v-for="(items, group) in groupedLiveData" :key="group" style="margin-bottom: 15px;">
+                    <div v-if="Object.keys(liveData).length > 0 && viewMode === 'measurement'">
+                        <div v-for="(items, group) in measurementGroups" :key="group" style="margin-bottom: 15px;">
                             <h4 style="margin: 0 0 8px 0; color: #666; font-size: 14px;">{{ getGroupLabel(group) }}</h4>
                             <div class="config-grid">
                                 <div :class="['config-item', isChannelInactive(key) ? 'inactive' : '']" v-for="(value, key) in items" :key="key">
@@ -343,15 +369,7 @@ Vue.component('live-data-tab', {
                     </div>
 
                     <!-- One row per channel -->
-                    <div v-else>
-                        <!-- Device-wide readings (message counter, voltages) on a single line -->
-                        <div v-if="globalItems.length > 0" class="global-readings">
-                            <div class="config-item" v-for="item in globalItems" :key="item.key">
-                                <label>{{ item.key }}</label>
-                                <div class="value">{{ item.value }}</div>
-                            </div>
-                        </div>
-
+                    <div v-else-if="Object.keys(liveData).length > 0">
                         <div v-if="ctMetrics.length > 0" class="table-responsive">
                             <table class="device-info-table">
                                 <tr>
