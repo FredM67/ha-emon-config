@@ -1,3 +1,10 @@
+## What's new in v1.8.0-beta.9
+
+### Fix: restore the friendly names on the voltage readings
+
+- The voltage channels show their configured name again, in both Live Data views
+- Disabled voltage channels are highlighted again
+
 ## What's new in v1.8.0-beta.8
 
 ### Improvement: consistent global readings in both Live Data views

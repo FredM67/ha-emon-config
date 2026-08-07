@@ -347,8 +347,8 @@ Vue.component('live-data-tab', {
                         <div v-for="group in globalGroups" :key="group.prefix" class="global-readings-group">
                             <h4 style="margin: 0 0 8px 0; color: #666; font-size: 14px;">{{ getGroupLabel(group.prefix) }}</h4>
                             <div class="global-readings-items">
-                                <div class="config-item" v-for="(value, key) in group.items" :key="key">
-                                    <label>{{ key }}</label>
+                                <div :class="['config-item', isChannelInactive(key) ? 'inactive' : '']" v-for="(value, key) in group.items" :key="key">
+                                    <label>{{ key }}<span v-if="getFriendlyName(key)" class="friendly-name"> - {{ getFriendlyName(key) }}</span></label>
                                     <div class="value">{{ value }}</div>
                                 </div>
                             </div>
