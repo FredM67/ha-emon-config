@@ -448,6 +448,45 @@ input[type="number"].no-spinner {
     color: #4CAF50;
 }
 
+/* Segmented control for switching the live data layout */
+.view-mode-toggle {
+    display: flex;
+    gap: 0;
+    font-weight: 400;
+    font-size: 13px;
+}
+
+.view-mode-toggle label {
+    padding: 5px 12px;
+    border: 1px solid #ddd;
+    background: #fff;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.view-mode-toggle label:first-child {
+    border-radius: 4px 0 0 4px;
+}
+
+.view-mode-toggle label:last-child {
+    border-radius: 0 4px 4px 0;
+    border-left: 0;
+}
+
+.view-mode-toggle label.active {
+    border-color: #2196F3;
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.view-mode-toggle label.active + label {
+    border-left-color: #2196F3;
+}
+
+.view-mode-toggle input[type="radio"] {
+    display: none;
+}
+
 .inactive-row {
     background-color: #ffebee;
 }

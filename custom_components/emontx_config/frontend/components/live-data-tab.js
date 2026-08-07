@@ -11,7 +11,68 @@ Vue.component('live-data-tab', {
         configReceived: Boolean,
         channelNames: Object
     },
+    data() {
+        const store = window.parent.localStorage || localStorage;
+        return {
+            // 'measurement' = one group per measurement type (V, P, E, ...)
+            // 'channel'     = one row per CT channel, one column per measurement
+            viewMode: store.getItem('emontx_live_view_mode') || 'measurement'
+        };
+    },
+    watch: {
+        viewMode(newMode) {
+            (window.parent.localStorage || localStorage).setItem('emontx_live_view_mode', newMode);
+        }
+    },
     computed: {
+        // Measurement prefixes that are indexed by CT channel. These are the
+        // ones that can be pivoted into a per-channel row.
+        ctMetrics() {
+            const all = ['P', 'E', 'I', 'PF', 'AP'];
+            const groups = this.groupedLiveData;
+            return all.filter(prefix => groups[prefix] && Object.keys(groups[prefix]).length > 0);
+        },
+        ctChannelCount() {
+            let count = this.device.ichannels.length;
+            // Fall back to whatever the device reports if the config dump has
+            // not arrived yet.
+            for (const key in this.liveData) {
+                const match = key.match(/^(?:PF|AP|[PEI])(\d+)$/);
+                if (match) count = Math.max(count, parseInt(match[1]));
+            }
+            return count;
+        },
+        // One row per CT channel, one cell per measurement type.
+        channelRows() {
+            const groups = this.groupedLiveData;
+            const rows = [];
+            for (let n = 1; n <= this.ctChannelCount; n++) {
+                const values = {};
+                for (const prefix of this.ctMetrics) {
+                    const key = prefix + n;
+                    values[prefix] = (groups[prefix] && groups[prefix][key] !== undefined)
+                        ? groups[prefix][key]
+                        : '-';
+                }
+                rows.push({
+                    num: n,
+                    name: this.getFriendlyName('P' + n),
+                    inactive: this.isChannelInactive('P' + n),
+                    values: values
+                });
+            }
+            return rows;
+        },
+        // Everything that is not indexed by CT channel keeps the grouped layout.
+        nonChannelGroups() {
+            const result = {};
+            for (const prefix in this.groupedLiveData) {
+                if (this.ctMetrics.indexOf(prefix) === -1) {
+                    result[prefix] = this.groupedLiveData[prefix];
+                }
+            }
+            return result;
+        },
         groupedLiveData() {
             // Group live data by prefix (V, P, E, etc.)
             // Include all channels from device config, even if disabled (show "-")
@@ -126,6 +187,14 @@ Vue.component('live-data-tab', {
 
             return label;
         },
+        getMetricLabel(prefix) {
+            // Short column header for the per-channel view: the translated group
+            // name without the trailing unit (values already carry their unit).
+            if (this.t.liveData && this.t.liveData.groups && this.t.liveData.groups[prefix]) {
+                return this.t.liveData.groups[prefix];
+            }
+            return prefix;
+        },
         isChannelInactive(key) {
             if (this.device.hardware !== 'emonPi3') {
                 return false;
@@ -229,13 +298,59 @@ Vue.component('live-data-tab', {
             </div>
 
             <div class="card">
-                <div class="card-header">{{ t.liveData.title }}</div>
+                <div class="card-header" style="display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+                    <span>{{ t.liveData.title }}</span>
+                    <div class="view-mode-toggle" v-if="Object.keys(liveData).length > 0">
+                        <label :class="{ active: viewMode === 'measurement' }">
+                            <input type="radio" value="measurement" v-model="viewMode" />
+                            {{ t.liveData.viewByMeasurement }}
+                        </label>
+                        <label :class="{ active: viewMode === 'channel' }">
+                            <input type="radio" value="channel" v-model="viewMode" />
+                            {{ t.liveData.viewByChannel }}
+                        </label>
+                    </div>
+                </div>
                 <div class="card-body">
                     <div v-if="Object.keys(liveData).length === 0" class="alert alert-info">
                         {{ t.liveData.waiting }}
                     </div>
-                    <div v-else>
+
+                    <!-- Grouped by measurement type -->
+                    <div v-else-if="viewMode === 'measurement'">
                         <div v-for="(items, group) in groupedLiveData" :key="group" style="margin-bottom: 15px;">
+                            <h4 style="margin: 0 0 8px 0; color: #666; font-size: 14px;">{{ getGroupLabel(group) }}</h4>
+                            <div class="config-grid">
+                                <div :class="['config-item', isChannelInactive(key) ? 'inactive' : '']" v-for="(value, key) in items" :key="key">
+                                    <label>{{ key }}<span v-if="getFriendlyName(key)" class="friendly-name"> - {{ getFriendlyName(key) }}</span></label>
+                                    <div class="value">{{ value }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- One row per channel -->
+                    <div v-else>
+                        <div v-if="ctMetrics.length > 0" class="table-responsive">
+                            <table class="device-info-table">
+                                <tr>
+                                    <th>{{ t.accumulators.channel }}</th>
+                                    <th>{{ t.config.name }}</th>
+                                    <th v-for="prefix in ctMetrics" :key="prefix">{{ getMetricLabel(prefix) }}</th>
+                                </tr>
+                                <tr v-for="row in channelRows" :key="row.num" :class="{ 'inactive-row': row.inactive }">
+                                    <td>{{ row.num }}</td>
+                                    <td>
+                                        <span v-if="row.name" class="friendly-name">{{ row.name }}</span>
+                                        <span v-else style="color: #999;">-</span>
+                                    </td>
+                                    <td v-for="prefix in ctMetrics" :key="prefix">{{ row.values[prefix] }}</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Measurements that are not per-CT keep the grouped layout -->
+                        <div v-for="(items, group) in nonChannelGroups" :key="group" style="margin-bottom: 15px;">
                             <h4 style="margin: 0 0 8px 0; color: #666; font-size: 14px;">{{ getGroupLabel(group) }}</h4>
                             <div class="config-grid">
                                 <div :class="['config-item', isChannelInactive(key) ? 'inactive' : '']" v-for="(value, key) in items" :key="key">

@@ -215,6 +215,8 @@
     "liveData": {
         "title": "Live Sensor Data",
         "waiting": "Waiting for data from emonPi/Tx...",
+        "viewByMeasurement": "By measurement",
+        "viewByChannel": "By channel",
         "groups": {
             "MSG": "Message",
             "V": "Voltage",

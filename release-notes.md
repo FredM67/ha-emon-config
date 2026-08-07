@@ -1,3 +1,14 @@
+## What's new in v1.8.0-beta.6
+
+### Feature: switch the Live Data layout between measurement and channel views
+
+- New toggle in the Live Data tab header to group readings either by type of measurement or by channel
+- The per-channel view shows one row per CT channel with all its measurements (power, energy, current, power factor, apparent power) side by side
+- Non-channel readings (message counter, voltages, temperatures, pulse) keep the grouped layout below the table
+- Disabled channels stay highlighted in both views
+- The selected view is remembered between sessions
+- Added translations for English, French, German, Spanish, and Italian
+
 ## What's new in v1.8.0-beta.5
 
 ### Feature: support the verbose serial output (`c2`) of firmware 1.1.2
