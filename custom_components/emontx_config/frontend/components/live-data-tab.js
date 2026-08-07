@@ -16,7 +16,7 @@ Vue.component('live-data-tab', {
             // Group live data by prefix (V, P, E, etc.)
             // Include all channels from device config, even if disabled (show "-")
             const groups = {};
-            const order = ['MSG', 'V', 'P', 'E', 'T', 'pulse'];
+            const order = ['MSG', 'V', 'P', 'E', 'I', 'PF', 'AP', 'T', 'pulse'];
 
             // First, add all data from liveData
             for (const key in this.liveData) {
@@ -55,6 +55,19 @@ Vue.component('live-data-tab', {
                     const key = 'E' + (i + 1);
                     if (!(key in groups['E'])) {
                         groups['E'][key] = '-';
+                    }
+                }
+
+                // Verbose mode ('c2') groups: current, power factor, apparent power.
+                // Only fill in placeholders once the group exists, otherwise the
+                // whole group would appear empty in non-verbose mode.
+                for (const prefix of ['I', 'PF', 'AP']) {
+                    if (!groups[prefix]) continue;
+                    for (let i = 0; i < this.device.ichannels.length; i++) {
+                        const key = prefix + (i + 1);
+                        if (!(key in groups[prefix])) {
+                            groups[prefix][key] = '-';
+                        }
                     }
                 }
             }
@@ -102,6 +115,8 @@ Vue.component('live-data-tab', {
                 'V': 'V',
                 'P': 'W',
                 'E': 'Wh',
+                'I': 'A',
+                'AP': 'VA',
                 'T': '°C'
             };
 
@@ -115,8 +130,9 @@ Vue.component('live-data-tab', {
             if (this.device.hardware !== 'emonPi3') {
                 return false;
             }
-            // Check power/energy channels
-            const ctMatch = key.match(/^[PE](\d+)$/);
+            // Check CT-derived channels (power, energy, and the verbose-mode
+            // current / power factor / apparent power)
+            const ctMatch = key.match(/^(?:PF|AP|[PEI])(\d+)$/);
             if (ctMatch) {
                 const channelNum = parseInt(ctMatch[1]) - 1;
                 if (channelNum >= 0 && channelNum < this.device.ichannels.length) {
@@ -150,6 +166,18 @@ Vue.component('live-data-tab', {
             if (key.match(/^E\d+$/)) {
                 return num.toFixed(0) + ' Wh';
             }
+            // Current (I1, I2, etc.)
+            if (key.match(/^I\d+$/)) {
+                return num.toFixed(2) + ' A';
+            }
+            // Power factor (PF1, PF2, etc.) - unitless
+            if (key.match(/^PF\d+$/)) {
+                return num.toFixed(2);
+            }
+            // Apparent power (AP1, AP2, etc.)
+            if (key.match(/^AP\d+$/)) {
+                return num.toFixed(0) + ' VA';
+            }
             // Temperature (T1, T2, etc.)
             if (key.match(/^T\d+$/)) {
                 return num.toFixed(1) + ' °C';
@@ -166,8 +194,8 @@ Vue.component('live-data-tab', {
                 return this.channelNames.voltage && this.channelNames.voltage[vMatch[1]];
             }
 
-            // Power/Energy channels: P1, E1, etc. -> use CT names
-            const peMatch = key.match(/^[PE](\d+)$/);
+            // CT-derived channels: P1, E1, I1, PF1, AP1, etc. -> use CT names
+            const peMatch = key.match(/^(?:PF|AP|[PEI])(\d+)$/);
             if (peMatch) {
                 return this.channelNames.ct && this.channelNames.ct[peMatch[1]];
             }

@@ -199,6 +199,9 @@
             "V": "Voltaje",
             "P": "Potencia",
             "E": "Energía",
+            "I": "Corriente",
+            "PF": "Factor de potencia",
+            "AP": "Potencia aparente",
             "T": "Temperatura",
             "pulse": "Pulso"
         }

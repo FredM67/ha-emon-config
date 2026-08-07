@@ -220,6 +220,9 @@
             "V": "Tension",
             "P": "Puissance",
             "E": "Énergie",
+            "I": "Courant",
+            "PF": "Facteur de puissance",
+            "AP": "Puissance apparente",
             "T": "Température",
             "pulse": "Impulsion"
         }

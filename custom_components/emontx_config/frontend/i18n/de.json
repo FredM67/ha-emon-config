@@ -199,6 +199,9 @@
             "V": "Spannung",
             "P": "Leistung",
             "E": "Energie",
+            "I": "Strom",
+            "PF": "Leistungsfaktor",
+            "AP": "Scheinleistung",
             "T": "Temperatur",
             "pulse": "Impuls"
         }

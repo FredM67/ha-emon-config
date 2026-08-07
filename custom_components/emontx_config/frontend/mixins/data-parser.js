@@ -44,7 +44,10 @@ const DataParserMixin = {
                 const value = match[2];
                 if (firstKey === null) firstKey = key;
                 const numValue = parseFloat(value);
-                sensorData[key] = isNaN(numValue) ? value : numValue;
+                // Verbose mode ('c2') reports temperatures as t1..t8; the rest of
+                // the UI keys temperatures on T1..T8.
+                const normalizedKey = /^t\d+$/.test(key) ? key.toUpperCase() : key;
+                sensorData[normalizedKey] = isNaN(numValue) ? value : numValue;
             }
 
             if (firstKey === 'MSG') {

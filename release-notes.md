@@ -1,3 +1,13 @@
+## What's new in v1.8.0-beta.5
+
+### Feature: support the verbose serial output (`c2`) of firmware 1.1.2
+
+- Display current (`I`), power factor (`PF`) and apparent power (`AP`) as their own groups with proper labels and units
+- Show disabled channels for these groups as well, highlighted like the existing power and energy channels
+- Apply the configured friendly channel names to the new groups
+- Accept the lowercase temperature keys (`t1`–`t8`) used by the verbose output
+- Added translations for English, French, German, Spanish, and Italian
+
 ## What's new in v1.8.0-beta.4
 
 ### Fix: parse complete automatic calibration results
