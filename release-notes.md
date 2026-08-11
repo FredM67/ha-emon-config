@@ -1,3 +1,9 @@
+## What's new in v1.8.0-beta.12
+
+### Fix: field-changed highlight collapses row spacing
+
+- The yellow background on a modified field no longer removes the gap between rows — only the left/right margins are negated to bleed the background, not the vertical ones
+
 ## What's new in v1.8.0-beta.11
 
 ### Fix: serial output toggle layout and translation corrections

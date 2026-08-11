@@ -616,7 +616,8 @@ h4 { margin: 20px 0 10px 0; color: #333; }
     background-color: #fff8e1;
     border-radius: 4px;
     padding: 4px 8px;
-    margin: -4px -8px;
+    margin-left: -8px;
+    margin-right: -8px;
 }
 
 .btn-success {
