@@ -356,6 +356,7 @@ input[type="number"].no-spinner {
     align-items: center;
     gap: 10px;
     margin-bottom: 15px;
+    padding: 4px 0;
 }
 
 .form-group label {

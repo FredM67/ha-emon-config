@@ -1,3 +1,9 @@
+## What's new in v1.8.0-beta.13
+
+### Fix: consistent row height with and without field-changed highlight
+
+- All form rows now have the same vertical padding whether highlighted or not — no layout shift when a field is changed
+
 ## What's new in v1.8.0-beta.12
 
 ### Fix: field-changed highlight collapses row spacing
