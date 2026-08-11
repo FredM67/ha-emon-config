@@ -1,3 +1,10 @@
+## What's new in v1.8.0-beta.11
+
+### Fix: serial output toggle layout and translation corrections
+
+- The description line now appears correctly below the segmented control instead of beside it
+- French, Italian and Spanish labels use the correct feminine forms to agree with the noun (*Sortie*, *Uscita*, *Salida*)
+
 ## What's new in v1.8.0-beta.10
 
 ### Feature: serial output verbosity toggle (c0 / c1 / c2)
