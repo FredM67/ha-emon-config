@@ -1,3 +1,13 @@
+## What's new in v1.8.0-beta.10
+
+### Feature: serial output verbosity toggle (c0 / c1 / c2)
+
+- New segmented control in *Other Settings* to switch the serial output between Off, Normal, and Verbose mode
+- Verbose mode (`c2`) enables current, power factor, and apparent power readings in the Live Data view
+- When Off is selected, the Datalog Interval and JSON Serial Format fields are disabled — they have no effect without serial output
+- The current mode is read from the device configuration dump and pre-selected automatically
+- Added translations for English, French, German, Spanish, and Italian
+
 ## What's new in v1.8.0-beta.9
 
 ### Fix: restore the friendly names on the voltage readings

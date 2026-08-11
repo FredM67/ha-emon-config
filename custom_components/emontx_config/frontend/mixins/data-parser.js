@@ -375,6 +375,9 @@ const DataParserMixin = {
                     else if (key === 'json') {
                         this.device.json = val === 'off' ? 0 : 1;
                     }
+                    else if (key === 'serial') {
+                        this.device.serial = val;
+                    }
                 }
             }
         },

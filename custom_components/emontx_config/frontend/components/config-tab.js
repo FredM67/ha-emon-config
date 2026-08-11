@@ -118,6 +118,8 @@ Vue.component('config-tab', {
                     return this.device.datalog !== this.originalDevice.datalog;
                 case 'json':
                     return this.device.json !== this.originalDevice.json;
+                case 'serial':
+                    return this.device.serial !== this.originalDevice.serial;
                 default:
                     return false;
             }
@@ -508,14 +510,36 @@ Vue.component('config-tab', {
                 <div class="card">
                     <div class="card-header">{{ t.config.otherSettings }}</div>
                     <div class="card-body">
+                        <div class="form-group" :class="{ 'field-changed': isFieldChanged('serial') }">
+                            <label>{{ t.config.serialOutput }}</label>
+                            <div class="view-mode-toggle" style="display: inline-flex;">
+                                <label :class="{ active: device.serial === 'off' }">
+                                    <input type="radio" value="off" v-model="device.serial" :disabled="!emontxConnected" />
+                                    {{ t.config.serialOff }}
+                                </label>
+                                <label :class="{ active: device.serial === 'normal' }">
+                                    <input type="radio" value="normal" v-model="device.serial" :disabled="!emontxConnected" />
+                                    {{ t.config.serialNormal }}
+                                </label>
+                                <label :class="{ active: device.serial === 'verbose' }">
+                                    <input type="radio" value="verbose" v-model="device.serial" :disabled="!emontxConnected" />
+                                    {{ t.config.serialVerbose }}
+                                </label>
+                            </div>
+                            <small v-if="device.serial" style="display: block; margin-top: 4px; color: #666;">
+                                <span v-if="device.serial === 'off'">{{ t.config.serialDescOff }}</span>
+                                <span v-else-if="device.serial === 'normal'">{{ t.config.serialDescNormal }}</span>
+                                <span v-else>{{ t.config.serialDescVerbose }}</span>
+                            </small>
+                        </div>
                         <div class="form-group" :class="{ 'field-changed': isFieldChanged('datalog') }">
                             <label>{{ t.config.datalogInterval }}</label>
-                            <input type="number" step="0.1" v-model="device.datalog" :disabled="!emontxConnected" style="width:80px" />
+                            <input type="number" step="0.1" v-model="device.datalog" :disabled="!emontxConnected || device.serial === 'off'" style="width:80px" />
                             <span class="unit">s</span>
                         </div>
                         <div class="form-group" :class="{ 'field-changed': isFieldChanged('json') }">
                             <label>{{ t.config.jsonSerialFormat }}</label>
-                            <input type="checkbox" v-model="device.json" :true-value="1" :false-value="0" :disabled="!emontxConnected" />
+                            <input type="checkbox" v-model="device.json" :true-value="1" :false-value="0" :disabled="!emontxConnected || device.serial === 'off'" />
                         </div>
                     </div>
                 </div>

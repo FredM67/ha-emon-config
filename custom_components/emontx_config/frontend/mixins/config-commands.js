@@ -228,6 +228,9 @@ const ConfigCommandsMixin = {
                 case 'json':
                     this.$set(this.originalDevice, 'json', this.device.json);
                     break;
+                case 'serial':
+                    this.$set(this.originalDevice, 'serial', this.device.serial);
+                    break;
                 case 'tempSlot':
                     // Update originalDevice.tempSensors with the new slot
                     if (this.originalDevice.tempSensors) {
@@ -303,6 +306,9 @@ const ConfigCommandsMixin = {
                 case 'json':
                     this.setJson();
                     break;
+                case 'serial':
+                    this.setSerialMode();
+                    break;
                 case 'tempSlot':
                     this.applyTempSensorSlot(change.addr, change.slot);
                     break;
@@ -321,6 +327,7 @@ const ConfigCommandsMixin = {
                 case 'rfPower': return 'RF Power';
                 case 'datalog': return 'Datalog';
                 case 'json': return 'JSON';
+                case 'serial': return 'Serial Output';
                 case 'tempSlot': return `T${change.slot}`;
                 default: return change.type;
             }
@@ -620,6 +627,16 @@ const ConfigCommandsMixin = {
 
         setJson() {
             this.writeToStream('j' + this.device.json);
+            this.changes = true;
+            this.hasUnsavedChanges = true;
+        },
+
+        setSerialMode() {
+            const levelMap = { 'off': 0, 'normal': 1, 'verbose': 2 };
+            const level = levelMap[this.device.serial];
+            if (level !== undefined) {
+                this.writeToStream('c' + level);
+            }
             this.changes = true;
             this.hasUnsavedChanges = true;
         },

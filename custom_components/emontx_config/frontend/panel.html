@@ -265,7 +265,7 @@
             el: '#app',
             mixins: [ConnectionMixin, DataParserMixin, ConfigCommandsMixin, YamlGeneratorMixin, ChannelNamesMixin, FirmwareUpdateMixin],
             data: {
-                integrationVersion: '1.8.0-beta.9',
+                integrationVersion: '1.8.0-beta.10',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -356,6 +356,7 @@
                     pulsePeriod: '',
                     datalog: '',
                     json: 0,
+                    serial: null,
                     vcal: '',
                     vchannels: [
                         { vcal: 100, vphase: 0, active: true, voltage: '' },
@@ -494,6 +495,7 @@
                     // Check misc settings
                     if (curr.datalog !== orig.datalog) changes.push({ type: 'datalog' });
                     if (curr.json !== orig.json) changes.push({ type: 'json' });
+                    if (curr.serial !== orig.serial) changes.push({ type: 'serial' });
 
                     return changes;
                 }
