@@ -1,3 +1,9 @@
+## What's new in v1.8.0-beta.15
+
+### UI: channel view table fits content
+
+- The per-channel table in Live Data now sizes columns to their content instead of stretching across the full window width
+
 ## What's new in v1.8.0-beta.14
 
 ### Feature: frequency field in Live Data

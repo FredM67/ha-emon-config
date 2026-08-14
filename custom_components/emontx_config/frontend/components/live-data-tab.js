@@ -376,7 +376,7 @@ Vue.component('live-data-tab', {
                     <!-- One row per channel -->
                     <div v-else-if="Object.keys(liveData).length > 0">
                         <div v-if="ctMetrics.length > 0" class="table-responsive">
-                            <table class="device-info-table">
+                            <table class="device-info-table" style="width: auto;">
                                 <tr>
                                     <th>{{ t.accumulators.channel }}</th>
                                     <th>{{ t.config.name }}</th>
