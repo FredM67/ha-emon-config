@@ -1,3 +1,9 @@
+## What's new in v1.8.0-beta.16
+
+### UI: right-align measurement values in channel view
+
+- Measurement columns (headers and values) in the per-channel table are now right-aligned for easier reading
+
 ## What's new in v1.8.0-beta.15
 
 ### UI: channel view table fits content
