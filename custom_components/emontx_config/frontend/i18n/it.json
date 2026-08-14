@@ -206,6 +206,7 @@
         "groups": {
             "MSG": "Messaggio",
             "V": "Tensione",
+            "F": "Frequenza",
             "P": "Potenza",
             "E": "Energia",
             "I": "Corrente",

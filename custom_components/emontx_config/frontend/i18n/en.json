@@ -227,6 +227,7 @@
         "groups": {
             "MSG": "Message",
             "V": "Voltage",
+            "F": "Frequency",
             "P": "Power",
             "E": "Energy",
             "I": "Current",

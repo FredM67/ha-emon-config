@@ -227,6 +227,7 @@
         "groups": {
             "MSG": "Message",
             "V": "Tension",
+            "F": "Fréquence",
             "P": "Puissance",
             "E": "Énergie",
             "I": "Courant",

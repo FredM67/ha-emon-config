@@ -206,6 +206,7 @@
         "groups": {
             "MSG": "Nachricht",
             "V": "Spannung",
+            "F": "Frequenz",
             "P": "Leistung",
             "E": "Energie",
             "I": "Strom",

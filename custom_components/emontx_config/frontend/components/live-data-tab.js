@@ -67,7 +67,7 @@ Vue.component('live-data-tab', {
         // each group keeping its own heading.
         globalGroups() {
             const result = [];
-            for (const prefix of ['MSG', 'V']) {
+            for (const prefix of ['MSG', 'V', 'F']) {
                 const group = this.groupedLiveData[prefix];
                 if (group && Object.keys(group).length > 0) {
                     result.push({ prefix: prefix, items: group });
@@ -79,7 +79,7 @@ Vue.component('live-data-tab', {
         // layout, below the channel table.
         nonChannelGroups() {
             const result = {};
-            const skip = this.ctMetrics.concat(['MSG', 'V']);
+            const skip = this.ctMetrics.concat(['MSG', 'V', 'F']);
             for (const prefix in this.groupedLiveData) {
                 if (skip.indexOf(prefix) === -1) {
                     result[prefix] = this.groupedLiveData[prefix];
@@ -92,7 +92,7 @@ Vue.component('live-data-tab', {
         measurementGroups() {
             const result = {};
             for (const prefix in this.groupedLiveData) {
-                if (prefix !== 'MSG' && prefix !== 'V') {
+                if (prefix !== 'MSG' && prefix !== 'V' && prefix !== 'F') {
                     result[prefix] = this.groupedLiveData[prefix];
                 }
             }
@@ -102,7 +102,7 @@ Vue.component('live-data-tab', {
             // Group live data by prefix (V, P, E, etc.)
             // Include all channels from device config, even if disabled (show "-")
             const groups = {};
-            const order = ['MSG', 'V', 'P', 'E', 'I', 'PF', 'AP', 'T', 'pulse'];
+            const order = ['MSG', 'V', 'F', 'P', 'E', 'I', 'PF', 'AP', 'T', 'pulse'];
 
             // First, add all data from liveData
             for (const key in this.liveData) {
@@ -199,6 +199,7 @@ Vue.component('live-data-tab', {
             // Add units for specific groups
             const units = {
                 'V': 'V',
+                'F': 'Hz',
                 'P': 'W',
                 'E': 'Wh',
                 'I': 'A',
@@ -251,6 +252,10 @@ Vue.component('live-data-tab', {
             // Voltage (V1, V2, etc.) - 2 decimals
             if (key.match(/^V\d+$/)) {
                 return num.toFixed(2) + ' V';
+            }
+            // Frequency (F, F1, etc.) - 2 decimals
+            if (key.match(/^F\d*$/)) {
+                return num.toFixed(2) + ' Hz';
             }
             // Power (P1, P2, etc.)
             if (key.match(/^P\d+$/)) {
@@ -347,7 +352,7 @@ Vue.component('live-data-tab', {
                         <div v-for="group in globalGroups" :key="group.prefix" class="global-readings-group">
                             <h4 style="margin: 0 0 8px 0; color: #666; font-size: 14px;">{{ getGroupLabel(group.prefix) }}</h4>
                             <div class="global-readings-items">
-                                <div :class="['config-item', isChannelInactive(key) ? 'inactive' : '']" v-for="(value, key) in group.items" :key="key">
+                                <div class="config-item" v-for="(value, key) in group.items" v-if="!isChannelInactive(key)" :key="key">
                                     <label>{{ key }}<span v-if="getFriendlyName(key)" class="friendly-name"> - {{ getFriendlyName(key) }}</span></label>
                                     <div class="value">{{ value }}</div>
                                 </div>
@@ -360,7 +365,7 @@ Vue.component('live-data-tab', {
                         <div v-for="(items, group) in measurementGroups" :key="group" style="margin-bottom: 15px;">
                             <h4 style="margin: 0 0 8px 0; color: #666; font-size: 14px;">{{ getGroupLabel(group) }}</h4>
                             <div class="config-grid">
-                                <div :class="['config-item', isChannelInactive(key) ? 'inactive' : '']" v-for="(value, key) in items" :key="key">
+                                <div class="config-item" v-for="(value, key) in items" v-if="!isChannelInactive(key)" :key="key">
                                     <label>{{ key }}<span v-if="getFriendlyName(key)" class="friendly-name"> - {{ getFriendlyName(key) }}</span></label>
                                     <div class="value">{{ value }}</div>
                                 </div>
@@ -377,7 +382,7 @@ Vue.component('live-data-tab', {
                                     <th>{{ t.config.name }}</th>
                                     <th v-for="prefix in ctMetrics" :key="prefix">{{ getMetricLabel(prefix) }}</th>
                                 </tr>
-                                <tr v-for="row in channelRows" :key="row.num" :class="{ 'inactive-row': row.inactive }">
+                                <tr v-for="row in channelRows" v-if="!row.inactive" :key="row.num">
                                     <td>{{ row.num }}</td>
                                     <td>
                                         <span v-if="row.name" class="friendly-name">{{ row.name }}</span>
@@ -392,7 +397,7 @@ Vue.component('live-data-tab', {
                         <div v-for="(items, group) in nonChannelGroups" :key="group" style="margin-bottom: 15px;">
                             <h4 style="margin: 0 0 8px 0; color: #666; font-size: 14px;">{{ getGroupLabel(group) }}</h4>
                             <div class="config-grid">
-                                <div :class="['config-item', isChannelInactive(key) ? 'inactive' : '']" v-for="(value, key) in items" :key="key">
+                                <div class="config-item" v-for="(value, key) in items" v-if="!isChannelInactive(key)" :key="key">
                                     <label>{{ key }}<span v-if="getFriendlyName(key)" class="friendly-name"> - {{ getFriendlyName(key) }}</span></label>
                                     <div class="value">{{ value }}</div>
                                 </div>

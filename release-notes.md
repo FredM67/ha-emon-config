@@ -1,3 +1,18 @@
+## What's new in v1.8.0-beta.14
+
+### Feature: frequency field in Live Data
+
+- New frequency field (tag `F`) displayed on the device-wide line alongside Message and Voltage
+- Formatted as `xx.xx Hz` with translated group labels in all five languages
+
+### Change: hide disabled channels in Live Data
+
+- Inactive/disabled channels are now completely hidden instead of appearing with a red background
+
+### UI: view-mode toggle spacing
+
+- The "By measurement" / "By channel" toggle buttons now have a small gap between them instead of being glued together
+
 ## What's new in v1.8.0-beta.13
 
 ### Fix: consistent row height with and without field-changed highlight

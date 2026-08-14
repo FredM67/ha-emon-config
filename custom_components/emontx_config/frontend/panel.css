@@ -470,7 +470,7 @@ input[type="number"].no-spinner {
 /* Segmented control for switching the live data layout */
 .view-mode-toggle {
     display: flex;
-    gap: 0;
+    gap: 6px;
     font-weight: 400;
     font-size: 13px;
 }
@@ -483,13 +483,8 @@ input[type="number"].no-spinner {
     white-space: nowrap;
 }
 
-.view-mode-toggle label:first-child {
-    border-radius: 4px 0 0 4px;
-}
-
-.view-mode-toggle label:last-child {
-    border-radius: 0 4px 4px 0;
-    border-left: 0;
+.view-mode-toggle label {
+    border-radius: 4px;
 }
 
 .view-mode-toggle label.active {
@@ -498,9 +493,6 @@ input[type="number"].no-spinner {
     color: #1565c0;
 }
 
-.view-mode-toggle label.active + label {
-    border-left-color: #2196F3;
-}
 
 .view-mode-toggle input[type="radio"] {
     display: none;
