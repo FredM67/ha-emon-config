@@ -380,7 +380,7 @@ Vue.component('live-data-tab', {
                                 <tr>
                                     <th>{{ t.accumulators.channel }}</th>
                                     <th>{{ t.config.name }}</th>
-                                    <th v-for="prefix in ctMetrics" :key="prefix" style="text-align: right;">{{ getMetricLabel(prefix) }}</th>
+                                    <th v-for="prefix in ctMetrics" :key="prefix" style="text-align: center;">{{ getMetricLabel(prefix) }}</th>
                                 </tr>
                                 <tr v-for="row in channelRows" v-if="!row.inactive" :key="row.num">
                                     <td>{{ row.num }}</td>

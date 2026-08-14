@@ -1,3 +1,9 @@
+## What's new in v1.8.0-beta.17
+
+### UI: center-align measurement headers in channel view
+
+- Measurement column headers are now centered while values remain right-aligned
+
 ## What's new in v1.8.0-beta.16
 
 ### UI: right-align measurement values in channel view
