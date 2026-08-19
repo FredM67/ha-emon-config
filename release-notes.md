@@ -1,3 +1,9 @@
+## What's new in v1.8.0-beta.21
+
+### UI: show Pulse before Temperature in Live Data
+
+- Pulse channels now appear above Temperature in both the measurement view and the channel view's non-CT section
+
 ## What's new in v1.8.0-beta.20
 
 ### UI: hide inactive channels in Accumulators tab

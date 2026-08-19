@@ -102,7 +102,7 @@ Vue.component('live-data-tab', {
             // Group live data by prefix (V, P, E, etc.)
             // Include all channels from device config, even if disabled (show "-")
             const groups = {};
-            const order = ['MSG', 'V', 'F', 'P', 'E', 'I', 'PF', 'AP', 'T', 'pulse'];
+            const order = ['MSG', 'V', 'F', 'P', 'E', 'I', 'PF', 'AP', 'pulse', 'T'];
 
             // First, add all data from liveData
             for (const key in this.liveData) {
