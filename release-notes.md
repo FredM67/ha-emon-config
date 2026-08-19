@@ -1,3 +1,12 @@
+## What's new in v1.8.0-beta.20
+
+### UI: hide inactive channels in Accumulators tab
+
+- Energy rows for inactive/disabled CT channels are now hidden entirely (same behaviour as Live Data)
+- The Status column has been removed — it is no longer needed since inactive rows are not shown
+- The entire Pulse card is hidden when no pulse data is present in the live stream
+- Pulse rows are filtered to only show channels that appear in live data
+
 ## What's new in v1.8.0-beta.19
 
 ### UI: Accumulators tab polish

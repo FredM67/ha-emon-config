@@ -20,6 +20,15 @@ Vue.component('accumulators-tab', {
         },
         pulseChannelCount() {
             return this.device.hardware === 'emonPi3' ? 3 : 1;
+        },
+        activePulseChannels() {
+            const result = [];
+            for (let n = 1; n <= this.pulseChannelCount; n++) {
+                if (this.liveData['pulse' + n] !== undefined) {
+                    result.push(n);
+                }
+            }
+            return result;
         }
     },
     methods: {
@@ -61,17 +70,12 @@ Vue.component('accumulators-tab', {
                                 <th>{{ t.accumulators.channel }}</th>
                                 <th>{{ t.config.name }}</th>
                                 <th>{{ t.accumulators.value }}</th>
-                                <th v-if="device.hardware === 'emonPi3'">{{ t.accumulators.status }}</th>
                                 <th v-if="device.hardware === 'emonPi3'">{{ t.accumulators.action }}</th>
                             </tr>
-                            <tr v-for="n in energyChannelCount" :key="'e'+n" :class="{ 'inactive-row': !isEnergyChannelActive(n) }">
+                            <tr v-for="n in energyChannelCount" v-if="isEnergyChannelActive(n)" :key="'e'+n">
                                 <td>E{{ n }}</td>
                                 <td><span v-if="getCtName(n)" class="friendly-name">{{ getCtName(n) }}</span><span v-else style="color: #999;">-</span></td>
                                 <td>{{ liveData['E' + n] || '0' }} Wh</td>
-                                <td v-if="device.hardware === 'emonPi3'">
-                                    <span v-if="isEnergyChannelActive(n)" style="color: #4CAF50;">{{ t.accumulators.active }}</span>
-                                    <span v-else style="color: #999;">{{ t.accumulators.inactive }}</span>
-                                </td>
                                 <td v-if="device.hardware === 'emonPi3'" style="white-space: nowrap;">
                                     <div style="display: flex; gap: 6px;">
                                         <button class="btn btn-sm btn-danger" @click="$emit('show-individual-zero', 'e', n)" :disabled="!emontxConnected" :title="t.tooltips.btnZeroIndividual">
@@ -88,7 +92,7 @@ Vue.component('accumulators-tab', {
                 </div>
             </div>
 
-            <div class="card">
+            <div class="card" v-if="activePulseChannels.length > 0">
                 <div class="card-header">{{ t.accumulators.pulseTitle }}</div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -99,7 +103,7 @@ Vue.component('accumulators-tab', {
                                 <th>{{ t.accumulators.value }}</th>
                                 <th v-if="device.hardware === 'emonPi3'">{{ t.accumulators.action }}</th>
                             </tr>
-                            <tr v-for="n in pulseChannelCount" :key="'p'+n">
+                            <tr v-for="n in activePulseChannels" :key="'p'+n">
                                 <td>Pulse {{ n }}</td>
                                 <td><span v-if="getOpaName(n)" class="friendly-name">{{ getOpaName(n) }}</span><span v-else style="color: #999;">-</span></td>
                                 <td>{{ liveData['pulse' + n] || '0' }}</td>
