@@ -10,7 +10,7 @@
         "terminal": "Terminal Serie",
         "firmware": "Actualización de firmware",
         "liveData": "Datos en Vivo",
-        "accumulators": "Restablecer Acumuladores"
+        "accumulators": "Acumuladores"
     },
     "configTabs": {
         "calibration": "Sensores de Energía",
@@ -243,7 +243,7 @@
         "message": "Hay cambios sin guardar en el dispositivo. Use \"Guardar Cambios\" para guardarlos."
     },
     "accumulators": {
-        "explanation": "Use esta página para restablecer a cero los valores almacenados en el emonTx/emonPi. Esta acción no se puede deshacer.",
+        "explanation": "Use esta página para restablecer o establecer los acumuladores de energía y pulso almacenados en el emonTx/emonPi. El restablecimiento a cero no se puede deshacer.",
         "energyTitle": "Acumuladores de Energía",
         "pulseTitle": "Acumuladores de Pulso",
         "channel": "Canal",

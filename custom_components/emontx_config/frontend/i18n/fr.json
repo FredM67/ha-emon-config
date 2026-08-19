@@ -10,7 +10,7 @@
         "terminal": "Terminal Série",
         "firmware": "Mise à jour firmware",
         "liveData": "Données en Direct",
-        "accumulators": "RAZ Accumulateurs"
+        "accumulators": "Accumulateurs"
     },
     "configTabs": {
         "calibration": "Capteurs d'Énergie",
@@ -264,7 +264,7 @@
         "message": "Il y a des modifications non enregistrées sur l'appareil. Utilisez \"Enregistrer\" pour les sauvegarder."
     },
     "accumulators": {
-        "explanation": "Utilisez cette page pour remettre à zéro les valeurs stockées sur l'emonTx/emonPi. Cette action est irréversible.",
+        "explanation": "Utilisez cette page pour remettre à zéro ou définir les accumulateurs d'énergie et d'impulsions stockés sur l'emonTx/emonPi. La remise à zéro est irréversible.",
         "energyTitle": "Accumulateurs d'Énergie",
         "pulseTitle": "Accumulateurs d'Impulsions",
         "channel": "Canal",

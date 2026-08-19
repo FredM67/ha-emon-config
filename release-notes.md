@@ -1,3 +1,11 @@
+## What's new in v1.8.0-beta.19
+
+### UI: Accumulators tab polish
+
+- Renamed the tab from "Zero Accumulators" to "Accumulators" (all languages) — it now manages both reset and set operations
+- Updated the explanation banner to reflect both reset and set capabilities
+- Zero and Set buttons no longer repeat the channel number — the row already shows it, so all buttons are now the same width
+
 ## What's new in v1.8.0-beta.18
 
 ### Feature: set accumulator to a specific value

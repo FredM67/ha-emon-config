@@ -10,7 +10,7 @@
         "terminal": "Terminale Seriale",
         "firmware": "Aggiornamento firmware",
         "liveData": "Dati in Tempo Reale",
-        "accumulators": "Azzera Accumulatori"
+        "accumulators": "Accumulatori"
     },
     "configTabs": {
         "calibration": "Sensori di Energia",
@@ -243,7 +243,7 @@
         "message": "Ci sono modifiche non salvate sul dispositivo. Usa \"Salva Modifiche\" per salvarle."
     },
     "accumulators": {
-        "explanation": "Usa questa pagina per azzerare i valori memorizzati sull'emonTx/emonPi. Questa azione non può essere annullata.",
+        "explanation": "Usa questa pagina per azzerare o impostare gli accumulatori di energia e impulsi memorizzati sull'emonTx/emonPi. L'azzeramento non può essere annullato.",
         "energyTitle": "Accumulatori di Energia",
         "pulseTitle": "Accumulatori di Impulsi",
         "channel": "Canale",

@@ -75,10 +75,10 @@ Vue.component('accumulators-tab', {
                                 <td v-if="device.hardware === 'emonPi3'" style="white-space: nowrap;">
                                     <div style="display: flex; gap: 6px;">
                                         <button class="btn btn-sm btn-danger" @click="$emit('show-individual-zero', 'e', n)" :disabled="!emontxConnected" :title="t.tooltips.btnZeroIndividual">
-                                            {{ t.accumulators.zero }} E{{ n }}
+                                            {{ t.accumulators.zero }}
                                         </button>
                                         <button class="btn btn-sm btn-primary" @click="$emit('show-set-accumulator', 'e', n)" :disabled="!emontxConnected" :title="t.tooltips.btnSetAccumulator">
-                                            {{ t.accumulators.set }} E{{ n }}
+                                            {{ t.accumulators.set }}
                                         </button>
                                     </div>
                                 </td>
@@ -106,10 +106,10 @@ Vue.component('accumulators-tab', {
                                 <td v-if="device.hardware === 'emonPi3'" style="white-space: nowrap;">
                                     <div style="display: flex; gap: 6px;">
                                         <button class="btn btn-sm btn-danger" @click="$emit('show-individual-zero', 'p', n)" :disabled="!emontxConnected" :title="t.tooltips.btnZeroPulse">
-                                            {{ t.accumulators.zero }} Pulse {{ n }}
+                                            {{ t.accumulators.zero }}
                                         </button>
                                         <button class="btn btn-sm btn-primary" @click="$emit('show-set-accumulator', 'p', n)" :disabled="!emontxConnected" :title="t.tooltips.btnSetAccumulator">
-                                            {{ t.accumulators.set }} Pulse {{ n }}
+                                            {{ t.accumulators.set }}
                                         </button>
                                     </div>
                                 </td>

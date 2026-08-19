@@ -10,7 +10,7 @@
         "terminal": "Serial Terminal",
         "firmware": "Firmware Update",
         "liveData": "Live Data",
-        "accumulators": "Zero Accumulators"
+        "accumulators": "Accumulators"
     },
     "configTabs": {
         "calibration": "Energy Sensors",
@@ -264,7 +264,7 @@
         "message": "There are unsaved changes on the device. Use \"Save Changes\" to save them."
     },
     "accumulators": {
-        "explanation": "Use this page to reset the values stored on the emonTx/emonPi to zero. This action cannot be undone.",
+        "explanation": "Use this page to reset or set the energy and pulse accumulators stored on the emonTx/emonPi. Zeroing cannot be undone.",
         "energyTitle": "Energy Accumulators",
         "pulseTitle": "Pulse Accumulators",
         "channel": "Channel",

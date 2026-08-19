@@ -10,7 +10,7 @@
         "terminal": "Serielles Terminal",
         "firmware": "Firmware-Update",
         "liveData": "Live-Daten",
-        "accumulators": "Akkumulatoren Nullen"
+        "accumulators": "Akkumulatoren"
     },
     "configTabs": {
         "calibration": "Energiesensoren",
@@ -243,7 +243,7 @@
         "message": "Es gibt ungespeicherte Änderungen auf dem Gerät. Verwenden Sie \"Speichern\" um sie zu sichern."
     },
     "accumulators": {
-        "explanation": "Verwenden Sie diese Seite, um die auf dem emonTx/emonPi gespeicherten Werte auf Null zu setzen. Diese Aktion kann nicht rückgängig gemacht werden.",
+        "explanation": "Verwenden Sie diese Seite, um die Energie- und Impulsakkumulatoren auf dem emonTx/emonPi zurückzusetzen oder zu setzen. Das Nullstellen kann nicht rückgängig gemacht werden.",
         "energyTitle": "Energie-Akkumulatoren",
         "pulseTitle": "Impuls-Akkumulatoren",
         "channel": "Kanal",
