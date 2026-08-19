@@ -36,6 +36,58 @@ Vue.component('individual-zero-modal', {
     `
 });
 
+// Set Accumulator Value Modal
+Vue.component('set-accumulator-modal', {
+    props: {
+        show: Boolean,
+        t: Object,
+        target: Object  // { type: 'e' or 'p', channel: number }
+    },
+    data() {
+        return { value: 0 };
+    },
+    watch: {
+        show(newVal) {
+            if (newVal) this.value = 0;
+        }
+    },
+    computed: {
+        targetLabel() {
+            if (!this.target) return '';
+            return this.target.type === 'e'
+                ? 'E' + this.target.channel
+                : 'Pulse ' + this.target.channel;
+        },
+        unit() {
+            if (!this.target) return '';
+            return this.target.type === 'e' ? 'Wh' : '';
+        }
+    },
+    template: `
+        <div v-if="show" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+            <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); max-width: 400px; width: 100%; text-align: center;">
+                <h3 style="margin-top: 0; color: #2196F3;">{{ t.accumulators.setTitle }}</h3>
+                <p style="font-size: 16px; margin: 20px 0;">
+                    {{ t.accumulators.setMessage }}
+                    <strong>{{ targetLabel }}</strong>
+                </p>
+                <div style="margin: 20px 0; text-align: left;">
+                    <label style="display: block; margin-bottom: 6px; font-weight: bold;">
+                        {{ t.accumulators.setValueLabel }}<span v-if="unit"> ({{ unit }})</span>:
+                    </label>
+                    <input type="number" v-model.number="value" min="0" step="1"
+                        style="width: 100%; padding: 8px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;"
+                        @keyup.enter="$emit('confirm', value)" />
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button class="btn btn-primary" @click="$emit('confirm', value)" style="padding: 12px 30px; font-size: 16px;">{{ t.accumulators.setConfirm }}</button>
+                    <button class="btn" @click="$emit('cancel')" style="padding: 12px 30px; font-size: 16px; background: #ccc;">{{ t.accumulators.setCancel }}</button>
+                </div>
+            </div>
+        </div>
+    `
+});
+
 // Zero Energy Confirmation Modal (for zeroing all)
 Vue.component('zero-confirm-modal', {
     props: {

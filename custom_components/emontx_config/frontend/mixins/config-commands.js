@@ -901,6 +901,27 @@ const ConfigCommandsMixin = {
 
         cancelIndividualZero() {
             this.showIndividualZeroModal = false;
+        },
+
+        showSetAccumulatorConfirm(type, channel) {
+            this.setAccumulatorTarget = { type, channel };
+            this.showSetAccumulatorModal = true;
+        },
+
+        confirmSetAccumulator(value) {
+            const { type, channel } = this.setAccumulatorTarget;
+            const intValue = Math.round(value);
+            if (type === 'e') {
+                this.writeToStream('ye' + channel + ' ' + intValue);
+            } else if (type === 'p') {
+                this.writeToStream('yp' + channel + ' ' + intValue);
+            }
+            setTimeout(() => this.writeToStream('lh'), 1500);
+            this.showSetAccumulatorModal = false;
+        },
+
+        cancelSetAccumulator() {
+            this.showSetAccumulatorModal = false;
         }
     }
 };

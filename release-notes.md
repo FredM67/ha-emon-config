@@ -1,3 +1,13 @@
+## What's new in v1.8.0-beta.18
+
+### Feature: set accumulator to a specific value
+
+- New **Set** button next to each Zero button in the Accumulators tab
+- Clicking Set opens a dialog to enter a value (in Wh for energy, counts for pulse)
+- Sends `ye<n> <m>` (energy) or `yp<n> <m>` (pulse) to the firmware, then reloads accumulators
+- Available for emonPi3 only, alongside the existing individual Zero buttons
+- Added translations for English, French, German, Spanish, and Italian
+
 ## What's new in v1.8.0-beta.17
 
 ### UI: center-align measurement headers in channel view

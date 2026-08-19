@@ -258,7 +258,13 @@
         "confirmMessage": "Sei sicuro di voler azzerare",
         "confirmWarning": "Questa azione non può essere annullata.",
         "confirmYes": "Sì, Azzera",
-        "confirmNo": "Annulla"
+        "confirmNo": "Annulla",
+        "set": "Imposta",
+        "setTitle": "Imposta Valore Accumulatore",
+        "setMessage": "Inserisci nuovo valore per",
+        "setValueLabel": "Nuovo valore",
+        "setConfirm": "Imposta Valore",
+        "setCancel": "Annulla"
     },
     "tempSensors": {
         "applyFirst": "Hai modifiche in attesa. Applicarle prima di salvare?"
@@ -299,6 +305,7 @@
         "btnSaveMapping": "Salva indirizzi sensori temperatura sul dispositivo",
         "btnZeroIndividual": "Reimposta questo accumulatore energia a zero",
         "btnZeroPulse": "Reimposta questo contatore impulsi a zero",
+        "btnSetAccumulator": "Imposta questo accumulatore a un valore specifico",
         "btnZeroAll": "Reimposta tutti gli accumulatori energia e impulsi a zero",
         "btnClearAllSlots": "Cancella tutte le assegnazioni slot sensori temperatura",
         "btnClearSlot": "Svuota questa assegnazione slot",

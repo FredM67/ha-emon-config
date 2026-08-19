@@ -279,7 +279,13 @@
         "confirmMessage": "Are you sure you want to zero",
         "confirmWarning": "This action cannot be undone.",
         "confirmYes": "Yes, Zero It",
-        "confirmNo": "Cancel"
+        "confirmNo": "Cancel",
+        "set": "Set",
+        "setTitle": "Set Accumulator Value",
+        "setMessage": "Enter new value for",
+        "setValueLabel": "New value",
+        "setConfirm": "Set Value",
+        "setCancel": "Cancel"
     },
     "tempSensors": {
         "applyFirst": "You have pending slot changes. Apply them before saving?",
@@ -328,6 +334,7 @@
         "btnSaveMapping": "Save temperature sensor addresses to device",
         "btnZeroIndividual": "Reset this energy accumulator to zero",
         "btnZeroPulse": "Reset this pulse counter to zero",
+        "btnSetAccumulator": "Set this accumulator to a specific value",
         "btnZeroAll": "Reset all energy and pulse accumulators to zero",
         "btnClearAllSlots": "Clear all temperature sensor slot assignments from device memory",
         "btnClearSlot": "Clear this slot assignment",

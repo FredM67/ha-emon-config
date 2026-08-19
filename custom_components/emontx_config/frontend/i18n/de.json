@@ -258,7 +258,13 @@
         "confirmMessage": "Sind Sie sicher, dass Sie nullstellen möchten",
         "confirmWarning": "Diese Aktion kann nicht rückgängig gemacht werden.",
         "confirmYes": "Ja, Nullstellen",
-        "confirmNo": "Abbrechen"
+        "confirmNo": "Abbrechen",
+        "set": "Setzen",
+        "setTitle": "Akkumulatorwert Setzen",
+        "setMessage": "Neuen Wert eingeben für",
+        "setValueLabel": "Neuer Wert",
+        "setConfirm": "Wert Setzen",
+        "setCancel": "Abbrechen"
     },
     "tempSensors": {
         "applyFirst": "Sie haben ausstehende Änderungen. Vor dem Speichern anwenden?"
@@ -299,6 +305,7 @@
         "btnSaveMapping": "Temperatursensor-Adressen am Gerät speichern",
         "btnZeroIndividual": "Diesen Energieakkumulator auf Null setzen",
         "btnZeroPulse": "Diesen Impulszähler auf Null setzen",
+        "btnSetAccumulator": "Diesen Akkumulator auf einen bestimmten Wert setzen",
         "btnZeroAll": "Alle Energie- und Impulsakkumulatoren auf Null setzen",
         "btnClearAllSlots": "Alle Temperatursensor-Slot-Zuordnungen löschen",
         "btnClearSlot": "Diese Slot-Zuordnung löschen",

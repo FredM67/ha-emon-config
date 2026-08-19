@@ -258,7 +258,13 @@
         "confirmMessage": "¿Está seguro de que desea restablecer",
         "confirmWarning": "Esta acción no se puede deshacer.",
         "confirmYes": "Sí, Restablecer",
-        "confirmNo": "Cancelar"
+        "confirmNo": "Cancelar",
+        "set": "Establecer",
+        "setTitle": "Establecer Valor del Acumulador",
+        "setMessage": "Ingrese nuevo valor para",
+        "setValueLabel": "Nuevo valor",
+        "setConfirm": "Establecer Valor",
+        "setCancel": "Cancelar"
     },
     "tempSensors": {
         "applyFirst": "Tiene cambios de ranura pendientes. ¿Aplicarlos antes de guardar?",
@@ -307,6 +313,7 @@
         "btnSaveMapping": "Guardar direcciones de sensores de temperatura en el dispositivo",
         "btnZeroIndividual": "Restablecer este acumulador de energía a cero",
         "btnZeroPulse": "Restablecer este contador de pulso a cero",
+        "btnSetAccumulator": "Establecer este acumulador a un valor específico",
         "btnZeroAll": "Restablecer todos los acumuladores de energía y pulso a cero",
         "btnClearAllSlots": "Limpiar todas las asignaciones de ranuras de sensores de temperatura de la memoria del dispositivo",
         "btnClearSlot": "Limpiar esta asignación de ranura",

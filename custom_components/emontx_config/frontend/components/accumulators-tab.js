@@ -72,10 +72,15 @@ Vue.component('accumulators-tab', {
                                     <span v-if="isEnergyChannelActive(n)" style="color: #4CAF50;">{{ t.accumulators.active }}</span>
                                     <span v-else style="color: #999;">{{ t.accumulators.inactive }}</span>
                                 </td>
-                                <td v-if="device.hardware === 'emonPi3'">
-                                    <button class="btn btn-sm btn-danger" @click="$emit('show-individual-zero', 'e', n)" :disabled="!emontxConnected" :title="t.tooltips.btnZeroIndividual">
-                                        {{ t.accumulators.zero }} E{{ n }}
-                                    </button>
+                                <td v-if="device.hardware === 'emonPi3'" style="white-space: nowrap;">
+                                    <div style="display: flex; gap: 6px;">
+                                        <button class="btn btn-sm btn-danger" @click="$emit('show-individual-zero', 'e', n)" :disabled="!emontxConnected" :title="t.tooltips.btnZeroIndividual">
+                                            {{ t.accumulators.zero }} E{{ n }}
+                                        </button>
+                                        <button class="btn btn-sm btn-primary" @click="$emit('show-set-accumulator', 'e', n)" :disabled="!emontxConnected" :title="t.tooltips.btnSetAccumulator">
+                                            {{ t.accumulators.set }} E{{ n }}
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         </table>
@@ -98,10 +103,15 @@ Vue.component('accumulators-tab', {
                                 <td>Pulse {{ n }}</td>
                                 <td><span v-if="getOpaName(n)" class="friendly-name">{{ getOpaName(n) }}</span><span v-else style="color: #999;">-</span></td>
                                 <td>{{ liveData['pulse' + n] || '0' }}</td>
-                                <td v-if="device.hardware === 'emonPi3'">
-                                    <button class="btn btn-sm btn-danger" @click="$emit('show-individual-zero', 'p', n)" :disabled="!emontxConnected" :title="t.tooltips.btnZeroPulse">
-                                        {{ t.accumulators.zero }} Pulse {{ n }}
-                                    </button>
+                                <td v-if="device.hardware === 'emonPi3'" style="white-space: nowrap;">
+                                    <div style="display: flex; gap: 6px;">
+                                        <button class="btn btn-sm btn-danger" @click="$emit('show-individual-zero', 'p', n)" :disabled="!emontxConnected" :title="t.tooltips.btnZeroPulse">
+                                            {{ t.accumulators.zero }} Pulse {{ n }}
+                                        </button>
+                                        <button class="btn btn-sm btn-primary" @click="$emit('show-set-accumulator', 'p', n)" :disabled="!emontxConnected" :title="t.tooltips.btnSetAccumulator">
+                                            {{ t.accumulators.set }} Pulse {{ n }}
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         </table>

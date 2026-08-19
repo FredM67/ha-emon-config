@@ -178,6 +178,7 @@
             @save-config="saveConfig"
             @zero-energy="zeroEnergy"
             @show-individual-zero="showIndividualZeroConfirm"
+            @show-set-accumulator="showSetAccumulatorConfirm"
         ></accumulators-tab>
 
         <!-- Modals -->
@@ -188,6 +189,14 @@
             @confirm="confirmIndividualZero"
             @cancel="cancelIndividualZero"
         ></individual-zero-modal>
+
+        <set-accumulator-modal
+            :show="showSetAccumulatorModal"
+            :t="t"
+            :target="setAccumulatorTarget"
+            @confirm="confirmSetAccumulator"
+            @cancel="cancelSetAccumulator"
+        ></set-accumulator-modal>
 
         <zero-confirm-modal
             :show="showZeroConfirm"
@@ -265,7 +274,7 @@
             el: '#app',
             mixins: [ConnectionMixin, DataParserMixin, ConfigCommandsMixin, YamlGeneratorMixin, ChannelNamesMixin, FirmwareUpdateMixin],
             data: {
-                integrationVersion: '1.8.0-beta.17',
+                integrationVersion: '1.8.0-beta.18',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -289,6 +298,9 @@
                 // Individual zero confirmation
                 showIndividualZeroModal: false,
                 individualZeroTarget: { type: '', channel: 0 },
+                // Set accumulator value
+                showSetAccumulatorModal: false,
+                setAccumulatorTarget: { type: '', channel: 0 },
                 // YAML generator
                 showYamlModal: false,
                 generatedYaml: '',

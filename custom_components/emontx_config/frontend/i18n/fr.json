@@ -279,7 +279,13 @@
         "confirmMessage": "Êtes-vous sûr de vouloir remettre à zéro",
         "confirmWarning": "Cette action est irréversible.",
         "confirmYes": "Oui, Remettre à Zéro",
-        "confirmNo": "Annuler"
+        "confirmNo": "Annuler",
+        "set": "Définir",
+        "setTitle": "Définir la Valeur de l'Accumulateur",
+        "setMessage": "Entrer la nouvelle valeur pour",
+        "setValueLabel": "Nouvelle valeur",
+        "setConfirm": "Définir la Valeur",
+        "setCancel": "Annuler"
     },
     "tempSensors": {
         "applyFirst": "Vous avez des modifications en attente. Les appliquer avant de sauvegarder ?"
@@ -320,6 +326,7 @@
         "btnSaveMapping": "Enregistrer les adresses des capteurs de température",
         "btnZeroIndividual": "Réinitialiser cet accumulateur d'énergie à zéro",
         "btnZeroPulse": "Réinitialiser ce compteur d'impulsions à zéro",
+        "btnSetAccumulator": "Définir cet accumulateur à une valeur spécifique",
         "btnZeroAll": "Réinitialiser tous les accumulateurs à zéro",
         "btnClearAllSlots": "Effacer toutes les affectations de capteurs de température",
         "btnClearSlot": "Vider cet emplacement",
