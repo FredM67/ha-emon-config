@@ -42,14 +42,14 @@ Vue.component('config-tab', {
     },
     methods: {
         isCustomCt(ical) {
-            return !this.ctsAvailable.includes(ical);
+            return !this.ctsAvailable.includes(Math.abs(ical));
         },
         getCtSelectValue(index) {
             const ical = this.device.ichannels[index].ical;
             if (this.customCtChannels[index] || this.isCustomCt(ical)) {
                 return 'custom';
             }
-            return ical;
+            return Math.abs(ical);
         },
         handleCtTypeChange(index, event) {
             const value = event.target.value;
@@ -57,8 +57,21 @@ Vue.component('config-tab', {
                 this.$set(this.customCtChannels, index, true);
             } else {
                 this.$set(this.customCtChannels, index, false);
-                this.device.ichannels[index].ical = parseFloat(value);
+                const sign = this.isCtInverted(index) ? -1 : 1;
+                this.device.ichannels[index].ical = sign * parseFloat(value);
             }
+        },
+        isCtInverted(index) {
+            return this.device.ichannels[index].ical < 0;
+        },
+        toggleCtInvert(index) {
+            const channel = this.device.ichannels[index];
+            this.$set(channel, 'ical', -channel.ical);
+        },
+        setIcalMagnitude(index, value) {
+            const magnitude = Math.abs(parseFloat(value)) || 0;
+            const sign = this.isCtInverted(index) ? -1 : 1;
+            this.$set(this.device.ichannels[index], 'ical', sign * magnitude);
         },
         handleOpaFuncChange(idx, event) {
             const newFunc = event.target.value;
@@ -341,7 +354,7 @@ Vue.component('config-tab', {
                                     <td>CT {{ index + 1 }}</td>
                                     <td><input type="text" :value="getChannelName('ct', String(index + 1))" @input="onNameChange('ct', String(index + 1), $event)" :placeholder="t.config.namePlaceholder" style="width: 150px;" /></td>
                                     <td>
-                                        <div style="display: flex; align-items: flex-start; gap: 5px;">
+                                        <div style="display: flex; align-items: flex-start; gap: 5px; flex-wrap: wrap;">
                                             <select :value="getCtSelectValue(index)" @change="handleCtTypeChange(index, $event)" :disabled="!emontxConnected" :class="{ 'input-error': isFieldError(index, 'ical') }">
                                                 <option v-for="rating in ctsAvailable" :value="rating" :key="rating">{{ rating }}A</option>
                                                 <option value="custom">{{ t.config.custom }}</option>
@@ -349,7 +362,8 @@ Vue.component('config-tab', {
                                             <div v-if="getCtSelectValue(index) === 'custom'">
                                                 <div style="display: flex; align-items: center; gap: 3px;">
                                                     <input type="number" min="10" max="200" step="0.01"
-                                                           v-model.number="channel.ical"
+                                                           :value="Math.abs(channel.ical)"
+                                                           @input="setIcalMagnitude(index, $event.target.value)"
                                                            :disabled="!emontxConnected"
                                                            :class="{ 'input-error': isFieldError(index, 'ical') }"
                                                            :title="failedCtMessages[index] || undefined"
@@ -358,6 +372,10 @@ Vue.component('config-tab', {
                                                 </div>
                                                 <div v-if="isCtFailed(index) && failedCtMessages[index]" class="field-error-msg">{{ failedCtMessages[index] }}</div>
                                             </div>
+                                            <label style="display: flex; align-items: center; gap: 3px; font-size: 12px; white-space: nowrap;" :title="t.tooltips.ctInvert">
+                                                <input type="checkbox" :checked="isCtInverted(index)" @change="toggleCtInvert(index)" :disabled="!emontxConnected" />
+                                                {{ t.config.invert }}
+                                            </label>
                                         </div>
                                     </td>
                                     <td><input type="number" step="0.01" v-model.number="channel.ilead" style="width:70px" :disabled="!emontxConnected" :class="{ 'input-error': isFieldError(index, 'ilead') }" class="no-spinner" /><span class="unit">&deg;</span></td>

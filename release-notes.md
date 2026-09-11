@@ -1,3 +1,13 @@
+## What's new in v1.8.0-beta.22
+
+### Feature: invert a CT reading instead of typing a negative calibration value
+
+- The CT calibration value can no longer be entered as negative — it is now restricted to positive values
+- A new **Invert** checkbox is available for each CT channel, for when the clamp is installed the wrong way around the conductor
+- Checking it negates the calibration value sent to the firmware, without the user having to type a negative number
+- If the device reports a negative calibration value, the UI automatically shows the positive magnitude with the Invert checkbox checked
+- Added translations for English, French, German, Spanish, and Italian
+
 ## What's new in v1.8.0-beta.21
 
 ### UI: show Pulse before Temperature in Live Data
