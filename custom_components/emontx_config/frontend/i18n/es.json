@@ -231,6 +231,22 @@
         "confirm": "Sí, Reiniciar",
         "cancel": "Cancelar"
     },
+    "lock": {
+        "locked": "Bloqueado",
+        "unlocked": "Desbloqueado",
+        "chipLockedTooltip": "El dispositivo rechaza los comandos de configuración. Haga clic para desbloquear.",
+        "chipUnlockedTooltip": "El dispositivo acepta los comandos de configuración. Haga clic para bloquear.",
+        "bannerTitle": "Dispositivo bloqueado.",
+        "bannerMessage": "Los comandos de configuración se rechazan hasta que el dispositivo se desbloquee.",
+        "unlockButton": "Desbloquear",
+        "confirmTitle": "¿Bloquear el dispositivo?",
+        "confirmMessage": "El dispositivo rechazará todos los comandos de configuración hasta que se desbloquee.",
+        "confirmButton": "Sí, Bloquear",
+        "unlocking": "Desbloqueando dispositivo...",
+        "locking": "Bloqueando dispositivo...",
+        "applyRejected": "El dispositivo está bloqueado - desbloquéelo para cambiar los ajustes.",
+        "applyAborted": "El dispositivo está bloqueado - los cambios restantes no se enviaron."
+    },
     "rfPowerWarning": {
         "title": "Advertencia de Alta Potencia RF",
         "message": "Está configurando la potencia RF a un nivel alto",

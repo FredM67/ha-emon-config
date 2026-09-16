@@ -252,6 +252,22 @@
         "confirm": "Yes, Reboot",
         "cancel": "Cancel"
     },
+    "lock": {
+        "locked": "Locked",
+        "unlocked": "Unlocked",
+        "chipLockedTooltip": "The device rejects configuration commands. Click to unlock.",
+        "chipUnlockedTooltip": "The device accepts configuration commands. Click to lock.",
+        "bannerTitle": "Device is locked.",
+        "bannerMessage": "Configuration commands are rejected until the device is unlocked.",
+        "unlockButton": "Unlock",
+        "confirmTitle": "Lock device?",
+        "confirmMessage": "The device will reject all configuration commands until it is unlocked.",
+        "confirmButton": "Yes, Lock",
+        "unlocking": "Unlocking device...",
+        "locking": "Locking device...",
+        "applyRejected": "Device is locked - unlock it to change settings.",
+        "applyAborted": "Device is locked - remaining changes were not sent."
+    },
     "rfPowerWarning": {
         "title": "High RF Power Warning",
         "message": "You are setting RF power to a high level",

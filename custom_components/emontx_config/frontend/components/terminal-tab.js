@@ -7,7 +7,9 @@ Vue.component('terminal-tab', {
         t: Object,
         lang: { type: String, default: 'en' },
         emontxConnected: Boolean,
-        hasUnsavedChanges: Boolean
+        hasUnsavedChanges: Boolean,
+        // null = unknown (firmware without emonlock support)
+        deviceLocked: { type: Boolean, default: null }
     },
     data() {
         return {
@@ -153,6 +155,10 @@ Vue.component('terminal-tab', {
                         <button class="btn btn-primary" @click="sendQuickCmd('v')">v - Version</button>
                         <button class="btn btn-primary" @click="sendQuickCmd('s')">s - Save</button>
                         <button class="btn btn-primary" @click="sendQuickCmd('?')">? - Help</button>
+                        <!-- Lock/unlock go through the parent so the confirm modal and the
+                             deviceLocked flag stay in sync with the rest of the panel. -->
+                        <button v-if="deviceLocked !== false" class="btn btn-warning" @click="$emit('unlock-device')" :disabled="!emontxConnected">🔓 emonunlock</button>
+                        <button v-if="deviceLocked !== true" class="btn" @click="$emit('lock-device')" :disabled="!emontxConnected">🔒 emonlock</button>
                     </div>
                 </div>
             </div>

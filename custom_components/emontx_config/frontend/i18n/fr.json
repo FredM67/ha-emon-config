@@ -252,6 +252,22 @@
         "confirm": "Oui, Redémarrer",
         "cancel": "Annuler"
     },
+    "lock": {
+        "locked": "Verrouillé",
+        "unlocked": "Déverrouillé",
+        "chipLockedTooltip": "L'appareil refuse les commandes de configuration. Cliquez pour déverrouiller.",
+        "chipUnlockedTooltip": "L'appareil accepte les commandes de configuration. Cliquez pour verrouiller.",
+        "bannerTitle": "Appareil verrouillé.",
+        "bannerMessage": "Les commandes de configuration sont refusées tant que l'appareil n'est pas déverrouillé.",
+        "unlockButton": "Déverrouiller",
+        "confirmTitle": "Verrouiller l'appareil ?",
+        "confirmMessage": "L'appareil refusera toutes les commandes de configuration jusqu'à son déverrouillage.",
+        "confirmButton": "Oui, Verrouiller",
+        "unlocking": "Déverrouillage de l'appareil...",
+        "locking": "Verrouillage de l'appareil...",
+        "applyRejected": "Appareil verrouillé - déverrouillez-le pour modifier les réglages.",
+        "applyAborted": "Appareil verrouillé - les modifications restantes n'ont pas été envoyées."
+    },
     "rfPowerWarning": {
         "title": "Avertissement Puissance RF Élevée",
         "message": "Vous définissez la puissance RF à un niveau élevé",

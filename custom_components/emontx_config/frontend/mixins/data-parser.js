@@ -34,6 +34,19 @@ const DataParserMixin = {
                 this.hasUnsavedChanges = false;
             }
 
+            // Command lock state.
+            // The 'l' dump ends with a bare "Locked."/"Unlocked." line; the
+            // emonlock/emonunlock commands ack with "> Locked."/"> Unlocked.".
+            const lockMatch = line.match(/^\s*>?\s*(un)?locked\.\s*$/i);
+            if (lockMatch) {
+                this.deviceLocked = !lockMatch[1];
+            }
+            // A rejected command also tells us the device is locked, even if we
+            // never saw the footer (e.g. it was locked after the config was loaded).
+            else if (/Locked \(unlock with/i.test(line)) {
+                this.deviceLocked = true;
+            }
+
             const sensorRegex = /"?(\w+)"?\s*:\s*"?([^",}\s]+)"?/g;
             let match;
             const sensorData = {};

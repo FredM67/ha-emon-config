@@ -130,6 +130,26 @@ Vue.component('reboot-confirm-modal', {
     `
 });
 
+// Lock Confirmation Modal (locking is deliberate; unlocking is one click)
+Vue.component('lock-confirm-modal', {
+    props: {
+        show: Boolean,
+        t: Object
+    },
+    template: `
+        <div v-if="show" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+            <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); max-width: 420px; text-align: center;">
+                <h3 style="margin-top: 0; color: #ff9800;">🔒 {{ t.lock?.confirmTitle || 'Lock device?' }}</h3>
+                <p style="font-size: 16px; margin: 20px 0;">{{ t.lock?.confirmMessage || 'The device will reject all configuration commands until it is unlocked.' }}</p>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button class="btn btn-warning" @click="$emit('confirm')" style="padding: 12px 30px; font-size: 16px;">{{ t.lock?.confirmButton || 'Yes, Lock' }}</button>
+                    <button class="btn" @click="$emit('cancel')" style="padding: 12px 30px; font-size: 16px; background: #ccc;">{{ t.rebootConfirm?.cancel || 'Cancel' }}</button>
+                </div>
+            </div>
+        </div>
+    `
+});
+
 // RF Power Warning Modal
 Vue.component('rf-power-warning-modal', {
     props: {

@@ -11,6 +11,7 @@ Vue.component('config-tab', {
         configReceived: Boolean,
         upgradeRequired: Boolean,
         hasUnsavedChanges: Boolean,
+        deviceLocked: { type: Boolean, default: null },
         hasPendingChanges: Boolean,
         pendingChangesCount: Number,
         applyProgress: Object,
@@ -195,10 +196,16 @@ Vue.component('config-tab', {
     template: `
         <form autocomplete="off" @submit.prevent>
         <div class="tab-content active" :style="{ paddingBottom: (hasPendingChanges || applyProgress) ? '68px' : '0' }">
+            <!-- Device Locked Banner: no configuration command will be accepted -->
+            <div v-if="deviceLocked" class="alert alert-warning" style="display: flex; align-items: center; justify-content: space-between;">
+                <span><strong>🔒 {{ t.lock.bannerTitle }}</strong> {{ t.lock.bannerMessage }}</span>
+                <button type="button" class="btn btn-warning" @click="$emit('unlock-device')" :disabled="!emontxConnected" style="margin-left: 15px;">{{ t.lock.unlockButton }}</button>
+            </div>
+
             <!-- Unsaved Changes Warning Banner (for flash save) -->
             <div v-if="hasUnsavedChanges" class="alert alert-danger" style="display: flex; align-items: center; justify-content: space-between;">
                 <span><strong>{{ t.unsavedChanges.title }}</strong> {{ t.unsavedChanges.message }}</span>
-                <button type="button" class="btn btn-warning" @click="$emit('save-config')" style="margin-left: 15px;">{{ t.buttons.save }}</button>
+                <button type="button" class="btn btn-warning" @click="$emit('save-config')" :disabled="deviceLocked" :title="deviceLocked ? t.lock.bannerMessage : ''" style="margin-left: 15px;">{{ t.buttons.save }}</button>
             </div>
 
             <!-- Floating Bottom Bar for Pending Changes / Apply Progress -->
@@ -210,7 +217,7 @@ Vue.component('config-tab', {
                         <span class="floating-bar-text">{{ t.pendingChanges.title }}</span>
                     </div>
                     <div class="floating-bar-buttons">
-                        <button type="button" class="btn btn-success" @click="$emit('apply-changes')" :disabled="!emontxConnected">{{ t.buttons.applyChanges }}</button>
+                        <button type="button" class="btn btn-success" @click="$emit('apply-changes')" :disabled="!emontxConnected || deviceLocked" :title="deviceLocked ? t.lock.bannerMessage : ''">{{ t.buttons.applyChanges }}</button>
                         <button type="button" class="btn" @click="$emit('discard-changes')" style="background: #ccc;">{{ t.buttons.discardChanges }}</button>
                     </div>
                 </template>
@@ -586,17 +593,17 @@ Vue.component('config-tab', {
 
                 <!-- Action Buttons -->
                 <div class="button-group">
-                    <button type="button" class="btn btn-success" @click="$emit('apply-changes')" :disabled="!hasPendingChanges || !emontxConnected || applyProgress" :title="t.tooltips.btnApplyChanges">
+                    <button type="button" class="btn btn-success" @click="$emit('apply-changes')" :disabled="!hasPendingChanges || !emontxConnected || applyProgress || deviceLocked" :title="deviceLocked ? t.lock.bannerMessage : t.tooltips.btnApplyChanges">
                         {{ t.buttons.applyChanges }} <span v-if="pendingChangesCount > 0">({{ pendingChangesCount }})</span>
                     </button>
                     <button type="button" class="btn" @click="$emit('discard-changes')" :disabled="!hasPendingChanges || applyProgress" style="background: #ccc;" :title="t.tooltips.btnDiscardChanges">
                         {{ t.buttons.discardChanges }}
                     </button>
-                    <button type="button" class="btn btn-warning" @click="$emit('save-config')" :disabled="!hasUnsavedChanges || !emontxConnected" :title="t.tooltips.btnSave">{{ t.buttons.save }}</button>
-                    <button type="button" class="btn btn-info" @click="$emit('restore-saved')" :disabled="!emontxConnected" :title="t.tooltips.btnRestoreSaved">{{ t.buttons.restoreSaved }}</button>
-                    <button type="button" class="btn btn-danger" @click="$emit('reset-defaults')" :disabled="!emontxConnected" :title="t.tooltips.btnResetDefaults">{{ t.buttons.resetDefaults }}</button>
+                    <button type="button" class="btn btn-warning" @click="$emit('save-config')" :disabled="!hasUnsavedChanges || !emontxConnected || deviceLocked" :title="deviceLocked ? t.lock.bannerMessage : t.tooltips.btnSave">{{ t.buttons.save }}</button>
+                    <button type="button" class="btn btn-info" @click="$emit('restore-saved')" :disabled="!emontxConnected || deviceLocked" :title="deviceLocked ? t.lock.bannerMessage : t.tooltips.btnRestoreSaved">{{ t.buttons.restoreSaved }}</button>
+                    <button type="button" class="btn btn-danger" @click="$emit('reset-defaults')" :disabled="!emontxConnected || deviceLocked" :title="deviceLocked ? t.lock.bannerMessage : t.tooltips.btnResetDefaults">{{ t.buttons.resetDefaults }}</button>
                     <button type="button" class="btn btn-primary" @click="$emit('load-config')" :disabled="!emontxConnected" :title="t.tooltips.btnReloadConfig">{{ t.buttons.reloadConfig }}</button>
-                    <button type="button" class="btn" @click="$emit('reboot-device')" :disabled="!emontxConnected" style="background: #ff5722; color: white;" :title="t.tooltips.btnReboot">{{ t.buttons.reboot }}</button>
+                    <button type="button" class="btn" @click="$emit('reboot-device')" :disabled="!emontxConnected || deviceLocked" style="background: #ff5722; color: white;" :title="deviceLocked ? t.lock.bannerMessage : t.tooltips.btnReboot">{{ t.buttons.reboot }}</button>
                     <button type="button" class="btn btn-primary" @click="$emit('generate-yaml')" :disabled="!configReceived" style="background: #9c27b0;" :title="t.tooltips.btnGenerateYaml">{{ t.buttons.generateYaml }}</button>
                 </div>
             </div>

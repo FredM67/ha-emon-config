@@ -1,3 +1,16 @@
+## What's new in v1.8.0-beta.23
+
+### Feature: command lock state (emonlock / emonunlock)
+
+- The panel now tracks the device's command lock, read from the `Locked.`/`Unlocked.` footer of the `l` dump and from the `emonlock`/`emonunlock` acknowledgements
+- A chip next to the voltage in the status bar shows 🔒 **Locked** (amber) or 🔓 **Unlocked** (grey); clicking it toggles the lock. No chip is shown on firmware that does not support the feature
+- Unlocking is a single click; locking asks for confirmation first
+- The Config tab shows a warning banner with a one-click **Unlock** button while the device is locked, and Apply Changes / Save / Restore Saved / Reset Defaults / Reboot are disabled
+- If a configuration command is rejected because the device is locked, Apply Changes now stops immediately (remaining changes stay pending for retry) instead of failing every change one by one
+- The raw firmware text `Locked (unlock with: emonunlock)` is replaced by a proper translated message
+- `emonunlock` / `emonlock` are also available as quick commands in the Terminal tab
+- Added translations for English, French, German, Spanish, and Italian
+
 ## What's new in v1.8.0-beta.22
 
 ### Feature: invert a CT reading instead of typing a negative calibration value

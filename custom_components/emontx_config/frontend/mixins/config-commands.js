@@ -88,6 +88,7 @@ const ConfigCommandsMixin = {
 
             const successfulChanges = [];
             const failedChanges = [];
+            let abortedByLock = false;
 
             for (let i = 0; i < changes.length; i++) {
                 const change = changes[i];
@@ -114,11 +115,25 @@ const ConfigCommandsMixin = {
                     this.log(`Applied: ${this.getChangeLabel(change)}`, 'info');
                     successfulChanges.push(change);
                 } catch (e) {
-                    const errorMsg = e.message && e.message.includes('> Error:')
+                    let errorMsg = e.message && e.message.includes('> Error:')
                         ? e.message.replace(/^.*>\s*Error:\s*/, '').trim()
                         : 'timeout or rejected';
+
+                    // The device rejects every config command while locked - replace
+                    // the raw firmware text and stop, instead of failing every change.
+                    if (/^Locked\b/i.test(errorMsg)) {
+                        this.deviceLocked = true;
+                        abortedByLock = true;
+                        errorMsg = this.t.lock?.applyRejected || 'Device is locked - unlock it to change settings.';
+                    }
+
                     this.log(`Failed to apply: ${this.getChangeLabel(change)} — ${errorMsg}`, 'error');
                     failedChanges.push({ ...change, errorMessage: errorMsg });
+
+                    if (abortedByLock) {
+                        this.log(this.t.lock?.applyAborted || 'Device is locked - remaining changes were not sent.', 'warning');
+                        break;
+                    }
                 }
             }
 
@@ -801,7 +816,41 @@ const ConfigCommandsMixin = {
             this.hasUnsavedChanges = true;
         },
 
+        // Command lock (firmware 'emonlock'/'emonunlock').
+        // While locked the device only accepts ?, b, l*, v, ol and on - every
+        // configuration command is answered with "> Error: Locked (...)".
+        unlockDevice() {
+            this.writeToStream('emonunlock');
+            this.log(this.t.lock?.unlocking || 'Unlocking device...', 'info');
+        },
+
+        lockDevice() {
+            this.showLockConfirm = true;
+        },
+
+        confirmLock() {
+            this.showLockConfirm = false;
+            this.writeToStream('emonlock');
+            this.log(this.t.lock?.locking || 'Locking device...', 'info');
+        },
+
+        cancelLock() {
+            this.showLockConfirm = false;
+        },
+
+        toggleLock() {
+            if (this.deviceLocked) {
+                this.unlockDevice();
+            } else {
+                this.lockDevice();
+            }
+        },
+
         async saveConfig() {
+            if (this.deviceLocked) {
+                this.log(this.t.lock?.applyRejected || 'Device is locked - unlock it to change settings.', 'error');
+                return;
+            }
             this.writeToStream('s');
             this.changes = false;
             this.hasUnsavedChanges = false;

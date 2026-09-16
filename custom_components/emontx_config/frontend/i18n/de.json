@@ -231,6 +231,22 @@
         "confirm": "Ja, Neu starten",
         "cancel": "Abbrechen"
     },
+    "lock": {
+        "locked": "Gesperrt",
+        "unlocked": "Entsperrt",
+        "chipLockedTooltip": "Das Gerät weist Konfigurationsbefehle ab. Zum Entsperren klicken.",
+        "chipUnlockedTooltip": "Das Gerät akzeptiert Konfigurationsbefehle. Zum Sperren klicken.",
+        "bannerTitle": "Gerät ist gesperrt.",
+        "bannerMessage": "Konfigurationsbefehle werden abgewiesen, bis das Gerät entsperrt wird.",
+        "unlockButton": "Entsperren",
+        "confirmTitle": "Gerät sperren?",
+        "confirmMessage": "Das Gerät weist alle Konfigurationsbefehle ab, bis es entsperrt wird.",
+        "confirmButton": "Ja, Sperren",
+        "unlocking": "Gerät wird entsperrt...",
+        "locking": "Gerät wird gesperrt...",
+        "applyRejected": "Gerät ist gesperrt - entsperren Sie es, um Einstellungen zu ändern.",
+        "applyAborted": "Gerät ist gesperrt - die übrigen Änderungen wurden nicht gesendet."
+    },
     "rfPowerWarning": {
         "title": "Warnung: Hohe RF-Leistung",
         "message": "Sie stellen die RF-Leistung auf einen hohen Wert ein",

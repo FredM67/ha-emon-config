@@ -47,6 +47,12 @@
                     {{ t.config.updateAvailable }}
                 </a>
                 <span style="margin-left: 12px;" v-if="device.voltage">{{ t.config.voltageLabel }}: <strong>{{ device.voltage }}</strong></span>
+                <span v-if="deviceLocked !== null"
+                      :class="['lock-chip', deviceLocked ? 'locked' : 'unlocked']"
+                      @click="toggleLock"
+                      :title="deviceLocked ? t.lock.chipLockedTooltip : t.lock.chipUnlockedTooltip">
+                    {{ deviceLocked ? '🔒 ' + t.lock.locked : '🔓 ' + t.lock.unlocked }}
+                </span>
             </div>
             <div class="status-item" style="margin-left: auto;">
                 <label style="margin-right: 8px;">{{ t.deviceSelector }}:</label>
@@ -74,6 +80,7 @@
             :no-response="noResponse"
             :upgrade-required="upgradeRequired"
             :has-unsaved-changes="hasUnsavedChanges"
+            :device-locked="deviceLocked"
             :has-pending-changes="hasPendingChanges"
             :pending-changes-count="pendingChangesList.length"
             :apply-progress="applyProgress"
@@ -111,6 +118,7 @@
             @export-names="exportChannelNames"
             @import-names="importChannelNames"
             @open-auto-calibration="showAutoCalibration = true"
+            @unlock-device="unlockDevice"
         ></config-tab>
 
         <!-- Serial Terminal Tab -->
@@ -121,8 +129,11 @@
             :lang="lang"
             :emontx-connected="emontxConnected"
             :has-unsaved-changes="hasUnsavedChanges"
+            :device-locked="deviceLocked"
             @send-command="writeToStream"
             @save-config="saveConfig"
+            @lock-device="lockDevice"
+            @unlock-device="unlockDevice"
         ></terminal-tab>
 
         <!-- Firmware Update Tab -->
@@ -212,6 +223,13 @@
             @cancel="cancelReboot"
         ></reboot-confirm-modal>
 
+        <lock-confirm-modal
+            :show="showLockConfirm"
+            :t="t"
+            @confirm="confirmLock"
+            @cancel="cancelLock"
+        ></lock-confirm-modal>
+
         <rf-power-warning-modal
             :show="showRfPowerWarning"
             :t="t"
@@ -274,7 +292,7 @@
             el: '#app',
             mixins: [ConnectionMixin, DataParserMixin, ConfigCommandsMixin, YamlGeneratorMixin, ChannelNamesMixin, FirmwareUpdateMixin],
             data: {
-                integrationVersion: '1.8.0-beta.22',
+                integrationVersion: '1.8.0-beta.23',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -292,6 +310,9 @@
                 showZeroConfirm: false,
                 // Reboot confirmation
                 showRebootConfirm: false,
+                // Command lock: null = unknown (firmware without lock support), true/false = known
+                deviceLocked: null,
+                showLockConfirm: false,
                 // RF power warning
                 showRfPowerWarning: false,
                 rfPowerWarningConfirmed: false,
@@ -608,6 +629,7 @@
                     this.emontxConnected = false;
                     this.liveData = {};
                     this.hasUnsavedChanges = false;
+                    this.deviceLocked = null;
                     this.updateChannelNamesForDevice();
                     this.log(`Switched to device: ${this.selectedDevice}`, 'info');
                     this.getDeviceInfo();

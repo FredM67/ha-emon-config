@@ -768,6 +768,38 @@ input.input-error.no-spinner {
     }
 }
 
+/* Command lock chip (status bar) */
+.lock-chip {
+    margin-left: 12px;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.lock-chip.locked {
+    background: #fff3e0;
+    color: #e65100;
+    border-color: #ffb74d;
+}
+
+.lock-chip.locked:hover {
+    background: #ffe0b2;
+}
+
+.lock-chip.unlocked {
+    background: #f0f0f0;
+    color: #666;
+    border-color: #ddd;
+}
+
+.lock-chip.unlocked:hover {
+    background: #e4e4e4;
+}
+
 /* Temperature Sensor Slot Grid */
 .temp-slots-grid {
     display: grid;
