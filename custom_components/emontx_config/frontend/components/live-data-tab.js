@@ -9,7 +9,10 @@ Vue.component('live-data-tab', {
         liveData: Object,
         hasUnsavedChanges: Boolean,
         configReceived: Boolean,
-        channelNames: Object
+        channelNames: Object,
+        emontxConnected: Boolean,
+        // null = unknown (firmware without emonlock support)
+        deviceLocked: { type: Boolean, default: null }
     },
     data() {
         const store = window.parent.localStorage || localStorage;
@@ -321,10 +324,13 @@ Vue.component('live-data-tab', {
     },
     template: `
         <div class="tab-content">
+            <!-- Device Locked Banner: the Save button below would be rejected -->
+            <lock-banner :t="t" :device-locked="deviceLocked" :emontx-connected="emontxConnected" @unlock-device="$emit('unlock-device')"></lock-banner>
+
             <!-- Unsaved Changes Warning Banner -->
             <div v-if="hasUnsavedChanges" class="alert alert-danger" style="display: flex; align-items: center; justify-content: space-between;">
                 <span><strong>{{ t.unsavedChanges.title }}</strong> {{ t.unsavedChanges.message }}</span>
-                <button class="btn btn-warning" @click="$emit('save-config')" style="margin-left: 15px;">{{ t.buttons.save }}</button>
+                <button class="btn btn-warning" @click="$emit('save-config')" :disabled="deviceLocked" :title="deviceLocked ? t.lock.bannerMessage : ''" style="margin-left: 15px;">{{ t.buttons.save }}</button>
             </div>
 
             <div class="card">

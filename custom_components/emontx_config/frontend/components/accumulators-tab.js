@@ -9,7 +9,9 @@ Vue.component('accumulators-tab', {
         liveData: Object,
         emontxConnected: Boolean,
         hasUnsavedChanges: Boolean,
-        channelNames: Object
+        channelNames: Object,
+        // null = unknown (firmware without emonlock support)
+        deviceLocked: { type: Boolean, default: null }
     },
     computed: {
         energyChannelCount() {
@@ -49,16 +51,19 @@ Vue.component('accumulators-tab', {
     },
     template: `
         <div class="tab-content">
+            <!-- Device Locked Banner: the yz/ye/yp commands will be rejected -->
+            <lock-banner :t="t" :device-locked="deviceLocked" :emontx-connected="emontxConnected" @unlock-device="$emit('unlock-device')"></lock-banner>
+
             <!-- Unsaved Changes Warning Banner -->
             <div v-if="hasUnsavedChanges" class="alert alert-danger" style="display: flex; align-items: center; justify-content: space-between;">
                 <span><strong>{{ t.unsavedChanges.title }}</strong> {{ t.unsavedChanges.message }}</span>
-                <button class="btn btn-warning" @click="$emit('save-config')" style="margin-left: 15px;">{{ t.buttons.save }}</button>
+                <button class="btn btn-warning" @click="$emit('save-config')" :disabled="deviceLocked" :title="deviceLocked ? t.lock.bannerMessage : ''" style="margin-left: 15px;">{{ t.buttons.save }}</button>
             </div>
 
             <!-- Explanation and Zero All button -->
             <div class="alert alert-info" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
                 <span>{{ t.accumulators.explanation }}</span>
-                <button class="btn btn-danger" @click="$emit('zero-energy')" :disabled="!emontxConnected" :title="t.tooltips.btnZeroAll">{{ t.accumulators.zeroAll }}</button>
+                <button class="btn btn-danger" @click="$emit('zero-energy')" :disabled="!emontxConnected || deviceLocked" :title="deviceLocked ? t.lock.bannerMessage : t.tooltips.btnZeroAll">{{ t.accumulators.zeroAll }}</button>
             </div>
 
             <div class="card">
@@ -78,10 +83,10 @@ Vue.component('accumulators-tab', {
                                 <td>{{ liveData['E' + n] || '0' }} Wh</td>
                                 <td v-if="device.hardware === 'emonPi3'" style="white-space: nowrap;">
                                     <div style="display: flex; gap: 6px;">
-                                        <button class="btn btn-sm btn-danger" @click="$emit('show-individual-zero', 'e', n)" :disabled="!emontxConnected" :title="t.tooltips.btnZeroIndividual">
+                                        <button class="btn btn-sm btn-danger" @click="$emit('show-individual-zero', 'e', n)" :disabled="!emontxConnected || deviceLocked" :title="deviceLocked ? t.lock.bannerMessage : t.tooltips.btnZeroIndividual">
                                             {{ t.accumulators.zero }}
                                         </button>
-                                        <button class="btn btn-sm btn-primary" @click="$emit('show-set-accumulator', 'e', n)" :disabled="!emontxConnected" :title="t.tooltips.btnSetAccumulator">
+                                        <button class="btn btn-sm btn-primary" @click="$emit('show-set-accumulator', 'e', n)" :disabled="!emontxConnected || deviceLocked" :title="deviceLocked ? t.lock.bannerMessage : t.tooltips.btnSetAccumulator">
                                             {{ t.accumulators.set }}
                                         </button>
                                     </div>
@@ -109,10 +114,10 @@ Vue.component('accumulators-tab', {
                                 <td>{{ liveData['pulse' + n] || '0' }}</td>
                                 <td v-if="device.hardware === 'emonPi3'" style="white-space: nowrap;">
                                     <div style="display: flex; gap: 6px;">
-                                        <button class="btn btn-sm btn-danger" @click="$emit('show-individual-zero', 'p', n)" :disabled="!emontxConnected" :title="t.tooltips.btnZeroPulse">
+                                        <button class="btn btn-sm btn-danger" @click="$emit('show-individual-zero', 'p', n)" :disabled="!emontxConnected || deviceLocked" :title="deviceLocked ? t.lock.bannerMessage : t.tooltips.btnZeroPulse">
                                             {{ t.accumulators.zero }}
                                         </button>
-                                        <button class="btn btn-sm btn-primary" @click="$emit('show-set-accumulator', 'p', n)" :disabled="!emontxConnected" :title="t.tooltips.btnSetAccumulator">
+                                        <button class="btn btn-sm btn-primary" @click="$emit('show-set-accumulator', 'p', n)" :disabled="!emontxConnected || deviceLocked" :title="deviceLocked ? t.lock.bannerMessage : t.tooltips.btnSetAccumulator">
                                             {{ t.accumulators.set }}
                                         </button>
                                     </div>

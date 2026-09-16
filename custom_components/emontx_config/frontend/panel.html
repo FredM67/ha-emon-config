@@ -174,7 +174,10 @@
             :has-unsaved-changes="hasUnsavedChanges"
             :config-received="configReceived"
             :channel-names="channelNames"
+            :emontx-connected="emontxConnected"
+            :device-locked="deviceLocked"
             @save-config="saveConfig"
+            @unlock-device="unlockDevice"
         ></live-data-tab>
 
         <!-- Accumulators Tab -->
@@ -186,7 +189,9 @@
             :emontx-connected="emontxConnected"
             :has-unsaved-changes="hasUnsavedChanges"
             :channel-names="channelNames"
+            :device-locked="deviceLocked"
             @save-config="saveConfig"
+            @unlock-device="unlockDevice"
             @zero-energy="zeroEnergy"
             @show-individual-zero="showIndividualZeroConfirm"
             @show-set-accumulator="showSetAccumulatorConfirm"
@@ -273,6 +278,7 @@
     <!-- Load component scripts -->
     <script src="/emontx_config_static/components/modals.js"></script>
     <script src="/emontx_config_static/components/temp-sensors-section.js"></script>
+    <script src="/emontx_config_static/components/lock-banner.js"></script>
     <script src="/emontx_config_static/components/config-tab.js"></script>
     <script src="/emontx_config_static/components/terminal-tab.js"></script>
     <script src="/emontx_config_static/components/live-data-tab.js"></script>
@@ -292,7 +298,7 @@
             el: '#app',
             mixins: [ConnectionMixin, DataParserMixin, ConfigCommandsMixin, YamlGeneratorMixin, ChannelNamesMixin, FirmwareUpdateMixin],
             data: {
-                integrationVersion: '1.8.0-beta.23',
+                integrationVersion: '1.8.0-beta.24',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,

@@ -125,10 +125,13 @@ Vue.component('terminal-tab', {
     },
     template: `
         <div class="tab-content">
+            <!-- Device Locked Banner: any command typed below may be rejected -->
+            <lock-banner :t="t" :device-locked="deviceLocked" :emontx-connected="emontxConnected" @unlock-device="$emit('unlock-device')"></lock-banner>
+
             <!-- Unsaved Changes Warning Banner -->
             <div v-if="hasUnsavedChanges" class="alert alert-danger" style="display: flex; align-items: center; justify-content: space-between;">
                 <span><strong>{{ t.unsavedChanges.title }}</strong> {{ t.unsavedChanges.message }}</span>
-                <button class="btn btn-warning" @click="$emit('save-config')" style="margin-left: 15px;">{{ t.buttons.save }}</button>
+                <button class="btn btn-warning" @click="$emit('save-config')" :disabled="deviceLocked" :title="deviceLocked ? t.lock.bannerMessage : ''" style="margin-left: 15px;">{{ t.buttons.save }}</button>
             </div>
 
             <div class="card">

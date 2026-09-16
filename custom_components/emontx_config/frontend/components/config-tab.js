@@ -197,10 +197,7 @@ Vue.component('config-tab', {
         <form autocomplete="off" @submit.prevent>
         <div class="tab-content active" :style="{ paddingBottom: (hasPendingChanges || applyProgress) ? '68px' : '0' }">
             <!-- Device Locked Banner: no configuration command will be accepted -->
-            <div v-if="deviceLocked" class="alert alert-warning" style="display: flex; align-items: center; justify-content: space-between;">
-                <span><strong>🔒 {{ t.lock.bannerTitle }}</strong> {{ t.lock.bannerMessage }}</span>
-                <button type="button" class="btn btn-warning" @click="$emit('unlock-device')" :disabled="!emontxConnected" style="margin-left: 15px;">{{ t.lock.unlockButton }}</button>
-            </div>
+            <lock-banner :t="t" :device-locked="deviceLocked" :emontx-connected="emontxConnected" @unlock-device="$emit('unlock-device')"></lock-banner>
 
             <!-- Unsaved Changes Warning Banner (for flash save) -->
             <div v-if="hasUnsavedChanges" class="alert alert-danger" style="display: flex; align-items: center; justify-content: space-between;">

@@ -1,3 +1,12 @@
+## What's new in v1.8.0-beta.24
+
+### UI: the "device is locked" ribbon is now shown on every tab that can be rejected
+
+- The locked warning banner was only on the Config tab; it now also appears on **Accumulators**, **Live Data** and **Terminal** — every tab from which a command the firmware refuses while locked can be sent
+- Extracted into a single reusable `lock-banner` component, so the message and its one-click **Unlock** button are identical everywhere
+- The Zero All / per-channel Zero / per-channel Set buttons in the Accumulators tab are now disabled while locked, as are the Save buttons in the unsaved-changes banners of every tab
+- The Firmware tab is unaffected: flashing goes through the ESPHome service and is not subject to the command lock
+
 ## What's new in v1.8.0-beta.23
 
 ### Feature: command lock state (emonlock / emonunlock)
