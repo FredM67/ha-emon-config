@@ -174,10 +174,8 @@
             :has-unsaved-changes="hasUnsavedChanges"
             :config-received="configReceived"
             :channel-names="channelNames"
-            :emontx-connected="emontxConnected"
             :device-locked="deviceLocked"
             @save-config="saveConfig"
-            @unlock-device="unlockDevice"
         ></live-data-tab>
 
         <!-- Accumulators Tab -->
@@ -298,7 +296,7 @@
             el: '#app',
             mixins: [ConnectionMixin, DataParserMixin, ConfigCommandsMixin, YamlGeneratorMixin, ChannelNamesMixin, FirmwareUpdateMixin],
             data: {
-                integrationVersion: '1.8.0-beta.24',
+                integrationVersion: '1.8.0-beta.25',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,

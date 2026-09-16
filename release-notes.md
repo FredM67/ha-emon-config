@@ -1,3 +1,11 @@
+## What's new in v1.8.0-beta.25
+
+### UI: no locked ribbon on the Live Data tab
+
+- The Live Data tab is a read-only view, so the "device is locked" ribbon is no longer shown there
+- Its only writable control — the Save button in the unsaved-changes banner — stays disabled while the device is locked, with the reason in its tooltip
+- The ribbon remains on Config, Accumulators and Terminal
+
 ## What's new in v1.8.0-beta.24
 
 ### UI: the "device is locked" ribbon is now shown on every tab that can be rejected

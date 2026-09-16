@@ -10,8 +10,8 @@ Vue.component('live-data-tab', {
         hasUnsavedChanges: Boolean,
         configReceived: Boolean,
         channelNames: Object,
-        emontxConnected: Boolean,
-        // null = unknown (firmware without emonlock support)
+        // Read-only tab, so no locked ribbon here - only used to disable the
+        // Save button in the unsaved-changes banner. null = unknown firmware.
         deviceLocked: { type: Boolean, default: null }
     },
     data() {
@@ -324,9 +324,6 @@ Vue.component('live-data-tab', {
     },
     template: `
         <div class="tab-content">
-            <!-- Device Locked Banner: the Save button below would be rejected -->
-            <lock-banner :t="t" :device-locked="deviceLocked" :emontx-connected="emontxConnected" @unlock-device="$emit('unlock-device')"></lock-banner>
-
             <!-- Unsaved Changes Warning Banner -->
             <div v-if="hasUnsavedChanges" class="alert alert-danger" style="display: flex; align-items: center; justify-content: space-between;">
                 <span><strong>{{ t.unsavedChanges.title }}</strong> {{ t.unsavedChanges.message }}</span>
