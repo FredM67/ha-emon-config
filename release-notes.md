@@ -1,3 +1,35 @@
+## What's new in v1.8.0
+
+This release rolls up everything shipped in the v1.8.0-beta.1 through beta.25 pre-releases below. Highlights:
+
+### Feature: command lock (emonlock / emonunlock)
+
+- The panel now tracks and surfaces the device's command lock: a status-bar chip, a warning ribbon with a one-click **Unlock** button on every tab that can send a command the firmware would reject (Config, Accumulators, Terminal), and disabled Apply/Save/Restore/Reset/Reboot buttons while locked
+- Locking asks for confirmation first; unlocking is a single click, including from the Terminal quick commands
+- Apply Changes now stops immediately on a lock rejection instead of failing every remaining change one by one, and the raw firmware error is replaced by a translated message
+- Firmware flashing is unaffected — it goes through the ESPHome service, not the serial link
+
+### Feature: automatic voltage and CT calibration
+
+- Calibrate individual or multiple voltage phases and CT channels directly from the panel, entering a reference voltage or known load current, with live progress and results per channel
+- A new **Invert** checkbox replaces negative calibration values for CTs installed the wrong way around
+
+### Feature: accumulator management
+
+- **Zero** and **Set** buttons for individual energy/pulse accumulators (emonPi3), alongside the existing Zero All, renamed the tab to "Accumulators"
+- Inactive channels and the unused Pulse card are hidden automatically
+
+### Feature: serial output verbosity toggle (c0 / c1 / c2)
+
+- Switch the serial output between Off, Normal, and Verbose from *Other Settings*; Verbose mode unlocks current, power factor, and apparent power readings in Live Data
+
+### UI: Live Data improvements
+
+- Toggle between grouping by measurement or by channel, with the message counter, voltages, and new frequency reading shown on a single line above the rest
+- Inactive channels are hidden instead of highlighted; Pulse now appears above Temperature
+
+As always, translations were added/updated for English, French, German, Spanish, and Italian.
+
 ## What's new in v1.8.0-beta.25
 
 ### UI: no locked ribbon on the Live Data tab
