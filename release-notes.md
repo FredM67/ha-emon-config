@@ -1,3 +1,11 @@
+## What's new in v1.8.1
+
+### Fix: the panel refreshes itself after a firmware flash
+
+- After a successful flash, the panel waits for the device to restart and reloads its configuration, so the new firmware version shows without clicking **Load config**
+- The update badge is checked against GitHub again, so it is also correct after flashing an older version
+- Not done after switching back to the USB bootloader, since the device no longer runs the normal firmware then
+
 ## What's new in v1.8.0
 
 This release rolls up everything shipped in the v1.8.0-beta.1 through beta.25 pre-releases below. Highlights:

@@ -203,6 +203,7 @@ const FirmwareUpdateMixin = {
                 this.log('No firmware binary URL available — run a firmware check first', 'warning');
                 return;
             }
+            this._switchingBootloader = false;
             this.flashingFirmware = true;
             this.flashStatus = 'started';
             this.flashProgress = 0;
@@ -229,6 +230,7 @@ const FirmwareUpdateMixin = {
          */
         switchToUsbBootloader() {
             const binUrl = 'https://raw.githubusercontent.com/openenergymonitor/emon32-fw/main/bin/bootloaders/change-bootloader-usb.bin';
+            this._switchingBootloader = true;
             this.flashingFirmware = true;
             this.flashStatus = 'started';
             this.flashProgress = 0;
@@ -267,6 +269,16 @@ const FirmwareUpdateMixin = {
                 this.firmwareUpdateAvailable = false;
                 this.saveFirmwareSettings();
                 this.log('Firmware flash complete — device is rebooting', 'info');
+                // After the USB bootloader switch the device no longer runs the firmware
+                if (!this._switchingBootloader) {
+                    // Same boot delay as confirmReboot(). Clearing the last check makes the
+                    // version parsed from 'l' re-check GitHub, so the badge matches what was flashed.
+                    setTimeout(() => {
+                        this.log('Reloading device configuration after the flash...', 'info');
+                        this.firmwareLastCheck = 0;
+                        this.loadConfig();
+                    }, 5000);
+                }
             } else if (data.status === 'failed') {
                 this.flashingFirmware = false;
                 this.log('Firmware flash failed: ' + (data.message || 'unknown error'), 'error');
