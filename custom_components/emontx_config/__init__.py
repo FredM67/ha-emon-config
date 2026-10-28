@@ -15,6 +15,7 @@ from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant, ServiceCall, callback
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.typing import ConfigType
+from homeassistant.loader import async_get_integration
 import voluptuous as vol
 
 from .const import DOMAIN, EVENT_EMONTX_RAW
@@ -132,6 +133,10 @@ async def _async_register_panel(hass: HomeAssistant, entry: ConfigEntry) -> None
         [StaticPathConfig("/emontx_config_static", frontend_path, cache_headers=False)]
     )
 
+    # The version in the URL busts the browser cache: panel.html passes it on to
+    # every script and asset, so a new release never runs stale cached files.
+    integration = await async_get_integration(hass, DOMAIN)
+
     # Register the panel
     frontend.async_register_built_in_panel(
         hass,
@@ -139,7 +144,7 @@ async def _async_register_panel(hass: HomeAssistant, entry: ConfigEntry) -> None
         sidebar_title="emonPi/Tx Config",
         sidebar_icon="mdi:lightning-bolt",
         frontend_url_path="emontx-config",
-        config={"url": "/emontx_config_static/panel.html"},
+        config={"url": f"/emontx_config_static/panel.html?v={integration.version}"},
         require_admin=True,
     )
 

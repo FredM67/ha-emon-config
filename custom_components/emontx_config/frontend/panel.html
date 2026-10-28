@@ -5,7 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>emonPi/Tx Configuration</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.min.js"></script>
-    <link rel="stylesheet" href="/emontx_config_static/panel.css">
+    <script>
+        // Cache busting: the backend opens panel.html?v=<version>; every asset gets the
+        // same query, so a new release never runs stale cached files.
+        const ASSET_VERSION = new URLSearchParams(location.search).get('v');
+        const ASSET_QUERY = ASSET_VERSION ? '?v=' + encodeURIComponent(ASSET_VERSION) : '';
+        document.write('<link rel="stylesheet" href="/emontx_config_static/panel.css' + ASSET_QUERY + '">');
+    </script>
 </head>
 <body>
     <div id="app" class="container" v-cloak>
@@ -273,30 +279,32 @@
         </template>
     </div>
 
-    <!-- Load component scripts -->
-    <script src="/emontx_config_static/components/modals.js"></script>
-    <script src="/emontx_config_static/components/temp-sensors-section.js"></script>
-    <script src="/emontx_config_static/components/lock-banner.js"></script>
-    <script src="/emontx_config_static/components/config-tab.js"></script>
-    <script src="/emontx_config_static/components/terminal-tab.js"></script>
-    <script src="/emontx_config_static/components/live-data-tab.js"></script>
-    <script src="/emontx_config_static/components/accumulators-tab.js"></script>
-    <script src="/emontx_config_static/components/firmware-tab.js"></script>
-
-    <!-- Load mixins -->
-    <script src="/emontx_config_static/mixins/connection.js"></script>
-    <script src="/emontx_config_static/mixins/data-parser.js"></script>
-    <script src="/emontx_config_static/mixins/config-commands.js"></script>
-    <script src="/emontx_config_static/mixins/yaml-generator.js"></script>
-    <script src="/emontx_config_static/mixins/channel-names.js"></script>
-    <script src="/emontx_config_static/mixins/firmware-update.js"></script>
+    <!-- Load components, then mixins (document.write keeps them ordered and blocking) -->
+    <script>
+        [
+            'components/modals.js',
+            'components/temp-sensors-section.js',
+            'components/lock-banner.js',
+            'components/config-tab.js',
+            'components/terminal-tab.js',
+            'components/live-data-tab.js',
+            'components/accumulators-tab.js',
+            'components/firmware-tab.js',
+            'mixins/connection.js',
+            'mixins/data-parser.js',
+            'mixins/config-commands.js',
+            'mixins/yaml-generator.js',
+            'mixins/channel-names.js',
+            'mixins/firmware-update.js',
+        ].forEach(f => document.write('<script src="/emontx_config_static/' + f + ASSET_QUERY + '"><\/script>'));
+    </script>
 
     <script>
         var app = new Vue({
             el: '#app',
             mixins: [ConnectionMixin, DataParserMixin, ConfigCommandsMixin, YamlGeneratorMixin, ChannelNamesMixin, FirmwareUpdateMixin],
             data: {
-                integrationVersion: '1.8.2',
+                integrationVersion: '1.8.3',
                 activeTab: (window.parent.localStorage || localStorage).getItem('emontx_active_tab') || 'config',
                 wsConnected: false,
                 emontxConnected: false,
@@ -569,14 +577,14 @@
                     const basePath = currentPath.substring(0, currentPath.lastIndexOf('/'));
 
                     try {
-                        const enResponse = await fetch(`${basePath}/i18n/en.json`);
+                        const enResponse = await fetch(`${basePath}/i18n/en.json${ASSET_QUERY}`);
                         if (!enResponse.ok) {
                             throw new Error('Failed to load English translations');
                         }
                         this.$set(this.translations, 'en', await enResponse.json());
 
                         if (lang !== 'en') {
-                            const langResponse = await fetch(`${basePath}/i18n/${lang}.json`);
+                            const langResponse = await fetch(`${basePath}/i18n/${lang}.json${ASSET_QUERY}`);
                             if (langResponse.ok) {
                                 this.$set(this.translations, lang, await langResponse.json());
                                 this.lang = lang;

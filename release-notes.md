@@ -1,3 +1,10 @@
+## What's new in v1.8.3
+
+### Fix: the panel always runs the installed version's code
+
+- After an update, the browser could keep running cached scripts from the previous version inside the panel, even though the header already showed the new version number. This is why the v1.8.2 firmware beta fix did not take effect for everyone
+- Every panel file now carries the integration version in its URL, so each release loads fresh files. Restart Home Assistant after updating, as HACS asks
+
 ## What's new in v1.8.2
 
 ### Fix: firmware update detected when running a beta
