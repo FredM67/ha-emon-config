@@ -165,20 +165,27 @@ const FirmwareUpdateMixin = {
         },
 
         isNewerVersion(latest, current) {
-            // Strip leading V/v prefix and any pre-release suffix (e.g., "-test", "-beta")
-            const clean = (v) => v.replace(/^[vV]/, '').replace(/-.*$/, '');
+            // Split into numeric core and pre-release suffix: "v1.2.0-beta" and
+            // "1.2.0b" both give [1, 2, 0] with a pre-release flag. "+build"
+            // metadata is ignored, as in semver.
+            const parse = (v) => {
+                const m = v.trim().replace(/^[vV]/, '').replace(/\+.*$/, '').match(/^(\d+(?:\.\d+)*)(.*)$/);
+                return m ? { parts: m[1].split('.').map(Number), pre: m[2] !== '' } : null;
+            };
 
-            const latestParts = clean(latest).split('.').map(Number);
-            const currentParts = clean(current).split('.').map(Number);
+            const l = parse(latest);
+            const c = parse(current);
+            if (!l || !c) return false;
 
-            for (let i = 0; i < Math.max(latestParts.length, currentParts.length); i++) {
-                const l = latestParts[i] || 0;
-                const c = currentParts[i] || 0;
-                if (isNaN(l) || isNaN(c)) return false;
-                if (l > c) return true;
-                if (l < c) return false;
+            for (let i = 0; i < Math.max(l.parts.length, c.parts.length); i++) {
+                const lp = l.parts[i] || 0;
+                const cp = c.parts[i] || 0;
+                if (lp > cp) return true;
+                if (lp < cp) return false;
             }
-            return false;
+            // Same numbers: a stable release supersedes a pre-release of it
+            // (1.2.0 > 1.2.0b / 1.2.0-beta)
+            return c.pre && !l.pre;
         },
 
         // ── Firmware flashing ──────────────────────────────────────────────

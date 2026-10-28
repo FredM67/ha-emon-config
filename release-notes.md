@@ -1,3 +1,9 @@
+## What's new in v1.8.2
+
+### Fix: firmware update detected when running a beta
+
+- A device running a firmware pre-release (e.g. `1.2.0b` or `1.2.0-beta`) is now offered the matching stable release (`1.2.0`) as an update; previously the panel reported it as up to date
+
 ## What's new in v1.8.1
 
 ### Fix: the panel refreshes itself after a firmware flash
