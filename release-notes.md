@@ -1,3 +1,9 @@
+## What's new in v1.8.4
+
+### New: integration icon on Home Assistant 2026.3+
+
+- The integration now ships its own brand icons (`brand/icon.png`, `brand/icon@2x.png`), so Home Assistant 2026.3 and newer shows its icon in Settings → Devices & services. Thanks to @frenck (#29)
+
 ## What's new in v1.8.3
 
 ### Fix: the panel always runs the installed version's code
